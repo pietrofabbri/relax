@@ -1,0 +1,228 @@
+/* Respira — stile. Carta e inchiostro: colori caldi, contorni scuri, niente effetti alla moda. */
+
+:root {
+  --carta: #f3ecdf;
+  --carta-scura: #e6dcc8;
+  --inchiostro: #2b2622;
+  --inchiostro-chiaro: #6b6157;
+  --accento: #b5523b;      /* rosso del cuore */
+  --calma: #3f7f78;        /* verde-azzurro della calma */
+  --ombra: rgba(43, 38, 34, 0.18);
+  --testo: 18px;
+}
+
+body.testo-grande { --testo: 22px; }
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--carta);
+  color: var(--inchiostro);
+  font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  font-size: var(--testo);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#mondo {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: block;
+}
+
+.nascosto { display: none !important; }
+
+/* ---------- Battito ---------- */
+#battito {
+  position: fixed;
+  top: max(10px, env(safe-area-inset-top));
+  left: max(12px, env(safe-area-inset-left));
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 8px;
+  background: rgba(243, 236, 223, 0.88);
+  border: 2px solid var(--inchiostro);
+  border-radius: 999px;
+  box-shadow: 0 2px 0 var(--ombra);
+  font-variant-numeric: tabular-nums;
+}
+#battito .cuore {
+  width: 28px;
+  height: 26px;
+  fill: var(--accento);
+  stroke: var(--inchiostro);
+  stroke-width: 1.5;
+  animation: pulsa var(--periodo, 0.83s) infinite ease-out;
+  transform-origin: 50% 60%;
+}
+body.movimento-ridotto #battito .cuore { animation: none; }
+#battito-numero { font-size: 1.3em; font-weight: bold; min-width: 1.8em; text-align: center; }
+.battito-etichetta { font-size: 0.7em; color: var(--inchiostro-chiaro); }
+
+@keyframes pulsa {
+  0% { transform: scale(1); }
+  12% { transform: scale(1.22); }
+  24% { transform: scale(0.98); }
+  36% { transform: scale(1.1); }
+  60%, 100% { transform: scale(1); }
+}
+
+/* ---------- Barra pulsanti ---------- */
+#barra {
+  position: fixed;
+  top: max(10px, env(safe-area-inset-top));
+  right: max(12px, env(safe-area-inset-right));
+  display: flex;
+  gap: 10px;
+}
+button {
+  font: inherit;
+  color: var(--inchiostro);
+  cursor: pointer;
+}
+.tondo {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid var(--inchiostro);
+  background: var(--carta);
+  font-size: 24px;
+  box-shadow: 0 2px 0 var(--ombra);
+}
+
+/* ---------- Suggerimento ---------- */
+#aiuto {
+  position: fixed;
+  left: 50%;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  max-width: min(92vw, 640px);
+  padding: 10px 18px;
+  background: rgba(243, 236, 223, 0.94);
+  border: 2px dashed var(--inchiostro);
+  border-radius: 14px;
+  font-size: 0.85em;
+  text-align: center;
+  pointer-events: none;
+}
+
+/* ---------- Pannello ---------- */
+#pannello {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+  background: rgba(43, 38, 34, 0.28);
+}
+#pannello .foglio {
+  position: relative;
+  width: min(94vw, 680px);
+  max-height: 92vh;
+  max-height: 92dvh;
+  overflow-y: auto;
+  padding: 22px 26px 18px;
+  background: var(--carta);
+  border: 2.5px solid var(--inchiostro);
+  border-radius: 6px 18px 8px 16px;
+  box-shadow: 4px 5px 0 var(--ombra);
+  user-select: text;
+  -webkit-user-select: text;
+}
+#pannello h2 {
+  margin: 0 0 10px;
+  font-size: 1.25em;
+  font-weight: normal;
+  font-style: italic;
+  border-bottom: 1.5px solid var(--inchiostro);
+  padding-bottom: 6px;
+}
+#pannello h2:empty { display: none; }
+#pannello-testo p { margin: 0 0 0.7em; line-height: 1.45; }
+#pannello-testo .piccolo { font-size: 0.8em; color: var(--inchiostro-chiaro); }
+#pannello-testo .grande-numero { font-size: 2.6em; text-align: center; margin: 0.2em 0; font-variant-numeric: tabular-nums; }
+#pannello-azioni {
+  position: sticky;
+  bottom: -18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+  margin: 10px -4px 0;
+  padding: 8px 4px 2px;
+  background: var(--carta);
+}
+.bottone {
+  min-height: 48px;
+  min-width: 48px;
+  padding: 10px 20px;
+  border: 2px solid var(--inchiostro);
+  border-radius: 10px;
+  background: var(--carta-scura);
+  box-shadow: 0 2px 0 var(--ombra);
+  font-size: 0.95em;
+}
+.bottone.principale { background: var(--calma); color: #fff; border-color: var(--inchiostro); }
+.bottone.secondario { background: transparent; }
+.bottone:focus-visible, .tondo:focus-visible { outline: 3px solid var(--accento); outline-offset: 2px; }
+
+input[type="number"] {
+  font: inherit;
+  font-size: 1.4em;
+  width: 5em;
+  padding: 6px 10px;
+  border: 2px solid var(--inchiostro);
+  border-radius: 8px;
+  background: #fff;
+  text-align: center;
+}
+.riga-campo { display: flex; gap: 12px; align-items: center; justify-content: center; margin: 10px 0; }
+
+/* Quaderno */
+.pagina-quaderno {
+  border-top: 1px dashed var(--inchiostro-chiaro);
+  padding: 10px 0 4px;
+}
+.pagina-quaderno h3 { margin: 0 0 4px; font-size: 1em; }
+.pagina-quaderno .codice { font-size: 0.7em; color: var(--inchiostro-chiaro); margin-left: 6px; font-family: monospace; }
+
+/* Impostazioni */
+.opzione {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 4px 0;
+  cursor: pointer;
+}
+.opzione input { width: 26px; height: 26px; accent-color: var(--calma); }
+
+/* Titolo */
+.titolo-gioco { font-size: 3em; text-align: center; margin: 0.1em 0 0; letter-spacing: 0.04em; }
+.sottotitolo { text-align: center; font-style: italic; color: var(--inchiostro-chiaro); }
+
+/* Orientamento */
+#ruota {
+  position: fixed;
+  left: 50%;
+  top: 70px;
+  transform: translateX(-50%);
+  max-width: 86vw;
+  padding: 8px 14px;
+  background: var(--carta);
+  border: 2px solid var(--inchiostro);
+  border-radius: 10px;
+  font-size: 0.8em;
+  text-align: center;
+  pointer-events: none;
+}

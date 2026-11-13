@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f3ecdf">
+  <meta name="description" content="Respira: un gioco educativo sul relax, tra le storie di tante culture e il funzionamento del corpo.">
+  <title>Respira</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="assets/icone/icona.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="assets/icone/icona-192.png">
+  <link rel="stylesheet" href="css/stile.css">
+</head>
+<body>
+  <canvas id="mondo" aria-hidden="true"></canvas>
+
+  <!-- Battito: sempre visibile durante il gioco -->
+  <div id="battito" class="nascosto" role="status" aria-live="off">
+    <svg class="cuore" viewBox="0 0 32 29" aria-hidden="true"><path d="M16 28 C 6 20 0 14 0 8 A 8 8 0 0 1 16 5 A 8 8 0 0 1 32 8 C 32 14 26 20 16 28 Z"/></svg>
+    <span id="battito-numero">72</span>
+    <span class="battito-etichetta"><span id="battito-unita">bpm</span> · <span id="battito-simulato"></span></span>
+  </div>
+
+  <!-- Pulsanti fissi -->
+  <div id="barra" class="nascosto">
+    <button id="btn-quaderno" class="tondo" aria-label="Quaderno">📖</button>
+    <button id="btn-impostazioni" class="tondo" aria-label="Impostazioni">⚙️</button>
+  </div>
+
+  <!-- Suggerimento -->
+  <div id="aiuto" class="nascosto" role="status" aria-live="polite"></div>
+
+  <!-- Finestra dei dialoghi e dei pannelli -->
+  <div id="pannello" class="nascosto" role="dialog" aria-modal="true" aria-labelledby="pannello-titolo">
+    <div class="foglio">
+      <h2 id="pannello-titolo"></h2>
+      <div id="pannello-testo"></div>
+      <div id="pannello-azioni"></div>
+    </div>
+  </div>
+
+  <!-- Avviso orientamento -->
+  <div id="ruota" class="nascosto"></div>
+
+  <noscript>Per giocare a Respira serve JavaScript attivo nel browser.</noscript>
+
+  <!-- Script classici, senza moduli: così il gioco funziona anche aprendo il file da una chiavetta -->
+  <script src="js/testi-it.js"></script>
+  <script src="js/impostazioni.js"></script>
+  <script src="js/voce.js"></script>
+  <script src="js/suoni.js"></script>
+  <script src="js/battito.js"></script>
+  <script src="js/pannello.js"></script>
+  <script src="js/quaderno.js"></script>
+  <script src="js/mondo.js"></script>
+  <script src="js/livello1.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
