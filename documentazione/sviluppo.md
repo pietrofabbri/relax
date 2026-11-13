@@ -26,7 +26,9 @@ Torna a: [documentazione](README.md) · [presentazione del progetto](../README.m
 | `js/battito.js` | Il battito **simulato** del personaggio: sale, poi torna da solo verso la base |
 | `js/pannello.js` | Finestre di racconto e di scelta (restituiscono Promise, così le scene si scrivono in ordine) |
 | `js/quaderno.js` | Il quaderno: ogni pagina ha il codice del passo della roadmap |
-| `js/mondo.js` | Disegno del mondo, movimento, tocchi |
+| `js/arte.js` | **Tutti i disegni**: cielo, mare, palme, grotta, animali, persone; colori che cambiano con l'ora del giorno |
+| `js/mondo.js` | Il motore: telecamera, strati in parallasse, ora del giorno, buio e luci, vista del calore, particelle, tocchi |
+| `js/didascalia.js` | La riga di testo in basso e la frase fissa in alto ("cosa devo fare") |
 | `js/livello1.js` | Il livello 1: oggetti, tappe, scene |
 | `js/main.js` | Avvio, schermata iniziale, impostazioni |
 | `sw.js`, `manifest.webmanifest` | Installazione sul telefono e uso offline quando il gioco è online |
@@ -35,12 +37,11 @@ Torna a: [documentazione](README.md) · [presentazione del progetto](../README.m
 ## Come aggiungere il disegno del ragazzo
 
 1. Scansiona il foglio a 300 dpi (o fotografalo con un'app di scansione), in orizzontale.
-2. Salvalo come `assets/sfondi/livello1-isola.jpg`.
-3. In `js/livello1.js`, nella funzione `carica`, togli il commento alla riga `sfondo: "assets/sfondi/livello1-isola.jpg",`.
+2. Salvalo in `assets/sfondi/`, per esempio `livello1-giungla.png` (meglio PNG con lo sfondo trasparente, così il cielo resta quello animato).
+3. In `js/mondo.js` gli strati sono disegnati in ordine: cielo, nuvole, isole lontane, mare, giungla, terreno, scena, primo piano. Il disegno va al posto di uno strato (di solito la giungla, che scorre a metà velocità): si carica con `new Image()` e si disegna nella stessa funzione, con la stessa parallasse.
+4. Il buio della notte e le luci si applicano sopra, quindi il disegno cambia da solo con l'ora del giorno.
 
-Il disegno prende il posto del cielo, del mare e della terra disegnati dal codice; personaggi e oggetti restano sopra, a inchiostro. Se il file manca, il gioco usa il disegno provvisorio.
-
-**Regole per il foglio:** tre fasce leggere (sfondo in alto, sentiero al centro, primo piano in basso); contorni marcati, colori pieni; niente scritte nel disegno.
+**Regole per il foglio:** una fascia per foglio (lontano, medio o vicino); contorni marcati, colori pieni; niente scritte; lasciare libera la parte bassa, dove camminano i personaggi.
 
 ## Come tradurre il gioco
 
@@ -52,16 +53,17 @@ Il disegno prende il posto del cielo, del mare e della terra disegnati dal codic
 
 Copia la struttura di `js/livello1.js`:
 
-- un elenco di **oggetti** (posizione, disegno, azione quando vengono toccati);
-- le **tappe**, ognuna con una funzione `prepara…` (cosa è attivo, dove si può camminare, il suggerimento in basso);
-- le **scene**, scritte come catene di `Pannello.racconta(...)`, una dopo l'altra.
+- `mondo`: dove stanno le cose (in coordinate del mondo: 1000 di altezza, il suolo a 790);
+- le **tappe** (`tappaQualcosa`), scritte come catene di Promise: `Didascalia.mostra(...)`, poi `attivita({...})`, poi `pagina(...)`;
+- `attivita` riceve i tocchi (`giu`, `muovi`, `su`), aggiorna ogni fotogramma (`aggiorna`) e può disegnare sopra (`disegnaMondo`, `disegnaSchermo`); finisce con `this.fine()`;
+- `luci()` e `calore()` dicono al motore cosa illumina il buio e cosa è caldo.
 
 Ogni livello salva la tappa raggiunta, così si può riprendere dopo aver chiuso il gioco.
 
 ## Come provare il gioco
 
 - **A mano:** apri `index.html` in un browser. Per simulare un telefono, usa gli strumenti per sviluppatori del browser (modalità dispositivo, in orizzontale).
-- **Test automatico:** `python3 strumenti/test_livello1.py`. Richiede Python con Playwright e Chrome. Il test gioca tutto il livello, controlla che non ci siano errori e salva le schermate in `/tmp/shots`.
+- **Test automatico:** `python3 strumenti/test_livello1.py`. Richiede Python con Playwright e Chrome. Il test gioca tutto il livello da solo (tocca, trascina, salta, tiene premuto, scrive il battito), fallisce se compare un errore o se una tappa resta ferma, e salva una schermata per tappa in `/tmp/foto_test`.
 
 ## Regole per chi scrive codice qui
 

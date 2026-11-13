@@ -12,8 +12,8 @@ Torna a: [indice dei livelli](README.md) · Storia: [opera](../didattica/storie/
 | **Passi della roadmap** | B1.1-B1.6, R1.1 |
 | **Ruolo nel gioco** | Tutorial: si impara a muoversi, a osservare e a usare il quaderno |
 | **Chi lo progetta** | Noi, completo prima della sessione 1 |
-| **Stato** | **Fatto, versione 1** (13 novembre 2026): giocabile dall'inizio alla fine, testato su telefono simulato |
-| **Codice** | `js/livello1.js` (logica), `js/testi-it.js` (testi), `js/mondo.js` (disegno) |
+| **Stato** | **Fatto, versione 2** (13 novembre 2026): rifatto con meno testo, grafica nuova e attività di gioco vere; il test automatico lo gioca tutto senza errori |
+| **Codice** | `js/livello1.js` (tappe), `js/testi-it.js` (testi), `js/arte.js` (disegni), `js/mondo.js` (motore) |
 
 ## 2. Ambientazione
 
@@ -22,31 +22,30 @@ Torna a: [indice dei livelli](README.md) · Storia: [opera](../didattica/storie/
 - **Foglio guida:** in alto mare e cielo; al centro un sentiero tra le palme; in basso la riva.
 - **Nota:** è il primo disegno del ragazzo da scansionare (sessione 1).
 
-## 3. Scene (come sono state costruite)
+## 3. Tappe (versione 2)
 
-| Tappa | Scena | Cosa fa il giocatore | Pagina del quaderno |
+Regola: **si capisce facendo**. Il testo è una riga in basso; in alto, una frase fissa dice cosa fare. Le pagine del quaderno arrivano come avviso che non blocca il gioco.
+
+| Tappa | Ora del giorno | Cosa fa il giocatore | Pagina del quaderno |
 | --- | --- | --- | --- |
-| Prologo | Il quaderno si apre | Legge chi è il Guardiano, chi era Ibn Tufayl, chi è Hayy | — |
-| Animali | Il risveglio | Esce dal rifugio e segue la cerva | — |
-| Animali | Gli animali | Osserva capra, uccello e tartaruga: a cosa servono corna, ali, guscio | B1.1 Ogni parte ha un compito |
-| Animali | La cerva corre | Vede che tutto cambia insieme; compare il battito (simulato) | B1.2 Le parti lavorano insieme |
-| Riflessi | La palma | Minigioco: tocca lo schermo quando cade il cocco, tre prove, tempo in millesimi di secondo | B1.3 Messaggi velocissimi |
-| Cerva | La cerva stanca | Ascolta il cuore della cerva che rallenta e si ferma; Hayy la seppellisce | R1.1 Il cuore batte sempre |
-| Cerva | La tristezza | Il battito resta alto, poi torna da solo | B1.4 Messaggi lenti |
-| Cerva | Il mio battito | Facoltativo: conta il proprio battito per 30 secondi | R1.2 Il mio battito |
-| Fuoco | Le canne in fiamme | Si scotta, accende un bastone, porta il fuoco nella grotta | — |
-| Fuoco | Caldo e freddo | Tocca il sasso, la capra e sé stesso | B1.5 Il corpo cerca l'equilibrio |
-| Fuoco | Seconda misura | Facoltativo: misura di nuovo il battito e confronta | B1.6 Misurare, ripetere, confrontare |
-| Absal | Lo straniero | Incontra Absal: imparare è un diritto | — |
-| Fine | La pagina finale | Riassunto, diritto (art. 1 e 26), una domanda aperta | — |
+| Segui | Alba | Tocca il sentiero e segue la cerva | — |
+| Animali | Giorno | Tocca capra, uccello, tartaruga: la parte del corpo si illumina (corna, ali, guscio). Poi trascina su Hayy l'oggetto che la imita: bastone, mantello di foglie, scudo di corteccia. Hayy si equipaggia | B1.1 Ogni parte ha un compito |
+| Corsa | Giorno | Corre dietro la cerva e tocca per saltare quattro ostacoli. Il corpo diventa trasparente: cuore che accelera, polmoni che si gonfiano, calore, sudore. Poi si siede e tutto torna giù | B1.2 Le parti lavorano insieme |
+| Cocchi | Giorno | Tocca appena un cocco si stacca: tre prove, tempi in millesimi e grafico a barre | B1.3 Messaggi velocissimi · B1.6 Misura più volte |
+| Cerva | Tramonto | Tiene il dito sulla cerva e sente il suo cuore rallentare (anelli e vibrazione) fino a fermarsi. Pianta tre fiori; la cerva sfuma. Il cuore di Hayy resta alto, poi torna giù da solo | R1.1 Il cuore batte sempre · B1.4 Messaggi lenti |
+| Fuoco | Notte | Un fulmine incendia le canne. Tocca il bastone per accenderlo, poi tiene premuto per riparare la fiamma dalle raffiche mentre Hayy la porta alla grotta. Se si spegne, si riaccende | — |
+| Calore | Notte | Accende la vista del calore (bottone con l'occhio) e tocca sasso (18°), capra (39°), sé stesso (37°) | B1.5 Il corpo cerca l'equilibrio |
+| Misura | Notte | Facoltativo: conta il proprio polso per 30 secondi | R1.2 Il mio battito |
+| Alba | Alba | Arriva una barca: va alla spiaggia e incontra Absal | — |
+| Fine | — | Diritto (art. 26) e una domanda aperta | — |
 
 ## 4. Meccanica principale
 
-**Osservare e annotare.** Toccando un animale o un oggetto, il Guardiano lo osserva e una scheda si aggiunge al quaderno. Il battito appare per la prima volta in alto, e il giocatore impara a leggerlo.
+**Imitare, provare, ascoltare il corpo.** Ogni tappa ha un gesto diverso (toccare, trascinare, saltare, reagire, tenere premuto, scegliere dove guardare), così il tutorial insegna tutti i comandi che servono nei livelli dopo.
 
 ## 5. Sfida finale
 
-Nessuna: è il livello tutorial. Si chiude quando il quaderno ha almeno tre schede.
+Portare il fuoco alla grotta nel vento: è la prima prova in cui si può fallire (e riprovare).
 
 ## 6. Pagina del quaderno
 
@@ -63,7 +62,7 @@ Ognuno ha una mente per ragionare (art. 1) e il diritto di imparare (art. 26). [
 
 ## 9. Accessibilità
 
-- Minigioco dei riflessi con difficoltà regolabile.
+- Nessuna prova a tempo blocca il gioco: nei cocchi un errore fa solo ripartire la prova; nella corsa un inciampo rallenta e basta.
 - Le schede del quaderno si possono anche ascoltare.
 
 ## 10. Decisioni prese e aperte

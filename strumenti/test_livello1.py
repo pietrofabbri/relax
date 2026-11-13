@@ -1,208 +1,173 @@
-"""Gioca il livello 1 dall'inizio alla fine in un telefono simulato e registra errori e screenshot."""
-import asyncio, sys
+"""Gioca tutto il livello 1 da solo, come farebbe un ragazzo, su un telefono simulato (844x390).
+
+Uso:  python3 strumenti/test_livello1.py [percorso index.html] [cartella foto]
+Serve Playwright con Chrome. Il test fallisce se compare un errore JavaScript,
+se una tappa resta ferma più di 60 secondi o se il finale non arriva.
+"""
+import asyncio, os, sys, time
 from playwright.async_api import async_playwright
 
-import os, pathlib
-RADICE = pathlib.Path(__file__).resolve().parent.parent
-URL = (RADICE / "index.html").as_uri()
-CHROME = os.environ.get("CHROME", "/usr/bin/google-chrome")
-VW, VH = 844, 390
-SHOTS = "/tmp/shots"
+RADICE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PAGINA = sys.argv[1] if len(sys.argv) > 1 else os.path.join(RADICE, "index.html")
+FOTO = sys.argv[2] if len(sys.argv) > 2 else "/tmp/foto_test"
+CHROME = "/usr/bin/google-chrome"
 
-errori = []
+STATO = """(() => {
+  const L = window.Livello1, vis = id => !document.getElementById(id).classList.contains('nascosto');
+  const d = L.debug(), m = d.mondo, h = d.hayyRef;
+  const sch = (x, y) => d.aSchermo(x, y);
+  const bottoni = [...document.querySelectorAll('#pannello-azioni button')].map(b => b.textContent);
+  return {
+    tappa: d.tappa, obiettivo: vis('suggerimento') ? document.getElementById('suggerimento').textContent : '',
+    cattura: vis('cattura'), pannello: vis('pannello'), bottoni, testoPannello: document.getElementById('pannello').innerText,
+    campo: !!document.querySelector('#pannello input'),
+    hayy: [h.x, h.salto], hayySch: sch(h.x, 660),
+    oggetto: m.oggetto ? sch(m.oggetto.x, m.oggetto.y) : null,
+    animali: Object.fromEntries(Object.entries(m.animali).map(([k, a]) => [k, {fatto: a.fatto, s: sch(a.x, 700)}])),
+    ostacoli: m.ostacoli.map(o => [o.x, o.passato]),
+    cocco: m.cocco ? m.cocco.stato : null,
+    cerva: sch(d.cerva.x, 750),
+    bastone: m.bastone && m.bastone.visibile ? sch(m.bastone.x, 770) : null,
+    sasso: sch(m.sasso.x, 760), capra2: sch(m.capra2.x, 700), hayyCorpo: sch(h.x, 660),
+    fuoco: h.equip.fuoco, forza: h.fuocoForza, calore: vis('btn-calore'),
+    spiaggia: sch(4200, 700), grotta: m.grottaLuce
+  };
+})()"""
 
-async def pannello_aperto(pg):
-    return await pg.evaluate("!document.getElementById('pannello').classList.contains('nascosto')")
-
-async def avanza(pg, massimo=40, prima=None):
-    """Clicca il bottone principale finché il pannello resta aperto."""
-    n = 0
-    await pg.wait_for_timeout(250)
-    while await pannello_aperto(pg) and n < massimo:
-        # se c'è un campo numerico, non è il momento di avanzare
-        if await pg.locator("#pannello input[type=number]").count():
-            return n
-        if await pg.locator("#pannello button", has_text="Non ora").count():
-            return n
-        await pg.locator("#pannello .bottone.principale").last.click()
-        n += 1
-        await pg.wait_for_timeout(180)
-    return n
-
-async def dbg(pg):
-    return await pg.evaluate("(() => { const d = RESPIRA.livello.debug(); return {tappa: d.tappa, oggetti: d.oggetti, g: d.guardiano, limite: d.limite, cocco: d.cocco}; })()")
-
-async def pos(pg, oid):
-    return await pg.evaluate(f"RESPIRA.livello.debug().posizione('{oid}')")
-
-async def vai_e_tocca(pg, oid, tentativi=30):
-    for _ in range(tentativi):
-        p = await pos(pg, oid)
-        if 60 < p["x"] < VW - 60:
-            await pg.mouse.click(p["x"], p["y"])
-            await pg.wait_for_timeout(900)
-            # aspetta l'arrivo e l'apertura del pannello
-            for _ in range(20):
-                if await pannello_aperto(pg):
-                    return True
-                await pg.wait_for_timeout(250)
-            return False
-        # cammina verso l'oggetto toccando il sentiero
-        x = VW - 40 if p["x"] >= VW - 60 else 40
-        await pg.mouse.click(x, VH * 0.72)
-        await pg.wait_for_timeout(700)
-    return False
-
-async def foto(pg, nome):
-    await pg.screenshot(path=f"{SHOTS}/{nome}.png")
 
 async def main():
-    import os
-    os.makedirs(SHOTS, exist_ok=True)
+    os.makedirs(FOTO, exist_ok=True)
     async with async_playwright() as p:
         b = await p.chromium.launch(executable_path=CHROME, args=["--no-sandbox", "--autoplay-policy=no-user-gesture-required"])
-        ctx = await b.new_context(viewport={"width": VW, "height": VH}, device_scale_factor=2, has_touch=True, is_mobile=True)
+        ctx = await b.new_context(viewport={"width": 844, "height": 390}, device_scale_factor=2, has_touch=True, is_mobile=True)
         pg = await ctx.new_page()
-        pg.on("console", lambda m: errori.append("console." + m.type + ": " + m.text) if m.type in ("error", "warning") else None)
-        pg.on("pageerror", lambda e: errori.append("pageerror: " + str(e)))
-        await pg.goto(URL)
+        errori = []
+        pg.on("pageerror", lambda e: errori.append(str(e)))
+        pg.on("console", lambda m: errori.append(m.text) if m.type in ("error", "warning") else None)
+        await pg.goto("file://" + PAGINA)
         await pg.wait_for_timeout(800)
-        await foto(pg, "01-titolo")
+        await pg.screenshot(path=f"{FOTO}/00-titolo.png")
 
-        await pg.get_by_text("Inizia il viaggio").click()
-        await pg.wait_for_timeout(300)
-        await foto(pg, "02-prologo")
-        await avanza(pg)
-        print("dopo prologo", await dbg(pg))
-        await foto(pg, "03-isola")
+        mouse = pg.mouse
+        premuto = False
+        tappa_vista, inizio_tappa, foto_fatte = None, time.time(), set()
+        fiori, calore_toccati = 0, set()
+        ultimo_salto = 0
+        misura_fatta = False
 
-        for animale in ["capra", "uccello", "tartaruga"]:
-            ok = await vai_e_tocca(pg, animale)
-            print(animale, ok)
-            if animale == "capra":
-                await foto(pg, "04-capra")
-            await avanza(pg)
-            # la cerva corre dopo il terzo animale: attesa di sicurezza
-            await pg.wait_for_timeout(1500)
-            await avanza(pg)
-        print("dopo animali", await dbg(pg))
-        await foto(pg, "05-battito")
+        async def tocca(x, y):
+            await mouse.click(x, y)
 
-        # riflessi
-        ok = await vai_e_tocca(pg, "palma")
-        print("palma", ok)
-        await avanza(pg)   # introduzione fino al pannello 'Prova 1 di 3' (principale = Inizia)
-        prove = 0
-        presto_testato = False
-        while prove < 3:
-            stato = (await dbg(pg))["cocco"]
-            if await pannello_aperto(pg):
-                testo = await pg.inner_text("#pannello")
-                await pg.locator("#pannello .bottone.principale").last.click()
-                await pg.wait_for_timeout(150)
+        while True:
+            s = await pg.evaluate(STATO)
+            if s["tappa"] != tappa_vista:
+                print(f"{time.strftime('%H:%M:%S')} tappa: {s['tappa']}")
+                tappa_vista, inizio_tappa = s["tappa"], time.time()
+            if time.time() - inizio_tappa > 90:
+                await pg.screenshot(path=f"{FOTO}/bloccato.png")
+                raise SystemExit(f"BLOCCATO nella tappa {s['tappa']}: obiettivo={s['obiettivo']!r} hayy={s['hayy']} errori={errori}")
+            chiave = (s["tappa"], s["obiettivo"])
+            if s["obiettivo"] and chiave not in foto_fatte:
+                foto_fatte.add(chiave)
+                await pg.wait_for_timeout(400)
+                await pg.screenshot(path=f"{FOTO}/{len(foto_fatte):02d}-{s['tappa']}.png")
+
+            # finestre e didascalie prima di tutto
+            if s["pannello"]:
+                if premuto:
+                    await mouse.up(); premuto = False
+                if "Imparare è un diritto" in s["testoPannello"]:
+                    await pg.screenshot(path=f"{FOTO}/99-finale.png")
+                    print("FINALE raggiunto")
+                    break
+                if s["campo"]:
+                    await pg.fill("#pannello input", "36")
+                    await pg.click("#pannello-azioni button:has-text('Ok')")
+                    misura_fatta = True
+                elif "Via" in s["bottoni"]:
+                    await pg.click("#pannello-azioni button:has-text('Via')")
+                elif s["bottoni"]:
+                    await pg.click("#pannello-azioni button:last-child")
+                await pg.wait_for_timeout(250)
                 continue
-            if stato == "attesa" and not presto_testato:
-                await pg.mouse.click(VW / 2, VH / 2)   # troppo presto, apposta
-                presto_testato = True
-                await pg.wait_for_timeout(300)
+            if s["cattura"]:
+                await tocca(420, 200)
+                await pg.wait_for_timeout(200)
                 continue
-            if stato == "cade":
-                await pg.wait_for_timeout(120)
-                await pg.mouse.click(VW / 2, VH / 2)
-                if prove == 0:
-                    await pg.wait_for_timeout(100)
-                    await foto(pg, "06-cocco")
-                prove += 1
-                await pg.wait_for_timeout(300)
+
+            t, ob = s["tappa"], s["obiettivo"]
+            if not ob:
+                if premuto and t != "fuoco":
+                    await mouse.up(); premuto = False
+                await pg.wait_for_timeout(60)
                 continue
-            await pg.wait_for_timeout(60)
-        await pg.wait_for_timeout(400)
-        await foto(pg, "07-risultati-riflessi")
-        await avanza(pg)
-        print("dopo riflessi", await dbg(pg))
 
-        # la cerva e la grotta
-        ok = await vai_e_tocca(pg, "grotta")
-        print("grotta", ok)
-        await foto(pg, "08-cerva")
-        await avanza(pg, massimo=60)
-        # prima misura: 'Non ora' (secondario) quando compare la scelta
-        for _ in range(20):
-            if await pannello_aperto(pg) and await pg.get_by_text("Non ora").count():
-                break
-            await avanza(pg, massimo=1)
-            await pg.wait_for_timeout(300)
-        await foto(pg, "09-scelta-misura")
-        await pg.get_by_text("Non ora").click()
-        await pg.wait_for_timeout(500)
-        await avanza(pg)
-        print("dopo cerva", await dbg(pg))
+            if t == "segui":
+                await tocca(800, 330)
+            elif t == "animali":
+                if s["oggetto"]:
+                    o, h = s["oggetto"], s["hayyCorpo"]
+                    await mouse.move(o["x"], o["y"]); await mouse.down()
+                    for i in range(1, 11):
+                        await mouse.move(o["x"] + (h["x"] - o["x"]) * i / 10, o["y"] + (h["y"] - o["y"]) * i / 10)
+                        await pg.wait_for_timeout(20)
+                    await mouse.up()
+                    await pg.wait_for_timeout(500)
+                else:
+                    for k, a in s["animali"].items():
+                        if not a["fatto"]:
+                            x = min(830, max(10, a["s"]["x"]))
+                            await tocca(x, a["s"]["y"])
+                            break
+                    await pg.wait_for_timeout(700)
+            elif t == "corsa":
+                hx, salto = s["hayy"]
+                for ox, passato in s["ostacoli"]:
+                    if not passato and 40 < ox - hx < 130 and salto < 1 and time.time() - ultimo_salto > 0.4:
+                        await tocca(420, 200); ultimo_salto = time.time()
+                await pg.wait_for_timeout(25)
+                continue
+            elif t == "cocchi":
+                if s["cocco"] == "cade":
+                    await pg.wait_for_timeout(250)
+                    await tocca(420, 200)
+                await pg.wait_for_timeout(30)
+                continue
+            elif t == "cerva":
+                c = s["cerva"]
+                if "fiori" in ob.lower() or "fior" in ob.lower():
+                    if premuto:
+                        await mouse.up(); premuto = False
+                    await tocca(c["x"] - 60 + fiori * 50, c["y"]); fiori += 1
+                    await pg.wait_for_timeout(400)
+                elif not premuto:
+                    await mouse.move(c["x"], c["y"]); await mouse.down(); premuto = True
+            elif t == "fuoco":
+                if s["bastone"]:
+                    if premuto:
+                        await mouse.up(); premuto = False
+                    await tocca(s["bastone"]["x"], s["bastone"]["y"])
+                    await pg.wait_for_timeout(500)
+                elif not premuto:
+                    await mouse.move(420, 200); await mouse.down(); premuto = True
+            elif t == "calore":
+                if premuto:
+                    await mouse.up(); premuto = False
+                for nome in ("sasso", "capra2", "hayyCorpo"):
+                    if nome not in calore_toccati:
+                        await tocca(s[nome]["x"], s[nome]["y"]); calore_toccati.add(nome)
+                        await pg.wait_for_timeout(2000)
+                        break
+            elif t == "alba":
+                await tocca(min(830, s["spiaggia"]["x"]), 330)
+            await pg.wait_for_timeout(150)
 
-        # fuoco
-        for oid in ["canne", "bastone", "grotta"]:
-            ok = await vai_e_tocca(pg, oid)
-            print(oid, ok)
-            await avanza(pg)
-        await foto(pg, "10-grotta-accesa")
-        for oid in ["sasso", "capra2", "hayy"]:
-            ok = await vai_e_tocca(pg, oid)
-            print(oid, ok)
-            if oid == "hayy":
-                await avanza(pg, massimo=12)
-            else:
-                await avanza(pg)
-        # seconda misura: scegli 'Via' e fai il conto alla rovescia
-        for _ in range(20):
-            if await pannello_aperto(pg) and await pg.get_by_text("Via", exact=True).count():
-                break
-            await avanza(pg, massimo=1)
-            await pg.wait_for_timeout(300)
-        await pg.get_by_text("Via", exact=True).click()
-        await pg.wait_for_timeout(2000)
-        await foto(pg, "11-conto")
-        await pg.wait_for_timeout(29500)
-        await pg.fill("#pannello input[type=number]", "200")
-        await pg.get_by_text("Conferma").click()
-        await pg.wait_for_timeout(300)
-        fuori = await pg.inner_text("#pannello")
-        print("numero fuori scala ->", "strano" in fuori)
-        await pg.fill("#pannello input[type=number]", "38")
-        await foto(pg, "12-numero")
-        await pg.get_by_text("Conferma").click()
-        await pg.wait_for_timeout(300)
-        await avanza(pg)
-        print("dopo fuoco", await dbg(pg))
-
-        ok = await vai_e_tocca(pg, "absal")
-        print("absal", ok)
-        await foto(pg, "13-absal")
-        for _ in range(10):
-            if await pg.get_by_text("Fine della prima pagina").count():
-                break
-            await pg.locator("#pannello .bottone.principale").last.click()
-            await pg.wait_for_timeout(200)
-        await foto(pg, "14-finale")
-        await pg.get_by_text("Quaderno", exact=True).last.click()
-        await pg.wait_for_timeout(300)
-        await foto(pg, "15-quaderno")
-        q = await pg.evaluate("RESPIRA.quaderno.numero()")
-        print("pagine nel quaderno:", q)
-        print("finale", await dbg(pg))
-
-        # ripresa: ricarica e controlla che il gioco riparta dalla fine
-        await pg.reload()
-        await pg.wait_for_timeout(800)
-        print("dopo ricarica, tasto Continua:", await pg.get_by_text("Continua").count() > 0)
-
-        # verticale
-        await pg.set_viewport_size({"width": 390, "height": 844})
-        await pg.wait_for_timeout(500)
-        await foto(pg, "16-verticale")
         await b.close()
+        print("misura del battito provata:", misura_fatta)
+        reali = [e for e in errori if "favicon" not in e]
+        print("errori:", reali)
+        if reali:
+            raise SystemExit(1)
 
-    print("\nERRORI:", len(errori))
-    for e in errori:
-        print(" -", e)
-    sys.exit(1 if errori else 0)
 
 asyncio.run(main())

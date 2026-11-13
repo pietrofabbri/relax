@@ -69,6 +69,26 @@
         o.stop(t + i * 0.12 + 0.65);
       });
     },
+    /* Una folata di vento: rumore filtrato che sale e scende */
+    vento: function () {
+      if (!attivo()) return;
+      var c = contesto();
+      if (!c) return;
+      var durata = 1.6, n = Math.floor(c.sampleRate * durata);
+      var buf = c.createBuffer(1, n, c.sampleRate), d = buf.getChannelData(0);
+      for (var i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+      var src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+      src.buffer = buf;
+      f.type = "bandpass";
+      f.frequency.setValueAtTime(400, c.currentTime);
+      f.frequency.linearRampToValueAtTime(900, c.currentTime + durata / 2);
+      f.frequency.linearRampToValueAtTime(300, c.currentTime + durata);
+      g.gain.setValueAtTime(0.0001, c.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.25, c.currentTime + 0.4);
+      g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + durata);
+      src.connect(f); f.connect(g); g.connect(c.destination);
+      src.start();
+    },
     /* Un tonfo leggero (il cocco sulla sabbia) */
     tonfo: function () {
       if (!attivo()) return;

@@ -3,11 +3,29 @@
   "use strict";
 
   var pagine = [];   /* { id, titolo, testo, roadmap } */
+  var codaAvvisi = Promise.resolve();
 
   function salva() {
     var p = window.Salvataggio.progressi("quaderno");
     p.pagine = pagine;
     window.Salvataggio.salvaProgressi();
+  }
+
+  /* Piccolo avviso in alto: non ferma il gioco. */
+  function avviso(pagina) {
+    var el = document.getElementById("avviso-quaderno");
+    el.querySelector(".avviso-titolo").textContent = pagina.titolo;
+    el.querySelector(".avviso-testo").textContent = pagina.testo;
+    el.classList.add("visibile");
+    window.Suoni.scoperta();
+    var btn = document.getElementById("btn-quaderno");
+    btn.classList.add("nuovo");
+    return new Promise(function (r) {
+      setTimeout(function () {
+        el.classList.remove("visibile");
+        setTimeout(function () { btn.classList.remove("nuovo"); r(); }, 500);
+      }, 3200);
+    });
   }
 
   window.Quaderno = {
@@ -19,42 +37,22 @@
     ha: function (id) { return pagine.some(function (x) { return x.id === id; }); },
     numero: function () { return pagine.length; },
 
-    /* Aggiunge una pagina (o la aggiorna, se esiste già) e mostra un piccolo avviso. */
+    /* Aggiunge una pagina e mostra l'avviso. La Promise si risolve subito: il gioco non si ferma. */
     aggiungi: function (pagina) {
       var esistente = -1;
       pagine.forEach(function (x, i) { if (x.id === pagina.id) esistente = i; });
       if (esistente >= 0) pagine[esistente] = pagina; else pagine.push(pagina);
       salva();
-      window.Suoni.scoperta();
-      var P = window.Pannello;
-      return new Promise(function (risolvi) {
-        P.apri(window.TESTI.quaderno.nuovaPagina);
-        var el = P.elementi();
-        var h = document.createElement("h3");
-        h.textContent = pagina.titolo;
-        el.testo.appendChild(h);
-        el.testo.appendChild(P.paragrafo(pagina.testo));
-        if (window.Voce.disponibile) {
-          el.azioni.appendChild(P.bottone(window.TESTI.gioco.ascolta, "secondario", function () {
-            window.Voce.leggi(pagina.titolo + ". " + pagina.testo);
-          }));
-        }
-        var b = P.bottone(window.TESTI.gioco.continua, "principale", function () { P.chiudi(); risolvi(); });
-        el.azioni.appendChild(b);
-        b.focus();
-        if (window.Salvataggio.impostazioni().voce) window.Voce.leggi(pagina.titolo + ". " + pagina.testo);
-      });
+      codaAvvisi = codaAvvisi.then(function () { return avviso(pagina); });
+      return Promise.resolve();
     },
 
-    /* Mostra tutto il quaderno. */
     mostra: function () {
       var P = window.Pannello;
       return new Promise(function (risolvi) {
         P.apri(window.TESTI.quaderno.titolo);
         var el = P.elementi();
-        if (!pagine.length) {
-          el.testo.appendChild(P.paragrafo(window.TESTI.quaderno.vuoto));
-        }
+        if (!pagine.length) el.testo.appendChild(P.paragrafo(window.TESTI.quaderno.vuoto));
         pagine.forEach(function (pg) {
           var d = document.createElement("div");
           d.className = "pagina-quaderno";

@@ -91,7 +91,7 @@ relax/
 - Roadmap disciplinare v2 (144 passi, revisione critica, fonti)
 - Le sette storie: scelte, verificate su fonti, ordinate secondo la roadmap
 - Documentazione didattica (storie e diritti) e schede dei livelli
-- **Livello 1 giocabile**, con storia, quaderno, battito simulato, minigioco dei riflessi e misura del battito vero
+- **Livello 1 giocabile, versione 2**: poco testo, grafica disegnata dal codice con ora del giorno, luci e notte, nove attività diverse (imitare gli animali, corsa con il corpo trasparente, riflessi, il cuore della cerva, il fuoco nel vento, la vista del calore, la misura del battito, l'arrivo di Absal)
 
 **Da fare**
 - [ ] Livello 2 (il respiro, con Ulisse): da costruire prima della sessione 1

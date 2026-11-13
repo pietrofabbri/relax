@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f3ecdf">
+  <meta name="theme-color" content="#1d2a44">
   <meta name="description" content="Respira: un gioco educativo sul relax, tra le storie di tante culture e il funzionamento del corpo.">
   <title>Respira</title>
   <link rel="manifest" href="manifest.webmanifest">
@@ -13,24 +13,45 @@
 </head>
 <body>
   <canvas id="mondo" aria-hidden="true"></canvas>
+  <div id="lampo" aria-hidden="true"></div>
 
-  <!-- Battito: sempre visibile durante il gioco -->
-  <div id="battito" class="nascosto" role="status" aria-live="off">
+  <!-- Battito simulato -->
+  <div id="battito" class="nascosto" role="status">
     <svg class="cuore" viewBox="0 0 32 29" aria-hidden="true"><path d="M16 28 C 6 20 0 14 0 8 A 8 8 0 0 1 16 5 A 8 8 0 0 1 32 8 C 32 14 26 20 16 28 Z"/></svg>
     <span id="battito-numero">72</span>
-    <span class="battito-etichetta"><span id="battito-unita">bpm</span> · <span id="battito-simulato"></span></span>
+    <span class="battito-etichetta" id="battito-simulato"></span>
   </div>
+
+  <!-- Obiettivo del momento -->
+  <div id="suggerimento" class="nascosto" role="status" aria-live="polite"></div>
 
   <!-- Pulsanti fissi -->
   <div id="barra" class="nascosto">
-    <button id="btn-quaderno" class="tondo" aria-label="Quaderno">📖</button>
-    <button id="btn-impostazioni" class="tondo" aria-label="Impostazioni">⚙️</button>
+    <button id="btn-calore" class="tondo nascosto" aria-label="Vista del calore">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.5" fill="currentColor"/></svg>
+    </button>
+    <button id="btn-quaderno" class="tondo" aria-label="Quaderno">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5c3-1.5 6-1.5 9 0v15c-3-1.5-6-1.5-9 0zM21 5c-3-1.5-6-1.5-9 0v15c3-1.5 6-1.5 9 0z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    </button>
+    <button id="btn-impostazioni" class="tondo" aria-label="Impostazioni">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
   </div>
 
-  <!-- Suggerimento -->
-  <div id="aiuto" class="nascosto" role="status" aria-live="polite"></div>
+  <!-- Avviso di nuova pagina nel quaderno -->
+  <div id="avviso-quaderno" role="status" aria-live="polite">
+    <div class="avviso-titolo"></div>
+    <div class="avviso-testo"></div>
+  </div>
 
-  <!-- Finestra dei dialoghi e dei pannelli -->
+  <!-- Didascalia: una riga alla volta -->
+  <div id="didascalia" role="status" aria-live="polite">
+    <span id="didascalia-testo"></span>
+    <span id="didascalia-freccia" aria-hidden="true">▸</span>
+  </div>
+  <div id="cattura" class="nascosto"></div>
+
+  <!-- Finestre (titolo, impostazioni, quaderno, fine) -->
   <div id="pannello" class="nascosto" role="dialog" aria-modal="true" aria-labelledby="pannello-titolo">
     <div class="foglio">
       <h2 id="pannello-titolo"></h2>
@@ -39,9 +60,7 @@
     </div>
   </div>
 
-  <!-- Avviso orientamento -->
   <div id="ruota" class="nascosto"></div>
-
   <noscript>Per giocare a Respira serve JavaScript attivo nel browser.</noscript>
 
   <!-- Script classici, senza moduli: così il gioco funziona anche aprendo il file da una chiavetta -->
@@ -51,7 +70,9 @@
   <script src="js/suoni.js"></script>
   <script src="js/battito.js"></script>
   <script src="js/pannello.js"></script>
+  <script src="js/didascalia.js"></script>
   <script src="js/quaderno.js"></script>
+  <script src="js/arte.js"></script>
   <script src="js/mondo.js"></script>
   <script src="js/livello1.js"></script>
   <script src="js/main.js"></script>

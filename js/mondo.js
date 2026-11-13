@@ -1,451 +1,215 @@
 /*
- * Il mondo: disegno, personaggi, tocchi.
- * Coordinate del mondo: altezza fissa 1000 unità, larghezza decisa dalla scena.
- * Lo stile "carta e inchiostro" è disegnato dal codice in modo provvisorio:
- * quando arriveranno le scansioni dei disegni del ragazzo, basterà indicare
- * l'immagine nella scena (campo "sfondo") e verrà usata al posto del disegno.
+ * Il mondo: camera, ora del giorno, luce, particelle, tocchi.
+ * Coordinate del mondo: altezza fissa 1000, larghezza decisa dalla scena.
+ * Il disegno vero e proprio sta in arte.js; le regole del livello in livello1.js.
  */
 (function () {
   "use strict";
 
+  var A = window.Arte;
   var ALTEZZA = 1000;
-  var SUOLO = 720;               /* la linea del sentiero */
-  var INCHIOSTRO = "#2b2622";
 
-  var canvas, ctx, dpr = 1, scala = 1;
-  var larghezzaVista = 1000;
-  var camera = { x: 0 };
-  var scena = null;
-  var carta = null;              /* motivo della carta, generato una volta */
-  var tempo = 0;
-  var ultimo = 0;
-  var callbackTocco = null;
+  var canvas, ctx, dpr = 1, scala = 1, vw = 1000;
+  var buio = null, bctx = null, carta = null;
+  var scena = null, attivita = null;
+  var tempo = 0, ultimo = 0;
+  var camera = { x: 0, segui: null, anticipo: 0.38 };
+  var ora = { valore: 1, da: 1, a: 1, t: 1, durata: 1 };
+  var termica = { attiva: false, mix: 0 };
+  var particelle = [];
+  var tocchi = { giu: false };
 
-  var guardiano = { x: 200, dest: 200, vel: 430, verso: 1, passo: 0, tiene: null, attesa: null };
-  var cerva = { x: 380, dest: 380, vel: 260, verso: 1, passo: 0, stato: "ferma", visibile: true };
+  /* ---------- particelle ---------- */
 
-  /* ---------- utilità ---------- */
+  var TIPI = {
+    polvere: { colore: [230, 210, 170], vita: 0.8, gravita: -20, dimensione: 6, sfuma: true },
+    scintilla: { colore: [255, 170, 60], vita: 1.4, gravita: -60, dimensione: 3, luce: true },
+    goccia: { colore: [190, 230, 255], vita: 0.7, gravita: 600, dimensione: 3 },
+    foglia: { colore: [110, 160, 90], vita: 3, gravita: 40, dimensione: 7 },
+    lucciola: { colore: [230, 255, 140], vita: 4, gravita: 0, dimensione: 2.5, luce: true },
+    stella: { colore: [255, 240, 180], vita: 0.9, gravita: 0, dimensione: 5, luce: true },
+    fumo: { colore: [180, 180, 190], vita: 2.5, gravita: -40, dimensione: 18, sfuma: true }
+  };
 
-  /* Generatore pseudo-casuale con seme: i disegni restano uguali a ogni fotogramma. */
-  function casuale(seme) {
-    var s = seme % 2147483647;
-    if (s <= 0) s += 2147483646;
-    return function () { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; };
+  function emetti(tipo, x, y, n, o) {
+    var t = TIPI[tipo];
+    o = o || {};
+    for (var i = 0; i < (n || 1); i++) {
+      particelle.push({
+        tipo: tipo, x: x + (Math.random() - 0.5) * (o.spazio || 20), y: y + (Math.random() - 0.5) * (o.spazio || 20),
+        vx: (o.vx || 0) + (Math.random() - 0.5) * (o.dispersione || 60),
+        vy: (o.vy || 0) + (Math.random() - 0.5) * (o.dispersione || 60),
+        vita: t.vita * (0.6 + Math.random() * 0.6), max: 0, d: t.dimensione * (0.6 + Math.random() * 0.8),
+        ph: Math.random() * 6
+      });
+      particelle[particelle.length - 1].max = particelle[particelle.length - 1].vita;
+    }
+    if (particelle.length > 500) particelle.splice(0, particelle.length - 500);
   }
 
-  function tratto(punti, spessore, colore) {
-    ctx.beginPath();
-    ctx.moveTo(punti[0][0], punti[0][1]);
-    for (var i = 1; i < punti.length; i++) ctx.lineTo(punti[i][0], punti[i][1]);
-    ctx.lineWidth = spessore || 4;
-    ctx.strokeStyle = colore || INCHIOSTRO;
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.stroke();
+  function aggiornaParticelle(dt) {
+    for (var i = particelle.length - 1; i >= 0; i--) {
+      var q = particelle[i], t = TIPI[q.tipo];
+      q.vita -= dt;
+      if (q.vita <= 0) { particelle.splice(i, 1); continue; }
+      q.vy += t.gravita * dt;
+      if (q.tipo === "lucciola") { q.vx = Math.sin(tempo + q.ph) * 30; q.vy = Math.cos(tempo * 0.7 + q.ph) * 20; }
+      if (q.tipo === "foglia") q.vx += Math.sin(tempo * 3 + q.ph) * 40 * dt;
+      q.x += q.vx * dt;
+      q.y += q.vy * dt;
+    }
   }
 
-  function ellisse(x, y, rx, ry, riempi, contorno, spessore) {
-    ctx.beginPath();
-    ctx.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
-    if (riempi) { ctx.fillStyle = riempi; ctx.fill(); }
-    if (contorno !== false) { ctx.lineWidth = spessore || 4; ctx.strokeStyle = INCHIOSTRO; ctx.stroke(); }
+  function disegnaParticelle() {
+    particelle.forEach(function (q) {
+      var t = TIPI[q.tipo], f = q.vita / q.max;
+      var a = t.sfuma ? f * 0.6 : Math.min(1, f * 2);
+      if (q.tipo === "lucciola") a *= 0.5 + 0.5 * Math.sin(tempo * 6 + q.ph);
+      if (t.luce) ctx.globalCompositeOperation = "lighter";
+      ctx.fillStyle = A.rgba(t.colore, a);
+      ctx.beginPath();
+      if (q.tipo === "foglia") ctx.ellipse(q.x, q.y, q.d, q.d * 0.45, tempo * 2 + q.ph, 0, Math.PI * 2);
+      else ctx.arc(q.x, q.y, q.d * (t.sfuma ? (2 - f) : 1), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalCompositeOperation = "source-over";
+    });
   }
+
+  /* ---------- carta (grana leggera, per restare nello stile del quaderno) ---------- */
 
   function preparaCarta() {
     var c = document.createElement("canvas");
-    c.width = c.height = 256;
+    c.width = c.height = 200;
     var g = c.getContext("2d");
-    g.fillStyle = "#f3ecdf";
-    g.fillRect(0, 0, 256, 256);
-    var r = casuale(7);
-    for (var i = 0; i < 2600; i++) {
-      var a = r() * 0.06;
-      g.fillStyle = "rgba(90,70,50," + a.toFixed(3) + ")";
-      g.fillRect(r() * 256, r() * 256, 1 + r() * 1.5, 1 + r() * 1.5);
+    var r = A.casuale(7);
+    for (var i = 0; i < 3000; i++) {
+      var v = Math.floor(r() * 255);
+      g.fillStyle = "rgba(" + v + "," + v + "," + v + "," + (r() * 0.08).toFixed(3) + ")";
+      g.fillRect(r() * 200, r() * 200, 1.5, 1.5);
     }
     return c;
   }
 
-  /* ---------- disegni degli elementi ---------- */
-
-  var Disegni = {
-    roccia: function (x, y, l, a) {
-      ctx.beginPath();
-      ctx.moveTo(x - l / 2, y);
-      ctx.quadraticCurveTo(x - l / 2 + 10, y - a, x, y - a - 10);
-      ctx.quadraticCurveTo(x + l / 2 - 5, y - a + 15, x + l / 2, y);
-      ctx.closePath();
-      ctx.fillStyle = "#cbbfa8";
-      ctx.fill();
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = INCHIOSTRO;
-      ctx.stroke();
-    },
-    cespuglio: function (x, y, s) {
-      for (var i = -1; i <= 1; i++) ellisse(x + i * 34 * s, y - 30 * s - (i === 0 ? 14 * s : 0), 40 * s, 32 * s, "#7c9a5e");
-    },
-    palma: function (x, y, alta, cocchi) {
-      ctx.beginPath();
-      ctx.moveTo(x - 12, y);
-      ctx.quadraticCurveTo(x - 40, y - alta / 2, x + 20, y - alta);
-      ctx.lineTo(x + 34, y - alta + 4);
-      ctx.quadraticCurveTo(x - 20, y - alta / 2, x + 14, y);
-      ctx.closePath();
-      ctx.fillStyle = "#a88a62";
-      ctx.fill();
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = INCHIOSTRO;
-      ctx.stroke();
-      var cx = x + 26, cy = y - alta;
-      var foglie = [[-150, -10], [-110, -60], [-30, -90], [60, -75], [140, -20], [110, 40], [-120, 45]];
-      foglie.forEach(function (f) {
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.quadraticCurveTo(cx + f[0] * 0.5, cy + f[1] - 40, cx + f[0], cy + f[1]);
-        ctx.quadraticCurveTo(cx + f[0] * 0.55, cy + f[1] * 0.4 - 10, cx, cy);
-        ctx.fillStyle = "#6f8f4e";
-        ctx.fill();
-        ctx.lineWidth = 3.5;
-        ctx.strokeStyle = INCHIOSTRO;
-        ctx.stroke();
-      });
-      if (cocchi) {
-        ellisse(cx - 12, cy + 22, 16, 16, "#7a5636");
-        ellisse(cx + 16, cy + 26, 16, 16, "#7a5636");
-      }
-    },
-    cocco: function (x, y) { ellisse(x, y, 17, 17, "#7a5636"); },
-    rifugio: function (x, y) {
-      Disegni.roccia(x, y, 380, 230);
-      ctx.beginPath();
-      ctx.moveTo(x - 70, y);
-      ctx.quadraticCurveTo(x - 60, y - 120, x, y - 125);
-      ctx.quadraticCurveTo(x + 60, y - 120, x + 70, y);
-      ctx.closePath();
-      ctx.fillStyle = "#5b4d40";
-      ctx.fill();
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = INCHIOSTRO;
-      ctx.stroke();
-    },
-    grotta: function (x, y, accesa) {
-      Disegni.roccia(x, y, 560, 330);
-      ctx.beginPath();
-      ctx.moveTo(x - 120, y);
-      ctx.quadraticCurveTo(x - 110, y - 200, x, y - 210);
-      ctx.quadraticCurveTo(x + 110, y - 200, x + 120, y);
-      ctx.closePath();
-      if (accesa) {
-        var g = ctx.createRadialGradient(x, y - 60, 10, x, y - 60, 170);
-        g.addColorStop(0, "#ffd99a");
-        g.addColorStop(1, "#8a5a3a");
-        ctx.fillStyle = g;
-      } else {
-        ctx.fillStyle = "#3d342c";
-      }
-      ctx.fill();
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = INCHIOSTRO;
-      ctx.stroke();
-      if (accesa) Disegni.fiamma(x, y - 8, 1.1);
-    },
-    canne: function (x, y, fuoco) {
-      var r = casuale(42);
-      for (var i = 0; i < 16; i++) {
-        var cx = x - 120 + i * 16 + r() * 8;
-        var h = 140 + r() * 90;
-        tratto([[cx, y], [cx + 6, y - h]], 4, "#5d6b3a");
-        tratto([[cx + 6, y - h], [cx + 22, y - h - 14]], 3, "#5d6b3a");
-      }
-      if (fuoco) {
-        Disegni.fiamma(x - 40, y - 20, 1.6);
-        Disegni.fiamma(x + 30, y - 10, 1.3);
-      }
-    },
-    fiamma: function (x, y, s) {
-      var t = tempo;
-      var o = Math.sin(t * 9 + x) * 6 * s;
-      ctx.beginPath();
-      ctx.moveTo(x - 26 * s, y);
-      ctx.quadraticCurveTo(x - 30 * s, y - 50 * s, x + o, y - 90 * s);
-      ctx.quadraticCurveTo(x + 30 * s, y - 50 * s, x + 26 * s, y);
-      ctx.closePath();
-      ctx.fillStyle = "#e0782f";
-      ctx.fill();
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = INCHIOSTRO;
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(x - 12 * s, y);
-      ctx.quadraticCurveTo(x - 12 * s, y - 30 * s, x + o * 0.6, y - 52 * s);
-      ctx.quadraticCurveTo(x + 12 * s, y - 30 * s, x + 12 * s, y);
-      ctx.closePath();
-      ctx.fillStyle = "#f6c453";
-      ctx.fill();
-    },
-    barca: function (x, y) {
-      ctx.beginPath();
-      ctx.moveTo(x - 110, y - 40);
-      ctx.lineTo(x + 110, y - 40);
-      ctx.quadraticCurveTo(x + 80, y + 10, x, y + 10);
-      ctx.quadraticCurveTo(x - 80, y + 10, x - 110, y - 40);
-      ctx.fillStyle = "#9b7350";
-      ctx.fill();
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = INCHIOSTRO;
-      ctx.stroke();
-      tratto([[x, y - 40], [x, y - 190]], 4);
-      ctx.beginPath();
-      ctx.moveTo(x + 4, y - 185);
-      ctx.quadraticCurveTo(x + 80, y - 120, x + 4, y - 60);
-      ctx.closePath();
-      ctx.fillStyle = "#efe5d0";
-      ctx.fill();
-      ctx.lineWidth = 3;
-      ctx.stroke();
-    },
-    sasso: function (x, y) { ellisse(x, y - 22, 46, 26, "#a9a091"); },
-
-    /* --- animali --- */
-    capra: function (x, y, verso) {
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.scale(verso || 1, 1);
-      ellisse(0, -70, 60, 34, "#e9e1d2");
-      tratto([[-40, -45], [-44, 0]], 6);
-      tratto([[-18, -42], [-16, 0]], 6);
-      tratto([[22, -42], [24, 0]], 6);
-      tratto([[42, -46], [40, 0]], 6);
-      tratto([[50, -90], [74, -128]], 10, "#e9e1d2");
-      tratto([[50, -90], [74, -128]], 4);
-      ellisse(84, -132, 24, 16, "#e9e1d2");
-      tratto([[84, -146], [70, -176], [56, -184]], 5);
-      tratto([[94, -146], [92, -178], [80, -190]], 5);
-      tratto([[90, -118], [94, -100]], 3);
-      ellisse(90, -136, 2.5, 2.5, INCHIOSTRO, false);
-      tratto([[-58, -78], [-72, -92]], 4);
-      ctx.restore();
-    },
-    uccello: function (x, y) {
-      var b = Math.sin(tempo * 3) * 3;
-      ellisse(x, y - 20 + b, 34, 22, "#c8d2d8");
-      ellisse(x + 30, y - 42 + b, 16, 15, "#c8d2d8");
-      ctx.beginPath();
-      ctx.moveTo(x + 44, y - 44 + b);
-      ctx.lineTo(x + 64, y - 38 + b);
-      ctx.lineTo(x + 44, y - 34 + b);
-      ctx.closePath();
-      ctx.fillStyle = "#d39a3a";
-      ctx.fill();
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = INCHIOSTRO;
-      ctx.stroke();
-      ellisse(x + 33, y - 46 + b, 2.5, 2.5, INCHIOSTRO, false);
-      tratto([[x - 10, y - 26 + b], [x - 40, y - 54 + b], [x - 56, y - 34 + b]], 3.5);
-      tratto([[x - 2, y + 2 + b], [x - 4, y + 18]], 3);
-      tratto([[x + 10, y + 2 + b], [x + 10, y + 18]], 3);
-    },
-    tartaruga: function (x, y) {
-      ctx.beginPath();
-      ctx.moveTo(x - 60, y - 6);
-      ctx.quadraticCurveTo(x, y - 90, x + 60, y - 6);
-      ctx.closePath();
-      ctx.fillStyle = "#7f8f56";
-      ctx.fill();
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = INCHIOSTRO;
-      ctx.stroke();
-      tratto([[x - 30, y - 30], [x, y - 52], [x + 30, y - 30]], 3);
-      tratto([[x, y - 52], [x, y - 10]], 3);
-      var t = Math.sin(tempo * 1.5) * 4;
-      ellisse(x + 74 + t, y - 18, 16, 12, "#a7b07a");
-      ellisse(x - 44, y - 2, 12, 7, "#a7b07a");
-      ellisse(x + 40, y - 2, 12, 7, "#a7b07a");
-    },
-    cerva: function (c) {
-      ctx.save();
-      ctx.translate(c.x, SUOLO + 10);
-      ctx.scale(c.verso, 1);
-      if (c.stato === "sdraiata") {
-        ellisse(0, -26, 74, 26, "#c79a6b");
-        tratto([[50, -40], [86, -66]], 10, "#c79a6b");
-        tratto([[50, -40], [86, -66]], 4);
-        ellisse(98, -70, 22, 14, "#c79a6b");
-        tratto([[92, -82], [86, -100]], 4);
-      } else {
-        var m = c.stato === "cammina" ? Math.sin(c.passo) * 14 : 0;
-        ellisse(0, -100, 70, 32, "#c79a6b");
-        tratto([[-46, -78], [-46 + m, -4]], 6);
-        tratto([[-24, -74], [-24 - m, -4]], 6);
-        tratto([[30, -74], [30 - m, -4]], 6);
-        tratto([[50, -78], [50 + m, -4]], 6);
-        tratto([[52, -118], [80, -170]], 12, "#c79a6b");
-        tratto([[52, -118], [80, -170]], 4);
-        ellisse(94, -176, 26, 16, "#c79a6b");
-        tratto([[84, -190], [78, -214]], 4);
-        tratto([[94, -190], [96, -214]], 4);
-        ellisse(100, -180, 2.5, 2.5, INCHIOSTRO, false);
-        tratto([[-70, -108], [-82, -120]], 4);
-      }
-      ctx.restore();
-    },
-    /* Il Guardiano: una sagoma a inchiostro, senza età, genere o cultura. */
-    persona: function (x, verso, passo, camminando, tiene, colore) {
-      ctx.save();
-      ctx.translate(x, SUOLO + 10);
-      ctx.scale(verso, 1);
-      var m = camminando ? Math.sin(passo) * 22 : 12;
-      var b = camminando ? Math.abs(Math.sin(passo)) * 4 : 0;
-      /* alone color carta: la sagoma resta visibile anche davanti a una grotta buia */
-      ctx.shadowColor = "rgba(243,236,223,0.95)";
-      ctx.shadowBlur = 10;
-      tratto([[0, -90 - b], [-m * 0.6, -45], [-m, -2]], 7);
-      tratto([[0, -90 - b], [m * 0.6, -45], [m, -2]], 7);
-      ctx.beginPath();
-      ctx.moveTo(-26, -92 - b);
-      ctx.quadraticCurveTo(-30, -150 - b, 0, -160 - b);
-      ctx.quadraticCurveTo(30, -150 - b, 26, -92 - b);
-      ctx.closePath();
-      ctx.fillStyle = colore || INCHIOSTRO;
-      ctx.fill();
-      ctx.lineWidth = 4;
-      ctx.strokeStyle = INCHIOSTRO;
-      ctx.stroke();
-      ellisse(0, -186 - b, 24, 24, colore || INCHIOSTRO);
-      if (tiene === "fuoco" || tiene === "bastone") {
-        tratto([[14, -140 - b], [44, -150 - b], [62, -200 - b]], 6, "#7a5636");
-        if (tiene === "fuoco") Disegni.fiamma(64, -200 - b, 0.55);
-      } else {
-        tratto([[16, -146 - b], [26 - m * 0.3, -110 - b]], 6);
-      }
-      tratto([[-16, -146 - b], [-26 + m * 0.3, -110 - b]], 6);
-      ctx.shadowBlur = 0;
-      ctx.shadowColor = "transparent";
-      ctx.restore();
-    },
-    domanda: function (x, y) {
-      var b = Math.sin(tempo * 3 + x) * 5;
-      ellisse(x, y + b, 30, 30, "#fff7e6", true, 4);
-      ctx.fillStyle = INCHIOSTRO;
-      ctx.font = "bold 40px Georgia, serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText("?", x, y + b + 2);
-    }
-  };
-
-  /* ---------- sfondo ---------- */
-
-  function disegnaSfondo(W) {
-    /* carta */
-    var motivo = ctx.createPattern(carta, "repeat");
-    ctx.fillStyle = motivo;
-    ctx.fillRect(camera.x - 10, 0, larghezzaVista + 20, ALTEZZA);
-
-    /* immagine del ragazzo, se presente */
-    if (scena.immagine && scena.immagine.complete && scena.immagine.naturalWidth) {
-      var img = scena.immagine;
-      var l = img.naturalWidth * (ALTEZZA / img.naturalHeight);
-      for (var x0 = 0; x0 < W; x0 += l) ctx.drawImage(img, x0, 0, l, ALTEZZA);
-      return;
-    }
-
-    /* cielo: acquerello leggero */
-    var cielo = ctx.createLinearGradient(0, 0, 0, 470);
-    cielo.addColorStop(0, "rgba(140,180,200,0.35)");
-    cielo.addColorStop(1, "rgba(200,220,215,0.15)");
-    ctx.fillStyle = cielo;
-    ctx.fillRect(camera.x - 10, 0, larghezzaVista + 20, 470);
-
-    /* sole */
-    ellisse(camera.x * 0.85 + 260, 130, 48, 48, "rgba(246,196,83,0.85)", true, 3);
-
-    /* nuvole, con parallasse */
-    var r = casuale(11);
-    for (var i = 0; i < 9; i++) {
-      var nx = i * 520 + r() * 200 + camera.x * 0.4;
-      var ny = 90 + r() * 120;
-      ellisse(nx, ny, 70, 20, "rgba(255,255,255,0.7)", true, 2.5);
-      ellisse(nx + 50, ny - 12, 46, 18, "rgba(255,255,255,0.7)", true, 2.5);
-    }
-
-    /* mare */
-    ctx.fillStyle = "rgba(77,140,150,0.45)";
-    ctx.fillRect(camera.x - 10, 470, larghezzaVista + 20, 110);
-    tratto([[camera.x - 10, 470], [camera.x + larghezzaVista + 10, 470]], 3);
-    for (var o = 0; o < 26; o++) {
-      var ox = Math.floor(camera.x / 180) * 180 + o * 90 + ((o % 2) * 40);
-      var oy = 500 + (o % 3) * 24;
-      var s = Math.sin(tempo * 1.2 + o) * 6;
-      tratto([[ox + s, oy], [ox + 18 + s, oy - 8], [ox + 36 + s, oy]], 2.5, "rgba(43,38,34,0.6)");
-    }
-
-    /* terra dell'isola */
-    ctx.beginPath();
-    ctx.moveTo(camera.x - 10, 580);
-    for (var x = Math.floor(camera.x / 60) * 60 - 60; x <= camera.x + larghezzaVista + 60; x += 60) {
-      ctx.lineTo(x, 575 + Math.sin(x * 0.01) * 10);
-    }
-    ctx.lineTo(camera.x + larghezzaVista + 10, ALTEZZA);
-    ctx.lineTo(camera.x - 10, ALTEZZA);
-    ctx.closePath();
-    ctx.fillStyle = "rgba(196,178,120,0.55)";
-    ctx.fill();
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = INCHIOSTRO;
-    ctx.stroke();
-
-    /* spiaggia in fondo all'isola */
-    if (scena.spiaggiaDa) {
-      ctx.fillStyle = "rgba(236,214,160,0.75)";
-      ctx.fillRect(scena.spiaggiaDa, 576, W - scena.spiaggiaDa, ALTEZZA - 576);
-    }
-
-    /* sentiero */
-    ctx.fillStyle = "rgba(230,214,170,0.75)";
-    ctx.fillRect(camera.x - 10, SUOLO - 18, larghezzaVista + 20, 54);
-    ctx.setLineDash([22, 18]);
-    tratto([[camera.x - 10, SUOLO - 18], [camera.x + larghezzaVista + 10, SUOLO - 18]], 2.5, "rgba(43,38,34,0.45)");
-    tratto([[camera.x - 10, SUOLO + 36], [camera.x + larghezzaVista + 10, SUOLO + 36]], 2.5, "rgba(43,38,34,0.45)");
-    ctx.setLineDash([]);
-
-    /* erba in primo piano */
-    var re = casuale(99);
-    for (var e = 0; e < 70; e++) {
-      var ex = re() * W;
-      if (ex < camera.x - 40 || ex > camera.x + larghezzaVista + 40) continue;
-      var ey = 820 + re() * 150;
-      tratto([[ex, ey], [ex - 6, ey - 26]], 3, "rgba(80,100,50,0.8)");
-      tratto([[ex + 6, ey], [ex + 10, ey - 22]], 3, "rgba(80,100,50,0.8)");
-    }
-  }
-
-  /* ---------- ciclo principale ---------- */
+  /* ---------- disegno ---------- */
 
   function ridimensiona() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(window.innerWidth * dpr);
     canvas.height = Math.round(window.innerHeight * dpr);
     scala = canvas.height / ALTEZZA;
-    larghezzaVista = canvas.width / scala;
+    vw = canvas.width / scala;
+    buio.width = canvas.width;
+    buio.height = canvas.height;
     var ruota = document.getElementById("ruota");
     if (ruota) {
       ruota.textContent = window.TESTI.gioco.ruota;
-      ruota.classList.toggle("nascosto", window.innerWidth >= window.innerHeight || !scena);
+      ruota.classList.toggle("nascosto", window.innerWidth >= window.innerHeight);
     }
   }
 
-  function aggiornaPersonaggio(p, dt) {
-    var diff = p.dest - p.x;
-    if (Math.abs(diff) > 2) {
-      var s = Math.sign(diff) * Math.min(Math.abs(diff), p.vel * dt);
-      p.x += s;
-      p.verso = Math.sign(diff);
-      p.passo += dt * 9;
-      return true;
+  function aggiornaCamera(dt) {
+    if (!scena) return;
+    var obiettivo = camera.x;
+    if (camera.segui) obiettivo = camera.segui.x - vw * camera.anticipo;
+    if (camera.fisso !== undefined && camera.fisso !== null) obiettivo = camera.fisso;
+    obiettivo = Math.max(0, Math.min(scena.larghezza - vw, obiettivo));
+    camera.x += (obiettivo - camera.x) * Math.min(1, dt * 3.5);
+  }
+
+  function disegna() {
+    var p = A.tavolozza(ora.valore);
+    var W = canvas.width, H = canvas.height;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    /* cielo e lontananza: coordinate dello schermo scalate */
+    ctx.setTransform(scala, 0, 0, scala, 0, 0);
+    A.cielo(ctx, p, vw, tempo);
+    A.nuvole(ctx, p, camera.x, vw, tempo);
+    A.isoleLontane(ctx, p, camera.x, vw);
+    A.mare(ctx, p, camera.x, vw, tempo);
+    A.giungla(ctx, p, camera.x, vw, tempo);
+
+    /* mondo vicino */
+    ctx.setTransform(scala, 0, 0, scala, -camera.x * scala, 0);
+    A.terreno(ctx, p, camera.x, vw, tempo, scena.larghezza, scena.spiaggiaDa);
+    if (scena.disegna) scena.disegna(ctx, p, tempo, camera.x, vw);
+    if (attivita && attivita.disegnaMondo) attivita.disegnaMondo(ctx, p, tempo);
+    disegnaParticelle();
+
+    /* primo piano */
+    ctx.setTransform(scala, 0, 0, scala, 0, 0);
+    A.primoPiano(ctx, p, camera.x, vw, tempo, scena.larghezza);
+
+    /* buio con le fonti di luce */
+    var forzaBuio = Math.min(0.88, p.notte * 0.82 + (scena.buio ? scena.buio() : 0));
+    var luci = scena.luci ? scena.luci() : [];
+    if (forzaBuio > 0.02) {
+      bctx.setTransform(1, 0, 0, 1, 0, 0);
+      bctx.globalCompositeOperation = "source-over";
+      bctx.clearRect(0, 0, W, H);
+      bctx.fillStyle = "rgba(4,6,18," + forzaBuio.toFixed(3) + ")";
+      bctx.fillRect(0, 0, W, H);
+      bctx.globalCompositeOperation = "destination-out";
+      bctx.setTransform(scala, 0, 0, scala, -camera.x * scala, 0);
+      luci.forEach(function (l) {
+        var trem = 1 + Math.sin(tempo * 11 + l.x) * 0.04 + Math.sin(tempo * 17) * 0.03;
+        var g = bctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.r * trem);
+        g.addColorStop(0, "rgba(0,0,0," + (l.forza || 1) + ")");
+        g.addColorStop(0.5, "rgba(0,0,0," + ((l.forza || 1) * 0.6) + ")");
+        g.addColorStop(1, "rgba(0,0,0,0)");
+        bctx.fillStyle = g;
+        bctx.fillRect(l.x - l.r * 1.1, l.y - l.r * 1.1, l.r * 2.2, l.r * 2.2);
+      });
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.drawImage(buio, 0, 0);
+      /* bagliore caldo delle luci */
+      ctx.setTransform(scala, 0, 0, scala, -camera.x * scala, 0);
+      ctx.globalCompositeOperation = "lighter";
+      luci.forEach(function (l) {
+        if (!l.colore) return;
+        var g2 = ctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.r * 0.8);
+        g2.addColorStop(0, A.rgba(l.colore, 0.22 * (l.forza || 1)));
+        g2.addColorStop(1, A.rgba(l.colore, 0));
+        ctx.fillStyle = g2;
+        ctx.fillRect(l.x - l.r, l.y - l.r, l.r * 2, l.r * 2);
+      });
+      ctx.globalCompositeOperation = "source-over";
     }
-    p.x = p.dest;
-    return false;
+
+    /* vista del calore */
+    if (termica.mix > 0.01) {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.fillStyle = "rgba(6,14,48," + (0.86 * termica.mix).toFixed(3) + ")";
+      ctx.fillRect(0, 0, W, H);
+      ctx.setTransform(scala, 0, 0, scala, -camera.x * scala, 0);
+      ctx.globalCompositeOperation = "lighter";
+      (scena.calore ? scena.calore() : []).forEach(function (c) {
+        var caldo = Math.max(0, Math.min(1, (c.temp - 10) / 30));
+        var col = caldo > 0.7 ? [255, 90, 40] : caldo > 0.45 ? [255, 190, 60] : [60, 140, 255];
+        var g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.r);
+        g.addColorStop(0, A.rgba(col, 0.85 * termica.mix));
+        g.addColorStop(0.6, A.rgba(col, 0.35 * termica.mix));
+        g.addColorStop(1, A.rgba(col, 0));
+        ctx.fillStyle = g;
+        ctx.fillRect(c.x - c.r, c.y - c.r, c.r * 2, c.r * 2);
+      });
+      ctx.globalCompositeOperation = "source-over";
+    }
+
+    /* grana della carta e vignetta */
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalAlpha = 0.5;
+    ctx.fillStyle = ctx.createPattern(carta, "repeat");
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 1;
+    var agit = window.Battito.agitazione();
+    A.vignetta(ctx, W, H, 0.35 + agit * 0.4);
+
+    /* interfaccia dell'attività, in coordinate dello schermo */
+    if (attivita && attivita.disegnaSchermo) {
+      ctx.setTransform(scala, 0, 0, scala, 0, 0);
+      attivita.disegnaSchermo(ctx, vw, ALTEZZA, p, tempo);
+    }
   }
 
   function ciclo(adesso) {
@@ -453,115 +217,81 @@
     ultimo = adesso;
     tempo += dt;
 
-    window.Battito.passo(dt, adesso);
-
-    if (scena) {
-      var W = scena.larghezza;
-      var cammina = aggiornaPersonaggio(guardiano, dt);
-      guardiano.camminando = cammina;
-      if (!cammina && guardiano.attesa) { var a = guardiano.attesa; guardiano.attesa = null; a(); }
-      var cervaCammina = aggiornaPersonaggio(cerva, dt);
-      if (cerva.stato !== "sdraiata") cerva.stato = cervaCammina ? "cammina" : "ferma";
-      if (!cervaCammina && cerva.attesa) { var ac = cerva.attesa; cerva.attesa = null; ac(); }
-
-      /* camera: segue il Guardiano */
-      var obiettivo = guardiano.x - larghezzaVista * 0.4;
-      obiettivo = Math.max(0, Math.min(W - larghezzaVista, obiettivo));
-      if (W < larghezzaVista) obiettivo = (W - larghezzaVista) / 2;
-      camera.x += (obiettivo - camera.x) * Math.min(1, dt * 4);
-
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      var tremito = 0;
-      var agit = window.Battito.agitazione();
-      if (agit > 0.35 && !window.Salvataggio.impostazioni().movimentoRidotto) {
-        tremito = Math.sin(tempo * 40) * agit * 4;
-      }
-      ctx.setTransform(scala, 0, 0, scala, (-camera.x + tremito) * scala, 0);
-
-      disegnaSfondo(W);
-
-      /* oggetti dietro ai personaggi */
-      scena.oggetti.forEach(function (o) {
-        if (o.visibile === false) return;
-        if (o.disegna) o.disegna(Disegni, o, tempo);
-      });
-
-      if (cerva.visibile) Disegni.cerva(cerva);
-      Disegni.persona(guardiano.x, guardiano.verso, guardiano.passo, guardiano.camminando, guardiano.tiene);
-
-      scena.oggetti.forEach(function (o) {
-        if (o.visibile !== false && o.attivo && o.domanda) Disegni.domanda(o.x, (o.yDomanda || SUOLO - 260));
-      });
-
-      if (scena.extra) scena.extra(ctx, Disegni, tempo);
-
-      /* vignetta: più il battito è alto, più si stringe la luce */
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      var buio = scena.buio ? scena.buio() : 0;
-      var forza = Math.max(agit * 0.55, buio);
-      if (forza > 0.01) {
-        var cx = canvas.width / 2, cy = canvas.height * 0.6;
-        var g = ctx.createRadialGradient(cx, cy, canvas.height * 0.25, cx, cy, Math.max(canvas.width, canvas.height) * 0.75);
-        g.addColorStop(0, "rgba(30,25,20,0)");
-        g.addColorStop(1, "rgba(30,25,20," + forza.toFixed(3) + ")");
-        ctx.fillStyle = g;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-      }
+    if (ora.t < 1) {
+      ora.t = Math.min(1, ora.t + dt / ora.durata);
+      var e = ora.t * ora.t * (3 - 2 * ora.t);
+      ora.valore = ora.da + (ora.a - ora.da) * e;
     }
+    termica.mix += ((termica.attiva ? 1 : 0) - termica.mix) * Math.min(1, dt * 5);
 
+    window.Battito.passo(dt, adesso);
+    if (scena) {
+      if (scena.aggiorna) scena.aggiorna(dt, tempo);
+      if (attivita && attivita.aggiorna) attivita.aggiorna(dt, tempo);
+      aggiornaParticelle(dt);
+      aggiornaCamera(dt);
+      disegna();
+    }
     window.requestAnimationFrame(ciclo);
   }
 
   /* ---------- tocchi ---------- */
 
-  function alTocco(e) {
-    if (!scena || window.Pannello.aperto()) return;
-    window.Suoni.sblocca();
+  function coordinate(e) {
     var r = canvas.getBoundingClientRect();
-    var sx = (e.clientX - r.left) * dpr;
-    var sy = (e.clientY - r.top) * dpr;
-    var wx = sx / scala + camera.x;
-    var wy = sy / scala;
-    if (callbackTocco) callbackTocco(wx, wy);
+    var sx = (e.clientX - r.left) * dpr / scala;
+    var sy = (e.clientY - r.top) * dpr / scala;
+    return { sx: sx, sy: sy, wx: sx + camera.x, wy: sy };
+  }
+
+  function giu(e) {
+    if (window.Pannello.aperto()) return;
+    window.Suoni.sblocca();
+    tocchi.giu = true;
+    try { canvas.setPointerCapture(e.pointerId); } catch (x) { /* niente */ }
+    var c = coordinate(e);
+    if (attivita && attivita.giu) attivita.giu(c.wx, c.wy, c.sx, c.sy);
+  }
+  function muovi(e) {
+    if (!tocchi.giu) return;
+    var c = coordinate(e);
+    if (attivita && attivita.muovi) attivita.muovi(c.wx, c.wy, c.sx, c.sy);
+  }
+  function su(e) {
+    if (!tocchi.giu) return;
+    tocchi.giu = false;
+    var c = coordinate(e);
+    if (attivita && attivita.su) attivita.su(c.wx, c.wy, c.sx, c.sy);
   }
 
   window.Mondo = {
-    SUOLO: SUOLO,
+    SUOLO: 790,
     prepara: function () {
       canvas = document.getElementById("mondo");
       ctx = canvas.getContext("2d");
+      buio = document.createElement("canvas");
+      bctx = buio.getContext("2d");
       carta = preparaCarta();
       ridimensiona();
       window.addEventListener("resize", ridimensiona);
-      canvas.addEventListener("pointerdown", alTocco);
+      canvas.addEventListener("pointerdown", giu);
+      canvas.addEventListener("pointermove", muovi);
+      canvas.addEventListener("pointerup", su);
+      canvas.addEventListener("pointercancel", su);
       window.requestAnimationFrame(ciclo);
     },
-    caricaScena: function (s) {
-      scena = s;
-      if (s.sfondo) {
-        var img = new Image();
-        img.onerror = function () { scena.immagine = null; };
-        img.src = s.sfondo;
-        s.immagine = img;
-      }
-      ridimensiona();
-    },
-    scena: function () { return scena; },
-    alTocco: function (fn) { callbackTocco = fn; },
-    guardiano: guardiano,
-    cerva: cerva,
+    caricaScena: function (s) { scena = s; ridimensiona(); },
+    attivita: function (a) { attivita = a; },
     camera: camera,
-    larghezzaVista: function () { return larghezzaVista; },
-    /* Muove un personaggio e risolve quando arriva. */
-    vai: function (personaggio, x) {
-      return new Promise(function (risolvi) {
-        personaggio.dest = x;
-        personaggio.attesa = risolvi;
-      });
+    vista: function () { return vw; },
+    tempo: function () { return tempo; },
+    /* porta l'ora del giorno a un valore (0 alba, 1 giorno, 2 tramonto, 3 notte) */
+    ora: function (valore, durata) {
+      if (!durata) { ora.valore = ora.a = ora.da = valore; ora.t = 1; return; }
+      ora.da = ora.valore; ora.a = valore; ora.t = 0; ora.durata = durata;
     },
-    /* Posizione sullo schermo (in pixel CSS) di un punto del mondo: serve ai test. */
+    termica: function (si) { termica.attiva = !!si; },
+    emetti: emetti,
     aSchermo: function (wx, wy) {
       return { x: (wx - camera.x) * scala / dpr, y: wy * scala / dpr };
     }

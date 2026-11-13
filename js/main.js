@@ -16,8 +16,7 @@
     h.textContent = G.titolo;
     el.testo.appendChild(h);
     el.testo.appendChild(P.paragrafo(G.sottotitolo, "sottotitolo"));
-    el.testo.appendChild(P.paragrafo(G.avvisoTerapia, "piccolo"));
-    el.testo.appendChild(P.paragrafo(G.salvataggio, "piccolo"));
+    el.testo.appendChild(P.paragrafo(G.avviso, "piccolo centrato"));
 
     el.azioni.appendChild(P.bottone(G.impostazioni, "secondario", function () {
       impostazioni().then(schermataIniziale);
@@ -71,6 +70,7 @@
     window.Salvataggio.applica();
     window.Battito.prepara();
     P.prepara();
+    window.Didascalia.prepara();
     window.Quaderno.carica();
     window.Mondo.prepara();
     window.Livello1.carica();
@@ -90,7 +90,7 @@
     }
 
     /* Per i test automatici */
-    window.RESPIRA = { livello: window.Livello1, mondo: window.Mondo, battito: window.Battito, quaderno: window.Quaderno };
+    window.RESPIRA = { livello: window.Livello1, mondo: window.Mondo, battito: window.Battito, quaderno: window.Quaderno, didascalia: window.Didascalia };
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", avvia);
