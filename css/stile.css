@@ -253,3 +253,81 @@ input[type="number"] {
   pointer-events: none;
   z-index: 6;
 }
+
+/* installazione */
+.bottone.installa::before { content: "⤓ "; }
+.passi-ios { display: flex; gap: 18px; justify-content: center; margin: 6px 0; }
+.passi-ios div { display: flex; flex-direction: column; align-items: center; gap: 8px; max-width: 170px; text-align: center; }
+.passi-ios svg { width: 44px; height: 44px; color: var(--calma); }
+
+/* fondale dal telefono */
+.riquadro-disegno { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.1); }
+.riquadro-disegno .titoletto { font-weight: bold; margin: 0 0 6px; }
+.riga-bottoni { display: flex; gap: 10px; flex-wrap: wrap; }
+#pannello-testo:has(> .opzione) { display: grid; grid-template-columns: 1fr 1fr; column-gap: 18px; }
+#pannello-testo:has(> .opzione) > .riquadro-disegno { grid-column: 1 / -1; }
+
+/* ---------- punti ---------- */
+#punti {
+  position: fixed;
+  top: calc(max(12px, env(safe-area-inset-top)) + 46px);
+  left: max(14px, env(safe-area-inset-left));
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 14px 4px 10px;
+  background: var(--vetro);
+  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border-radius: 999px;
+  color: var(--oro);
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+#punti svg { width: 18px; height: 18px; fill: var(--oro); }
+#punti.salta { animation: salta-punti 0.45s cubic-bezier(.2,1.6,.4,1); }
+@keyframes salta-punti { 0% { transform: scale(1); } 35% { transform: scale(1.45) rotate(-4deg); } 100% { transform: scale(1); } }
+
+/* ---------- stelle ---------- */
+#stelle {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center; gap: 2vw;
+  pointer-events: none;
+  opacity: 0; transition: opacity 0.3s;
+  z-index: 8;
+}
+#stelle.visibile { opacity: 1; }
+#stelle .stella { width: 15vh; height: 15vh; fill: rgba(255,255,255,0.18); stroke: rgba(255,255,255,0.5); stroke-width: 0.6; transform: scale(0); }
+#stelle .stella.grande { width: 21vh; height: 21vh; margin-top: -6vh; }
+#stelle .stella.accesa { animation: stella-entra 0.45s cubic-bezier(.2,1.8,.4,1) forwards; }
+#stelle .stella.piena { fill: #ffd34d; stroke: #fff2b0; filter: drop-shadow(0 0 18px rgba(255, 200, 60, 0.9)); }
+@keyframes stella-entra { 0% { transform: scale(0) rotate(-120deg); } 100% { transform: scale(1) rotate(0); } }
+
+/* ---------- indovina ---------- */
+#indovina {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2.2vh;
+  background: radial-gradient(ellipse at center, rgba(20,16,40,0.55), rgba(10,8,24,0.85));
+  z-index: 9;
+  animation: appare 0.3s ease-out;
+}
+#indovina .etichetta-indovina { font-family: 'Trebuchet MS', sans-serif; font-weight: 900; font-size: 1.1em; letter-spacing: 0.2em; text-transform: uppercase; color: var(--oro); animation: oscilla 1.2s ease-in-out infinite; }
+#indovina .domanda { font-size: 1.5em; color: #fff; text-align: center; max-width: 80vw; }
+#indovina .scelte { display: flex; gap: 4vw; }
+#indovina .scelta {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  min-width: 26vh; padding: 2.4vh 3vw;
+  border: 3px solid rgba(255,255,255,0.35); border-radius: 26px;
+  background: rgba(255,255,255,0.1); color: #fff; font: inherit; cursor: pointer;
+  transition: transform 0.15s, background 0.2s;
+  animation: entra-scelta 0.5s cubic-bezier(.2,1.6,.4,1) backwards;
+}
+#indovina .scelta:nth-child(2) { animation-delay: 0.1s; }
+#indovina .scelta:active { transform: scale(0.94); }
+#indovina .scelta .icona { font-size: 2.6em; line-height: 1; }
+#indovina .scelta.giusta { background: rgba(80, 200, 120, 0.45); border-color: #9cf0b6; transform: scale(1.08); }
+#indovina .scelta.sbagliata { background: rgba(230, 90, 90, 0.4); border-color: #ff9a9a; animation: scuoti 0.4s; }
+@keyframes entra-scelta { 0% { transform: scale(0.3) translateY(40px); opacity: 0; } 100% { transform: none; opacity: 1; } }
+@keyframes oscilla { 0%, 100% { transform: rotate(-3deg) scale(1); } 50% { transform: rotate(3deg) scale(1.08); } }
+@keyframes scuoti { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+body.movimento-ridotto #indovina .etichetta-indovina, body.movimento-ridotto #punti.salta { animation: none; }
+@keyframes appare { from { opacity: 0; } }
+#pannello-testo .bottino { font-family: 'Trebuchet MS', sans-serif; font-weight: 900; color: #c8891c; letter-spacing: 0.04em; }

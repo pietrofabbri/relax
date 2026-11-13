@@ -8,7 +8,11 @@
   <title>Respira</title>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="assets/icone/icona.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="assets/icone/icona-192.png">
+  <link rel="apple-touch-icon" href="assets/icone/icona-180.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Respira">
   <link rel="stylesheet" href="css/stile.css">
 </head>
 <body>
@@ -20,6 +24,26 @@
     <svg class="cuore" viewBox="0 0 32 29" aria-hidden="true"><path d="M16 28 C 6 20 0 14 0 8 A 8 8 0 0 1 16 5 A 8 8 0 0 1 32 8 C 32 14 26 20 16 28 Z"/></svg>
     <span id="battito-numero">72</span>
     <span class="battito-etichetta" id="battito-simulato"></span>
+  </div>
+
+  <!-- Punti -->
+  <div id="punti" class="nascosto" aria-live="off">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1l3 8 8 3-8 3-3 8-3-8-8-3 8-3z"/></svg>
+    <span id="punti-numero">0</span>
+  </div>
+
+  <!-- Stelle di fine tappa -->
+  <div id="stelle" class="nascosto" aria-hidden="true">
+    <svg class="stella" viewBox="0 0 24 24"><path d="M12 2l3 7 7.5.6-5.7 5 1.8 7.4L12 18l-6.6 4 1.8-7.4L1.5 9.6 9 9z"/></svg>
+    <svg class="stella grande" viewBox="0 0 24 24"><path d="M12 2l3 7 7.5.6-5.7 5 1.8 7.4L12 18l-6.6 4 1.8-7.4L1.5 9.6 9 9z"/></svg>
+    <svg class="stella" viewBox="0 0 24 24"><path d="M12 2l3 7 7.5.6-5.7 5 1.8 7.4L12 18l-6.6 4 1.8-7.4L1.5 9.6 9 9z"/></svg>
+  </div>
+
+  <!-- Indovina: prima dell'esperimento -->
+  <div id="indovina" class="nascosto" role="dialog" aria-live="polite">
+    <div class="etichetta-indovina">Indovina!</div>
+    <div class="domanda"></div>
+    <div class="scelte"></div>
   </div>
 
   <!-- Obiettivo del momento -->
@@ -73,8 +97,11 @@
   <script src="js/didascalia.js"></script>
   <script src="js/quaderno.js"></script>
   <script src="js/arte.js"></script>
+  <script src="js/fondale.js"></script>
   <script src="js/mondo.js"></script>
+  <script src="js/spettacolo.js"></script>
   <script src="js/livello1.js"></script>
+  <script src="js/app.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

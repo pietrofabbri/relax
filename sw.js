@@ -1,5 +1,5 @@
 /* Service worker: conserva i file del gioco per giocare anche senza connessione. */
-var VERSIONE = "respira-v3";
+var VERSIONE = "respira-v4";
 var FILE = [
   "./",
   "index.html",
@@ -12,14 +12,19 @@ var FILE = [
   "js/pannello.js",
   "js/didascalia.js",
   "js/arte.js",
+  "js/fondale.js",
+  "js/app.js",
   "js/quaderno.js",
   "js/mondo.js",
+  "js/spettacolo.js",
   "js/livello1.js",
   "js/main.js",
   "manifest.webmanifest",
   "assets/icone/icona.svg",
   "assets/icone/icona-192.png",
-  "assets/icone/icona-512.png"
+  "assets/icone/icona-512.png",
+  "assets/icone/icona-maschera-512.png",
+  "assets/icone/icona-180.png"
 ];
 
 self.addEventListener("install", function (e) {

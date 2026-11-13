@@ -34,7 +34,114 @@
     o.stop(quando + 0.2);
   }
 
+  /* una nota breve */
+  function nota(f, quando, durata, volume, tipo, scivola) {
+    var c = contesto();
+    if (!c) return;
+    var o = c.createOscillator(), g = c.createGain();
+    o.type = tipo || "triangle";
+    o.frequency.setValueAtTime(f, quando);
+    if (scivola) o.frequency.exponentialRampToValueAtTime(scivola, quando + durata);
+    g.gain.setValueAtTime(0.0001, quando);
+    g.gain.exponentialRampToValueAtTime(volume, quando + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, quando + durata);
+    o.connect(g);
+    g.connect(c.destination);
+    o.start(quando);
+    o.stop(quando + durata + 0.02);
+  }
+
+  /* rumore bianco filtrato (esplosioni, fruscii) */
+  function rumore(durata, filtro, da, a, volume) {
+    var c = contesto();
+    if (!c) return;
+    var n = Math.floor(c.sampleRate * durata);
+    var buf = c.createBuffer(1, n, c.sampleRate), d = buf.getChannelData(0);
+    for (var i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+    var src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain(), t = c.currentTime;
+    src.buffer = buf;
+    f.type = filtro;
+    f.frequency.setValueAtTime(da, t);
+    f.frequency.exponentialRampToValueAtTime(a, t + durata);
+    g.gain.setValueAtTime(volume, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + durata);
+    src.connect(f); f.connect(g); g.connect(c.destination);
+    src.start();
+  }
+
+  /* scala pentatonica: le note dei premi salgono con la serie */
+  var PENTA = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.51, 1567.98, 1760];
+
   window.Suoni = {
+    /* premio: una nota che sale con la serie (combo) */
+    ding: function (serie) {
+      if (!attivo()) return;
+      var c = contesto();
+      if (!c) return;
+      var f = PENTA[Math.min(PENTA.length - 1, serie || 0)], t = c.currentTime + 0.005;
+      nota(f, t, 0.25, 0.12, "triangle");
+      nota(f * 2, t + 0.04, 0.18, 0.05, "sine");
+    },
+    pop: function () {
+      if (!attivo()) return;
+      var c = contesto();
+      if (!c) return;
+      nota(300, c.currentTime + 0.005, 0.09, 0.15, "sine", 900);
+    },
+    /* salto: un fischio che sale */
+    salto: function () {
+      if (!attivo()) return;
+      var c = contesto();
+      if (!c) return;
+      nota(260, c.currentTime + 0.005, 0.22, 0.09, "square", 700);
+    },
+    /* errore morbido: due note che scendono */
+    ops: function () {
+      if (!attivo()) return;
+      var c = contesto();
+      if (!c) return;
+      var t = c.currentTime + 0.005;
+      nota(330, t, 0.14, 0.1, "sawtooth", 250);
+      nota(247, t + 0.12, 0.2, 0.1, "sawtooth", 180);
+    },
+    /* tuono */
+    tuono: function () {
+      if (!attivo()) return;
+      rumore(2.2, "lowpass", 1800, 60, 0.9);
+      var c = contesto();
+      if (c) colpo(c.currentTime + 0.01, 0.9);
+    },
+    /* fuoco che divampa */
+    fiammata: function () {
+      if (!attivo()) return;
+      rumore(0.9, "bandpass", 300, 2500, 0.35);
+    },
+    /* folata veloce (sipario, scatti) */
+    whoosh: function () {
+      if (!attivo()) return;
+      rumore(0.45, "bandpass", 300, 2200, 0.18);
+    },
+    /* fanfara: arpeggio che sale */
+    fanfara: function (stelle) {
+      if (!attivo()) return;
+      var c = contesto();
+      if (!c) return;
+      var t = c.currentTime + 0.01;
+      [523.25, 659.25, 783.99, 1046.5].slice(0, 1 + (stelle || 3)).forEach(function (f, i) {
+        nota(f, t + i * 0.11, 0.5, 0.1, "triangle");
+        nota(f / 2, t + i * 0.11, 0.4, 0.05, "sine");
+      });
+    },
+    /* stella: un tintinnio */
+    stella: function (i) {
+      if (!attivo()) return;
+      var c = contesto();
+      if (!c) return;
+      var f = [880, 1108.73, 1318.51][Math.min(2, i || 0)];
+      nota(f, c.currentTime + 0.005, 0.5, 0.1, "sine");
+      nota(f * 1.5, c.currentTime + 0.03, 0.4, 0.04, "sine");
+    },
+
     sblocca: function () {
       var c = contesto();
       if (c && c.state === "suspended") { try { c.resume(); } catch (e) { /* niente */ } }

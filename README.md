@@ -8,9 +8,16 @@ Progetto scolastico · 25 ore con uno studente di quinta, indirizzo biotecnologi
 
 ## Gioca
 
-- **Online:** quando GitHub Pages è attivo, il gioco è su `https://pietrofabbri.github.io/relax/`. Da lì si può aggiungere alla schermata Home del telefono e funziona anche offline.
-- **Senza internet:** scarica il repository (pulsante *Code → Download ZIP*), scompatta e apri `index.html` con un browser. Non serve installare niente.
-- **Telefono in orizzontale.** Si gioca con un dito.
+<img src="assets/qr-gioco.png" alt="Codice QR per aprire il gioco" width="160" align="right">
+
+**Sul telefono, come app.** Inquadra il codice QR (o apri `https://pietrofabbri.github.io/relax/`), poi:
+
+- **Android (Chrome):** nella schermata iniziale del gioco tocca **Installa l'app**.
+- **iPhone (Safari):** tocca **Condividi**, poi **Aggiungi alla schermata Home** (il gioco mostra i due passi).
+
+L'icona sul telefono apre sempre la versione pubblicata su GitHub: ogni modifica caricata su `main` arriva da sola all'app la volta dopo che la si apre con la rete. Senza rete si gioca con l'ultima versione scaricata. Si gioca a tutto schermo, in orizzontale, con un dito.
+
+**Senza internet, dal computer:** *Code → Download ZIP*, scompatta e apri `index.html` con un browser.
 
 **Disponibile ora:** il livello 1, *L'isola* (storia di Hayy ibn Yaqzan). Gli altri livelli sono progettati e documentati.
 
@@ -91,7 +98,9 @@ relax/
 - Roadmap disciplinare v2 (144 passi, revisione critica, fonti)
 - Le sette storie: scelte, verificate su fonti, ordinate secondo la roadmap
 - Documentazione didattica (storie e diritti) e schede dei livelli
-- **Livello 1 giocabile, versione 2**: poco testo, grafica disegnata dal codice con ora del giorno, luci e notte, nove attività diverse (imitare gli animali, corsa con il corpo trasparente, riflessi, il cuore della cerva, il fuoco nel vento, la vista del calore, la misura del battito, l'arrivo di Absal)
+- **App installabile** sul telefono (Android e iPhone), aggiornata da GitHub Pages
+- **Fondale disegnato**: il disegno del ragazzo dietro a tutto il livello, anche fotografato dal telefono
+- **Livello 1 giocabile, versione 3** (punti, serie, stelle, "Indovina!", effetti), con: poco testo, grafica disegnata dal codice con ora del giorno, luci e notte, nove attività diverse (imitare gli animali, corsa con il corpo trasparente, riflessi, il cuore della cerva, il fuoco nel vento, la vista del calore, la misura del battito, l'arrivo di Absal)
 
 **Da fare**
 - [ ] Livello 2 (il respiro, con Ulisse): da costruire prima della sessione 1

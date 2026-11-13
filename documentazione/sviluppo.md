@@ -28,20 +28,56 @@ Torna a: [documentazione](README.md) · [presentazione del progetto](../README.m
 | `js/quaderno.js` | Il quaderno: ogni pagina ha il codice del passo della roadmap |
 | `js/arte.js` | **Tutti i disegni**: cielo, mare, palme, grotta, animali, persone; colori che cambiano con l'ora del giorno |
 | `js/mondo.js` | Il motore: telecamera, strati in parallasse, ora del giorno, buio e luci, vista del calore, particelle, tocchi |
+| `js/fondale.js` | Il **fondale**: il disegno del ragazzo dietro al livello (da file o da foto del telefono) |
+| `js/spettacolo.js` | **Punti, serie, stelle, "Indovina!", sipario** tra le tappe: valgono per tutti i livelli |
+| `js/app.js` | L'app sul telefono: installazione, schermo intero, aggiornamenti da GitHub |
 | `js/didascalia.js` | La riga di testo in basso e la frase fissa in alto ("cosa devo fare") |
 | `js/livello1.js` | Il livello 1: oggetti, tappe, scene |
 | `js/main.js` | Avvio, schermata iniziale, impostazioni |
 | `sw.js`, `manifest.webmanifest` | Installazione sul telefono e uso offline quando il gioco è online |
+| `strumenti/prepara_fondale.py` | Dalla scansione o foto dei fogli al fondale (PNG con la carta trasparente) |
+| `strumenti/qr.py` | Crea il codice QR del gioco (`assets/qr-gioco.png`) |
 | `strumenti/test_livello1.py` | Gioca il livello 1 dall'inizio alla fine e segnala errori |
 
-## Come aggiungere il disegno del ragazzo
+## Il fondale: il disegno del ragazzo
 
-1. Scansiona il foglio a 300 dpi (o fotografalo con un'app di scansione), in orizzontale.
-2. Salvalo in `assets/sfondi/`, per esempio `livello1-giungla.png` (meglio PNG con lo sfondo trasparente, così il cielo resta quello animato).
-3. In `js/mondo.js` gli strati sono disegnati in ordine: cielo, nuvole, isole lontane, mare, giungla, terreno, scena, primo piano. Il disegno va al posto di uno strato (di solito la giungla, che scorre a metà velocità): si carica con `new Image()` e si disegna nella stessa funzione, con la stessa parallasse.
-4. Il buio della notte e le luci si applicano sopra, quindi il disegno cambia da solo con l'ora del giorno.
+**Un livello, un fondale, sempre lo stesso.** Come il fondale di un teatro: sta dietro a tutto il livello, dall'alba alla notte. Davanti, il codice disegna il sentiero, i personaggi, gli oggetti e il primo piano, così il gioco resta leggibile e i personaggi si possono animare.
 
-**Regole per il foglio:** una fascia per foglio (lontano, medio o vicino); contorni marcati, colori pieni; niente scritte; lasciare libera la parte bassa, dove camminano i personaggi.
+```
+cielo animato (sole, nuvole, stelle)      ← codice: si vede dove il foglio è bianco
+FONDALE = il disegno del ragazzo          ← scorre piano, tinto dall'ora del giorno
+sentiero, personaggi, oggetti, effetti    ← codice
+primo piano (foglie scure)                ← codice
+buio della notte, luci del fuoco           ← codice, sopra a tutto
+```
+
+**Il foglio.** Una striscia di **3 fogli A4 orizzontali**, uno accanto all'altro: si legge da sinistra (il rifugio, l'alba) a destra (la grotta, la spiaggia). Mentre Hayy cammina, il fondale scorre e alla fine del livello si è visto tutto, senza ripetizioni. Con un foglio solo funziona lo stesso: il disegno si ripete a specchio, così i bordi combaciano.
+
+Regole per chi disegna:
+- **il cielo si lascia bianco**: diventa trasparente e lì si vede il cielo animato (niente sole né luna: li fa il gioco, e cambiano con l'ora);
+- la **striscia bassa** del foglio (gli ultimi 2-3 cm) resta vuota o semplice: lì camminano i personaggi;
+- contorni marcati, colori pieni (pennarelli, tempere), niente scritte.
+
+**Due strade per metterlo nel gioco:**
+
+1. **Dal telefono, in classe (subito):** Impostazioni → *Il tuo disegno come fondale* → *Scegli una foto* (si possono scegliere più fogli, da sinistra a destra). Il gioco toglie le ombre della foto, rende trasparente la carta, ravviva i colori e mette il disegno in scena. Le foto restano solo su quel telefono (IndexedDB): non vengono inviate a nessuno.
+2. **Per tutti (definitivo):** `python3 strumenti/prepara_fondale.py foglio1.jpg foglio2.jpg foglio3.jpg assets/fondali/livello1.png`, poi in `js/fondale.js` scrivi il percorso in `FONDALI.livello1.file` e carica tutto su GitHub.
+
+In `FONDALI` si regolano anche `alto` e `basso` (la fascia dello schermo occupata dal disegno) e `sostituisce` (quali strati del codice il disegno prende il posto di: isole lontane, mare, giungla).
+
+## Lo spettacolo: punti, stelle, "Indovina!"
+
+Regola: **ogni gesto riuscito fa festa, ogni scoperta ha un premio, ogni esperimento comincia con una scommessa.**
+
+- **Punti e serie** (`Spettacolo.premio`, `serie`, `rompi`): i colpi riusciti di fila moltiplicano i punti e alzano la nota del suono.
+- **Stelle** (da 1 a 3) alla fine di ogni tappa, in base ai punti presi rispetto al punteggio pieno (`MASSIMI` in `livello1.js`).
+- **"Indovina!"** (`Spettacolo.indovina`): prima dell'esperimento si sceglie cosa succederà (il cuore accelera o rallenta? chi è più caldo?). È il metodo scientifico in piccolo: ipotesi, prova, confronto.
+- **Effetti del motore** (`Mondo.scuoti`, `zoom`, `rallenta`, `lampo`, `scritta`, `onda`, `coriandoli`, `sipario`). Con "Meno movimento sullo schermo" scosse, zoom e lampi si riducono.
+- **Semi di luce** lungo il sentiero: si raccolgono passandoci sopra.
+
+## L'app sul telefono
+
+`manifest.webmanifest` + `sw.js` + `js/app.js`. L'app installata punta a GitHub Pages; il service worker prende sempre prima la versione in rete e salva una copia per giocare offline. Quando si carica una versione nuova, **alza `VERSIONE` in `sw.js`**: l'app se ne accorge quando torna in primo piano e si aggiorna da sola sulla schermata iniziale.
 
 ## Come tradurre il gioco
 

@@ -18,6 +18,11 @@
   var termica = { attiva: false, mix: 0 };
   var particelle = [];
   var tocchi = { giu: false };
+  /* effetti: scossa, zoom, rallentatore, lampo, scritte, sipario */
+  var fx = { scossa: 0, scossaMax: 0, sx: 0, sy: 0, zoom: 1, zoomA: 1, zoomT: 0, fuoco: null,
+    lento: 1, lentoT: 0, lampo: 0, lampoCol: [255, 255, 255], scritte: [], onde: [],
+    sipario: null };
+  var calmo = function () { try { return window.Salvataggio.impostazioni().movimentoRidotto; } catch (e) { return false; } };
 
   /* ---------- particelle ---------- */
 
@@ -28,7 +33,9 @@
     foglia: { colore: [110, 160, 90], vita: 3, gravita: 40, dimensione: 7 },
     lucciola: { colore: [230, 255, 140], vita: 4, gravita: 0, dimensione: 2.5, luce: true },
     stella: { colore: [255, 240, 180], vita: 0.9, gravita: 0, dimensione: 5, luce: true },
-    fumo: { colore: [180, 180, 190], vita: 2.5, gravita: -40, dimensione: 18, sfuma: true }
+    fumo: { colore: [180, 180, 190], vita: 2.5, gravita: -40, dimensione: 18, sfuma: true },
+    coriandolo: { colore: [255, 255, 255], vita: 2.6, gravita: 520, dimensione: 9 },
+    brace: { colore: [255, 120, 40], vita: 0.9, gravita: 300, dimensione: 4, luce: true }
   };
 
   function emetti(tipo, x, y, n, o) {
@@ -40,7 +47,8 @@
         vx: (o.vx || 0) + (Math.random() - 0.5) * (o.dispersione || 60),
         vy: (o.vy || 0) + (Math.random() - 0.5) * (o.dispersione || 60),
         vita: t.vita * (0.6 + Math.random() * 0.6), max: 0, d: t.dimensione * (0.6 + Math.random() * 0.8),
-        ph: Math.random() * 6
+        ph: Math.random() * 6,
+        col: o.colori ? o.colori[Math.floor(Math.random() * o.colori.length)] : null
       });
       particelle[particelle.length - 1].max = particelle[particelle.length - 1].vita;
     }
@@ -55,6 +63,7 @@
       q.vy += t.gravita * dt;
       if (q.tipo === "lucciola") { q.vx = Math.sin(tempo + q.ph) * 30; q.vy = Math.cos(tempo * 0.7 + q.ph) * 20; }
       if (q.tipo === "foglia") q.vx += Math.sin(tempo * 3 + q.ph) * 40 * dt;
+      if (q.tipo === "coriandolo") { q.vx *= 1 - dt * 1.5; q.vy = Math.min(q.vy, 260); }
       q.x += q.vx * dt;
       q.y += q.vy * dt;
     }
@@ -66,7 +75,16 @@
       var a = t.sfuma ? f * 0.6 : Math.min(1, f * 2);
       if (q.tipo === "lucciola") a *= 0.5 + 0.5 * Math.sin(tempo * 6 + q.ph);
       if (t.luce) ctx.globalCompositeOperation = "lighter";
-      ctx.fillStyle = A.rgba(t.colore, a);
+      ctx.fillStyle = A.rgba(q.col || t.colore, a);
+      if (q.tipo === "coriandolo") {
+        ctx.save();
+        ctx.translate(q.x, q.y);
+        ctx.rotate(tempo * 6 + q.ph);
+        ctx.scale(1, Math.sin(tempo * 9 + q.ph));
+        ctx.fillRect(-q.d / 2, -q.d / 3, q.d, q.d * 0.66);
+        ctx.restore();
+        return;
+      }
       ctx.beginPath();
       if (q.tipo === "foglia") ctx.ellipse(q.x, q.y, q.d, q.d * 0.45, tempo * 2 + q.ph, 0, Math.PI * 2);
       else ctx.arc(q.x, q.y, q.d * (t.sfuma ? (2 - f) : 1), 0, Math.PI * 2);
@@ -116,28 +134,43 @@
     camera.x += (obiettivo - camera.x) * Math.min(1, dt * 3.5);
   }
 
+  /* Trasformazione con zoom (intorno al punto fuoco) e scossa. mondo=true: coordinate del mondo */
+  function trasforma(c, mondo, profondita) {
+    var z = fx.zoom, W = canvas.width, H = canvas.height;
+    var px = fx.fuoco ? (fx.fuoco.x - camera.x) * scala : W / 2, py = fx.fuoco ? fx.fuoco.y * scala : H * 0.6;
+    var k = profondita === undefined ? 1 : profondita;
+    var ox = px * (1 - z) + fx.sx * k * dpr, oy = py * (1 - z) + fx.sy * k * dpr;
+    if (mondo) ox -= camera.x * scala * z;
+    c.setTransform(scala * z, 0, 0, scala * z, ox, oy);
+  }
+
   function disegna() {
     var p = A.tavolozza(ora.valore);
     var W = canvas.width, H = canvas.height;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-    /* cielo e lontananza: coordinate dello schermo scalate */
-    ctx.setTransform(scala, 0, 0, scala, 0, 0);
+    /* cielo: fermo, solo un po' di scossa */
+    ctx.setTransform(scala, 0, 0, scala, fx.sx * 0.2 * dpr, fx.sy * 0.2 * dpr);
     A.cielo(ctx, p, vw, tempo);
     A.nuvole(ctx, p, camera.x, vw, tempo);
-    A.isoleLontane(ctx, p, camera.x, vw);
-    A.mare(ctx, p, camera.x, vw, tempo);
-    A.giungla(ctx, p, camera.x, vw, tempo);
+    /* lontananza: il fondale disegnato dal ragazzo, oppure il paesaggio del codice */
+    trasforma(ctx, false, 0.5);
+    var F = window.Fondale;
+    if (!F.sostituisce("isole")) A.isoleLontane(ctx, p, camera.x, vw);
+    if (!F.sostituisce("mare")) A.mare(ctx, p, camera.x, vw, tempo);
+    F.disegna(ctx, p, ora.valore, camera.x, vw, scena.larghezza);
+    if (!F.sostituisce("giungla")) A.giungla(ctx, p, camera.x, vw, tempo);
 
     /* mondo vicino */
-    ctx.setTransform(scala, 0, 0, scala, -camera.x * scala, 0);
+    trasforma(ctx, true);
     A.terreno(ctx, p, camera.x, vw, tempo, scena.larghezza, scena.spiaggiaDa);
     if (scena.disegna) scena.disegna(ctx, p, tempo, camera.x, vw);
     if (attivita && attivita.disegnaMondo) attivita.disegnaMondo(ctx, p, tempo);
     disegnaParticelle();
+    disegnaScritte(p);
 
     /* primo piano */
-    ctx.setTransform(scala, 0, 0, scala, 0, 0);
+    trasforma(ctx, false, 1.4);
     A.primoPiano(ctx, p, camera.x, vw, tempo, scena.larghezza);
 
     /* buio con le fonti di luce */
@@ -150,7 +183,7 @@
       bctx.fillStyle = "rgba(4,6,18," + forzaBuio.toFixed(3) + ")";
       bctx.fillRect(0, 0, W, H);
       bctx.globalCompositeOperation = "destination-out";
-      bctx.setTransform(scala, 0, 0, scala, -camera.x * scala, 0);
+      trasforma(bctx, true);
       luci.forEach(function (l) {
         var trem = 1 + Math.sin(tempo * 11 + l.x) * 0.04 + Math.sin(tempo * 17) * 0.03;
         var g = bctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.r * trem);
@@ -163,7 +196,7 @@
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.drawImage(buio, 0, 0);
       /* bagliore caldo delle luci */
-      ctx.setTransform(scala, 0, 0, scala, -camera.x * scala, 0);
+      trasforma(ctx, true);
       ctx.globalCompositeOperation = "lighter";
       luci.forEach(function (l) {
         if (!l.colore) return;
@@ -181,7 +214,7 @@
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.fillStyle = "rgba(6,14,48," + (0.86 * termica.mix).toFixed(3) + ")";
       ctx.fillRect(0, 0, W, H);
-      ctx.setTransform(scala, 0, 0, scala, -camera.x * scala, 0);
+      trasforma(ctx, true);
       ctx.globalCompositeOperation = "lighter";
       (scena.calore ? scena.calore() : []).forEach(function (c) {
         var caldo = Math.max(0, Math.min(1, (c.temp - 10) / 30));
@@ -205,16 +238,130 @@
     var agit = window.Battito.agitazione();
     A.vignetta(ctx, W, H, 0.35 + agit * 0.4);
 
+    /* onde dei tocchi e lampo */
+    ctx.setTransform(scala, 0, 0, scala, 0, 0);
+    fx.onde.forEach(function (o) {
+      var f = o.t / o.vita;
+      ctx.strokeStyle = A.rgba(o.colore, (1 - f) * 0.8);
+      ctx.lineWidth = o.spessore * (1 - f) + 1;
+      ctx.beginPath();
+      ctx.arc(o.x, o.y, o.r0 + (o.r - o.r0) * (1 - Math.pow(1 - f, 3)), 0, Math.PI * 2);
+      ctx.stroke();
+    });
+    if (fx.lampo > 0.01) {
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.fillStyle = A.rgba(fx.lampoCol, Math.min(1, fx.lampo));
+      ctx.fillRect(0, 0, W, H);
+    }
+
     /* interfaccia dell'attività, in coordinate dello schermo */
     if (attivita && attivita.disegnaSchermo) {
       ctx.setTransform(scala, 0, 0, scala, 0, 0);
       attivita.disegnaSchermo(ctx, vw, ALTEZZA, p, tempo);
     }
+    disegnaSipario();
+  }
+
+  /* ---------- scritte che saltano fuori ("PERFETTO!", "+10") ---------- */
+
+  function disegnaScritte() {
+    fx.scritte.forEach(function (s) {
+      var f = s.t / s.vita;
+      var entra = Math.min(1, s.t / 0.18);
+      var rimbalzo = entra < 1 ? 0.3 + 0.9 * entra : 1 + Math.sin(Math.min(1, (s.t - 0.18) / 0.25) * Math.PI) * 0.15;
+      var a = f > 0.75 ? (1 - f) / 0.25 : 1;
+      ctx.save();
+      ctx.translate(s.x, s.y - s.t * s.sale);
+      ctx.rotate(s.ruota * (1 - entra));
+      ctx.scale(rimbalzo, rimbalzo);
+      ctx.globalAlpha = a;
+      ctx.font = "900 " + s.dim + "px 'Trebuchet MS', 'Arial Rounded MT Bold', sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.lineJoin = "round";
+      ctx.lineWidth = s.dim * 0.22;
+      ctx.strokeStyle = "rgba(30,20,40,0.85)";
+      ctx.strokeText(s.testo, 0, 0);
+      var g = ctx.createLinearGradient(0, -s.dim / 2, 0, s.dim / 2);
+      g.addColorStop(0, "#ffffff");
+      g.addColorStop(0.5, s.colore);
+      g.addColorStop(1, s.colore);
+      ctx.fillStyle = g;
+      ctx.fillText(s.testo, 0, 0);
+      ctx.restore();
+    });
+  }
+
+  /* ---------- sipario tra una tappa e l'altra: un cerchio che si chiude e si riapre ---------- */
+
+  function disegnaSipario() {
+    var sp = fx.sipario;
+    if (!sp) return;
+    var W = canvas.width, H = canvas.height;
+    var f = sp.t / sp.durata, aperto;
+    if (sp.fase === "chiude") aperto = 1 - f * f;
+    else if (sp.fase === "pausa") aperto = 0;
+    else aperto = 1 - Math.pow(1 - f, 3);
+    var raggio = Math.hypot(W, H) * 0.6 * aperto;
+    var cx = sp.x !== undefined ? (sp.x - camera.x) * scala : W / 2, cy = (sp.y !== undefined ? sp.y : 600) * scala;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = "#0d1020";
+    ctx.beginPath();
+    ctx.rect(0, 0, W, H);
+    ctx.arc(cx, cy, Math.max(0, raggio), 0, Math.PI * 2, true);
+    ctx.fill("evenodd");
+    if (sp.titolo && (sp.fase === "pausa" || (sp.fase === "chiude" && f > 0.6) || (sp.fase === "apre" && f < 0.4))) {
+      var a = sp.fase === "pausa" ? 1 : sp.fase === "chiude" ? (f - 0.6) / 0.4 : 1 - f / 0.4;
+      var tp = sp.fase === "pausa" ? sp.t / sp.durata : 0;
+      ctx.setTransform(scala, 0, 0, scala, 0, 0);
+      ctx.globalAlpha = Math.max(0, a);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#ffd27a";
+      ctx.font = "900 150px 'Trebuchet MS', sans-serif";
+      ctx.fillText(sp.numero || "", vw / 2, 400 - tp * 10);
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "700 64px 'Trebuchet MS', sans-serif";
+      ctx.fillText(sp.titolo, vw / 2, 560 - tp * 10);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function aggiornaEffetti(dt) {
+    /* scossa che si smorza */
+    if (fx.scossa > 0) {
+      fx.scossa = Math.max(0, fx.scossa - dt);
+      var forza = fx.scossaMax * (fx.scossa / (fx.scossaDurata || 0.3));
+      fx.sx = (Math.random() - 0.5) * 2 * forza;
+      fx.sy = (Math.random() - 0.5) * 2 * forza;
+    } else { fx.sx = fx.sy = 0; }
+    /* zoom: va verso il valore voluto, poi torna a 1 */
+    if (fx.zoomT > 0) fx.zoomT -= dt; else fx.zoomA = 1;
+    fx.zoom += (fx.zoomA - fx.zoom) * Math.min(1, dt * 7);
+    /* rallentatore */
+    if (fx.lentoT > 0) { fx.lentoT -= dt; if (fx.lentoT <= 0) fx.lento = 1; }
+    fx.lampo = Math.max(0, fx.lampo - dt * 3.2);
+    fx.scritte.forEach(function (s) { s.t += dt; });
+    fx.scritte = fx.scritte.filter(function (s) { return s.t < s.vita; });
+    fx.onde.forEach(function (o) { o.t += dt; });
+    fx.onde = fx.onde.filter(function (o) { return o.t < o.vita; });
+    var sp = fx.sipario;
+    if (sp) {
+      sp.t += dt;
+      if (sp.t >= sp.durata) {
+        sp.t = 0;
+        if (sp.fase === "chiude") { sp.fase = "pausa"; sp.durata = sp.pausa; if (sp.alBuio) sp.alBuio(); }
+        else if (sp.fase === "pausa") { sp.fase = "apre"; sp.durata = 0.7; }
+        else { var fatto = sp.fatto; fx.sipario = null; if (fatto) fatto(); }
+      }
+    }
   }
 
   function ciclo(adesso) {
-    var dt = Math.min(0.05, (adesso - (ultimo || adesso)) / 1000);
+    var dtVero = Math.min(0.05, (adesso - (ultimo || adesso)) / 1000);
     ultimo = adesso;
+    aggiornaEffetti(dtVero);
+    var dt = dtVero * fx.lento;
     tempo += dt;
 
     if (ora.t < 1) {
@@ -239,9 +386,13 @@
 
   function coordinate(e) {
     var r = canvas.getBoundingClientRect();
-    var sx = (e.clientX - r.left) * dpr / scala;
-    var sy = (e.clientY - r.top) * dpr / scala;
-    return { sx: sx, sy: sy, wx: sx + camera.x, wy: sy };
+    var px = (e.clientX - r.left) * dpr, py = (e.clientY - r.top) * dpr;
+    var sx = px / scala, sy = py / scala;
+    /* togli zoom e scossa per sapere dove si è toccato nel mondo */
+    var z = fx.zoom, W = canvas.width, H = canvas.height;
+    var fxp = fx.fuoco ? (fx.fuoco.x - camera.x) * scala : W / 2, fyp = fx.fuoco ? fx.fuoco.y * scala : H * 0.6;
+    var mx = (px - fxp * (1 - z) - fx.sx * dpr) / (scala * z), my = (py - fyp * (1 - z) - fx.sy * dpr) / (scala * z);
+    return { sx: sx, sy: sy, wx: mx + camera.x, wy: my };
   }
 
   function giu(e) {
@@ -250,6 +401,7 @@
     tocchi.giu = true;
     try { canvas.setPointerCapture(e.pointerId); } catch (x) { /* niente */ }
     var c = coordinate(e);
+    onda(c.sx, c.sy, { r: 70, vita: 0.45, colore: [255, 255, 255], spessore: 6 });
     if (attivita && attivita.giu) attivita.giu(c.wx, c.wy, c.sx, c.sy);
   }
   function muovi(e) {
@@ -262,6 +414,11 @@
     tocchi.giu = false;
     var c = coordinate(e);
     if (attivita && attivita.su) attivita.su(c.wx, c.wy, c.sx, c.sy);
+  }
+
+  function onda(x, y, o) {
+    o = o || {};
+    fx.onde.push({ x: x, y: y, t: 0, vita: o.vita || 0.6, r: o.r || 120, r0: o.r0 || 6, colore: o.colore || [255, 240, 200], spessore: o.spessore || 10 });
   }
 
   window.Mondo = {
@@ -292,8 +449,44 @@
     },
     termica: function (si) { termica.attiva = !!si; },
     emetti: emetti,
+
+    /* --- effetti --- */
+    scuoti: function (forza, durata) {
+      if (calmo()) forza *= 0.25;
+      if (forza < fx.scossaMax * (fx.scossa / (fx.scossaDurata || 0.3))) return;
+      fx.scossaMax = forza; fx.scossa = fx.scossaDurata = durata || 0.3;
+    },
+    zoom: function (fattore, durata, fuoco) {
+      fattore = Math.max(1, fattore); /* sotto 1 si vedrebbero i bordi del mondo */
+      if (calmo()) fattore = 1 + (fattore - 1) * 0.3;
+      fx.zoomA = fattore; fx.zoomT = durata || 0.4; fx.fuoco = fuoco || null;
+    },
+    rallenta: function (fattore, durata) { fx.lento = fattore; fx.lentoT = durata; },
+    lampo: function (colore, forza) { fx.lampoCol = colore || [255, 255, 255]; fx.lampo = calmo() ? 0.25 : (forza || 0.8); },
+    /* scritta grande nel mondo che salta fuori e sale */
+    scritta: function (testo, x, y, o) {
+      o = o || {};
+      fx.scritte.push({ testo: testo, x: x, y: y, t: 0, vita: o.vita || 1.3, dim: o.dim || 64, colore: o.colore || "#ffd27a",
+        sale: o.sale === undefined ? 60 : o.sale, ruota: (Math.random() - 0.5) * 0.5 });
+    },
+    /* onda in coordinate del mondo */
+    onda: function (wx, wy, o) { onda(wx - camera.x, wy, o); },
+    coriandoli: function (x, y, n) {
+      emetti("coriandolo", x, y, n || 60, { vy: -700, dispersione: 900, spazio: 40,
+        colori: [[255, 210, 90], [255, 120, 140], [120, 210, 255], [150, 230, 140], [200, 160, 255]] });
+    },
+    /* sipario: si chiude (con titolo grande al buio) e si riapre. alBuio: cosa fare quando è chiuso */
+    sipario: function (o) {
+      o = o || {};
+      return new Promise(function (r) {
+        fx.sipario = { fase: "chiude", t: 0, durata: 0.6, pausa: o.pausa || 1.1, titolo: o.titolo, numero: o.numero,
+          x: o.x, y: o.y, alBuio: o.alBuio, fatto: r };
+      });
+    },
     aSchermo: function (wx, wy) {
-      return { x: (wx - camera.x) * scala / dpr, y: wy * scala / dpr };
+      var z = fx.zoom, W = canvas.width, H = canvas.height;
+      var fxp = fx.fuoco ? (fx.fuoco.x - camera.x) * scala : W / 2, fyp = fx.fuoco ? fx.fuoco.y * scala : H * 0.6;
+      return { x: (fxp * (1 - z) + fx.sx * dpr + (wx - camera.x) * scala * z) / dpr, y: (fyp * (1 - z) + fx.sy * dpr + wy * scala * z) / dpr };
     }
   };
 })();

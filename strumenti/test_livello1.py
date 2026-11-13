@@ -19,7 +19,7 @@ STATO = """(() => {
   const bottoni = [...document.querySelectorAll('#pannello-azioni button')].map(b => b.textContent);
   return {
     tappa: d.tappa, obiettivo: vis('suggerimento') ? document.getElementById('suggerimento').textContent : '',
-    cattura: vis('cattura'), pannello: vis('pannello'), bottoni, testoPannello: document.getElementById('pannello').innerText,
+    cattura: vis('cattura'), pannello: vis('pannello'), indovina: vis('indovina'), bottoni, testoPannello: document.getElementById('pannello').innerText,
     campo: !!document.querySelector('#pannello input'),
     hayy: [h.x, h.salto], hayySch: sch(h.x, 660),
     oggetto: m.oggetto ? sch(m.oggetto.x, m.oggetto.y) : null,
@@ -73,10 +73,19 @@ async def main():
                 await pg.screenshot(path=f"{FOTO}/{len(foto_fatte):02d}-{s['tappa']}.png")
 
             # finestre e didascalie prima di tutto
+            if s["indovina"]:
+                if premuto:
+                    await mouse.up(); premuto = False
+                await pg.wait_for_timeout(500)
+                await pg.screenshot(path=f"{FOTO}/indovina-{s['tappa']}.png")
+                await pg.click("#indovina .scelta >> nth=0")
+                await pg.wait_for_timeout(1600)
+                continue
             if s["pannello"]:
                 if premuto:
                     await mouse.up(); premuto = False
                 if "Imparare è un diritto" in s["testoPannello"]:
+                    await pg.wait_for_timeout(600)
                     await pg.screenshot(path=f"{FOTO}/99-finale.png")
                     print("FINALE raggiunto")
                     break

@@ -12,7 +12,7 @@ Torna a: [indice dei livelli](README.md) · Storia: [opera](../didattica/storie/
 | **Passi della roadmap** | B1.1-B1.6, R1.1 |
 | **Ruolo nel gioco** | Tutorial: si impara a muoversi, a osservare e a usare il quaderno |
 | **Chi lo progetta** | Noi, completo prima della sessione 1 |
-| **Stato** | **Fatto, versione 2** (13 novembre 2026): rifatto con meno testo, grafica nuova e attività di gioco vere; il test automatico lo gioca tutto senza errori |
+| **Stato** | **Fatto, versione 3** (13 novembre 2026): punti, serie, stelle per tappa, tre "Indovina!", semi di luce, effetti (scosse, zoom, lampi, rallentatore, coriandoli), sipario tra le tappe; il test automatico lo gioca tutto senza errori |
 | **Codice** | `js/livello1.js` (tappe), `js/testi-it.js` (testi), `js/arte.js` (disegni), `js/mondo.js` (motore) |
 
 ## 2. Ambientazione
@@ -38,6 +38,18 @@ Regola: **si capisce facendo**. Il testo è una riga in basso; in alto, una fras
 | Misura | Notte | Facoltativo: conta il proprio polso per 30 secondi | R1.2 Il mio battito |
 | Alba | Alba | Arriva una barca: va alla spiaggia e incontra Absal | — |
 | Fine | — | Diritto (art. 26) e una domanda aperta | — |
+
+### Indovina! (prima dell'esperimento)
+
+| Tappa | Domanda | Risposta |
+| --- | --- | --- |
+| Corsa | Se Hayy corre, il cuore… accelera o rallenta? | accelera |
+| Cerva | Dopo un'emozione forte, il cuore si calma… subito o piano piano? | piano piano |
+| Calore | Chi è più caldo, il sasso o la capra? | la capra |
+
+### Premi
+
+Semi di luce lungo il sentiero (+10), oggetto copiato (+50), salti puliti di fila (+20 × serie), cocchi presi (da +20 "LENTO" a +100 "FULMINE!" sotto i 260 ms), raffiche parate (+30 × serie), fuoco nella grotta (+100), temperature scoperte (+30), Indovina giusto (+50). Alla fine di ogni tappa da 1 a 3 stelle.
 
 ## 4. Meccanica principale
 

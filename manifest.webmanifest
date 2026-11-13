@@ -1,4 +1,5 @@
 {
+  "id": "/relax/",
   "name": "Respira",
   "short_name": "Respira",
   "description": "Un gioco educativo sul relax, tra le storie di tante culture e il funzionamento del corpo.",
@@ -6,12 +7,15 @@
   "start_url": "./",
   "scope": "./",
   "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
   "orientation": "landscape",
-  "background_color": "#f3ecdf",
-  "theme_color": "#f3ecdf",
+  "background_color": "#1d2a44",
+  "theme_color": "#1d2a44",
+  "categories": ["education", "games", "kids"],
   "icons": [
-    { "src": "assets/icone/icona-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "assets/icone/icona-512.png", "sizes": "512x512", "type": "image/png" },
-    { "src": "assets/icone/icona.svg", "sizes": "any", "type": "image/svg+xml" }
+    { "src": "assets/icone/icona-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icone/icona-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icone/icona-maschera-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/icone/icona.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
   ]
 }

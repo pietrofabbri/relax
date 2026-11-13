@@ -19,6 +19,7 @@
   var T = window.TESTI.livello1, D = T.d, OB = T.obiettivi;
   var M = window.Mondo, A = window.Arte;
   var Did = window.Didascalia, Q = window.Quaderno, B = window.Battito, P = window.Pannello;
+  var S = window.Spettacolo;
   var SUOLO = 790;
   var LARGHEZZA = 4700;
   var TAPPE = ["segui", "animali", "corsa", "cocchi", "cerva", "fuoco", "calore", "misura", "alba", "fine"];
@@ -50,8 +51,16 @@
     anelli: [],
     oggetto: null,          /* oggetto da trascinare */
     evidenzia: null,        /* parte dell'animale osservata */
-    temperature: []         /* etichette della vista del calore */
+    temperature: [],        /* etichette della vista del calore */
+    /* semi di luce: si raccolgono passandoci sopra */
+    semi: [380, 480, 580, 680, 780, 1000, 1280, 1550, 3500, 3640, 3780, 3920, 4060].map(function (x, i) {
+      return { x: x, y: SUOLO - 70 - (i % 3) * 30, preso: false, t: 0 };
+    }),
+    semiPresi: 0
   };
+
+  /* punteggio pieno di ogni tappa: serve per le stelle */
+  var MASSIMI = { segui: 30, animali: 170, corsa: 250, cocchi: 240, cerva: 170, fuoco: 220, calore: 140, alba: 140 };
 
   /* ---------- utilità ---------- */
 
@@ -117,6 +126,16 @@
     }
     if (absal.visibile) muovi(absal, dt);
 
+    mondo.semi.forEach(function (sm) {
+      if (sm.preso) { sm.t += dt; return; }
+      if (Math.abs(hayy.x - sm.x) < 55) {
+        sm.preso = true;
+        mondo.semiPresi++;
+        M.onda(sm.x, sm.y, { r: 90, colore: [255, 230, 140], vita: 0.5 });
+        S.premio(10, sm.x, sm.y - 50, null, { nota: mondo.semiPresi % 10, dim: 44, scintille: 8 });
+      }
+    });
+
     mondo.etichette.forEach(function (e) { e.vita -= dt; e.dy += dt * 30; });
     mondo.etichette = mondo.etichette.filter(function (e) { return e.vita > 0; });
     mondo.anelli.forEach(function (a) { a.t += dt; });
@@ -135,6 +154,7 @@
 
   function disegna(ctx, p, tempo, camX, vw) {
     var visibile = function (x, m) { return x > camX - (m || 400) && x < camX + vw + (m || 400); };
+    disegnaSemi(ctx, tempo, visibile);
 
     /* rifugio di Hayy */
     if (visibile(150)) A.roccia(ctx, p, 120, SUOLO - 20, 360, 230, 11);
@@ -285,6 +305,37 @@
     ctx.fill();
   }
 
+  function disegnaSemi(ctx, tempo, visibile) {
+    mondo.semi.forEach(function (sm) {
+      if (!visibile(sm.x) || (sm.preso && sm.t > 0.4)) return;
+      var y = sm.y + Math.sin(tempo * 3 + sm.x) * 8;
+      var k = sm.preso ? 1 + sm.t * 4 : 1, a = sm.preso ? 1 - sm.t / 0.4 : 1;
+      ctx.save();
+      ctx.globalAlpha = a;
+      ctx.globalCompositeOperation = "lighter";
+      var g = ctx.createRadialGradient(sm.x, y, 0, sm.x, y, 44 * k);
+      g.addColorStop(0, "rgba(255,240,170,0.95)");
+      g.addColorStop(0.35, "rgba(255,200,90,0.45)");
+      g.addColorStop(1, "rgba(255,180,60,0)");
+      ctx.fillStyle = g;
+      ctx.fillRect(sm.x - 50 * k, y - 50 * k, 100 * k, 100 * k);
+      ctx.strokeStyle = "rgba(255,240,190,0.6)";
+      ctx.lineWidth = 2;
+      for (var i = 0; i < 4; i++) {
+        var an = tempo * 1.5 + i * Math.PI / 2, r1 = 14 * k, r2 = (26 + Math.sin(tempo * 5 + i) * 4) * k;
+        ctx.beginPath();
+        ctx.moveTo(sm.x + Math.cos(an) * r1, y + Math.sin(an) * r1);
+        ctx.lineTo(sm.x + Math.cos(an) * r2, y + Math.sin(an) * r2);
+        ctx.stroke();
+      }
+      ctx.restore();
+      ctx.fillStyle = "rgba(255,255,240," + a + ")";
+      ctx.beginPath();
+      ctx.arc(sm.x, y, 7, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  }
+
   function capsulaBastone(ctx, x, y) {
     ctx.strokeStyle = "#7a5636";
     ctx.lineWidth = 9;
@@ -409,7 +460,7 @@
       tartaruga: { testo: D.tartaruga, fatto: D.tartarugaFatto, tipo: "corteccia", equip: "scudo", parte: [0, -40, 75] }
     };
     vai(cerva, 1700, 200);
-    return Did.sequenza([D.diverso, D.copia]).then(function () {
+    return Did.mostra(D.copia).then(function () {
       Did.obiettivo(OB.animali);
       return attivita({
         occupato: false,
@@ -439,8 +490,12 @@
             hayy.equip[d.equip] = true;
             mondo.animali[o.animale].fatto = true;
             mondo.oggetto = null;
-            M.emetti("stella", hayy.x, SUOLO - 150, 18, { dispersione: 260, spazio: 80 });
-            window.Suoni.scoperta();
+            M.emetti("stella", hayy.x, SUOLO - 150, 30, { dispersione: 420, spazio: 80 });
+            M.onda(hayy.x, SUOLO - 150, { r: 260, colore: [255, 230, 150], vita: 0.7, spessore: 16 });
+            M.zoom(1.22, 0.7, { x: hayy.x, y: SUOLO - 150 });
+            M.coriandoli(hayy.x, SUOLO - 260, 40);
+            M.scuoti(8, 0.2);
+            S.premio(50, hayy.x, SUOLO - 330, D.super);
             Did.obiettivo(OB.animali);
             Did.mostra(d.fatto, { tocca: false, durata: 2.2 });
             var tutti = Object.keys(dati).every(function (k) { return mondo.animali[k].fatto; });
@@ -465,6 +520,8 @@
       vai(hayy, a.x + lato * 170, 340).then(function () {
         hayy.verso = -lato;
         mondo.evidenzia = { x: a.x + d.parte[0], y: SUOLO + d.parte[1], r: d.parte[2] };
+        M.zoom(1.3, 2.2, { x: a.x, y: SUOLO + d.parte[1] });
+        window.Suoni.pop();
         return Did.mostra(d.testo, { tocca: false, durata: 2.2 });
       }).then(function () {
         mondo.evidenzia = null;
@@ -485,7 +542,9 @@
     return vai(hayy, 1680, 340).then(function () {
       cerva.x = Math.max(cerva.x, 1800);
       cerva.dest = cerva.x;
-      return Did.mostra(D.corsa);
+      return S.indovina(D.indovinaCorsa, [{ icona: "▲", testo: D.accelera }, { icona: "▼", testo: D.rallenta }], 0);
+    }).then(function () {
+      return Did.mostra(D.corsa, { tocca: false, durata: 1.4 });
     }).then(function () {
       B.mostra();
       Did.obiettivo(OB.salta);
@@ -496,7 +555,10 @@
       mondo.ostacoli.forEach(function (o) { o.passato = false; });
       return attivita({
         giu: function () {
-          if (hayy.salto <= 0.5) { hayy.vy = 980; hayy.posa = "salta"; window.Suoni.tonfo(); }
+          if (hayy.salto <= 0.5) {
+            hayy.vy = 980; hayy.posa = "salta"; window.Suoni.salto();
+            M.emetti("polvere", hayy.x, SUOLO, 10, { dispersione: 200 });
+          }
         },
         aggiorna: function (dt) {
           vel = Math.min(560, vel + dt * 90);
@@ -517,7 +579,18 @@
             if (o.passato) return;
             if (hayy.x > o.x - 30 && hayy.x < o.x + 30) {
               o.passato = true;
-              if (hayy.salto < 45) { rallenta = 0.7; M.emetti("polvere", o.x, SUOLO - 20, 14); etichetta(D.inciampo, "#ffd27a"); }
+              if (hayy.salto < 45) {
+                rallenta = 0.7;
+                M.emetti("polvere", o.x, SUOLO - 20, 24, { dispersione: 300 });
+                M.scuoti(16, 0.35);
+                M.scritta(D.inciampo, o.x, SUOLO - 280, { colore: "#ff8a8a", dim: 70 });
+                window.Suoni.ops();
+                S.rompi();
+              } else {
+                var serie = S.serie();
+                S.premio(20, o.x, SUOLO - 300, serie > 1 ? "x" + serie : D.salto, { serie: true, colore: serie > 2 ? "#9cf0ff" : "#ffd27a" });
+                M.onda(o.x, SUOLO - 40, { r: 160, colore: [255, 255, 255], vita: 0.4 });
+              }
             }
           });
           /* la cerva corre davanti */
@@ -532,7 +605,10 @@
           if (f > 0.15 && !mostrate.c) { mostrate.c = 1; etichetta(D.etichettaCuore, "#ff9a9a"); }
           if (f > 0.4 && !mostrate.r) { mostrate.r = 1; etichetta(D.etichettaRespiro, "#a8d8ff"); }
           if (f > 0.65 && !mostrate.t) { mostrate.t = 1; etichetta(D.etichettaCalore, "#ffc27a"); }
+          this.velocita = rallenta > 0 ? 0 : (vel - 260) / 300;
           if (hayy.x >= 2720) {
+            M.rallenta(0.35, 0.8);
+            M.zoom(1.25, 1.4, { x: 2720, y: SUOLO - 150 });
             hayy.x = 2720;
             hayy.dest = 2720;
             hayy.salto = 0;
@@ -541,11 +617,29 @@
             hayy.posa = "fermo";
             this.fine();
           }
+        },
+        disegnaSchermo: function (ctx, vw) {
+          var v = this.velocita || 0;
+          if (v <= 0.05) return;
+          var t = M.tempo();
+          ctx.strokeStyle = "rgba(255,255,255," + (0.25 * v).toFixed(3) + ")";
+          ctx.lineCap = "round";
+          for (var i = 0; i < 18; i++) {
+            var y = 80 + ((i * 137) % 760);
+            var len = 120 + (i % 4) * 60;
+            var x = vw - ((t * 2600 + i * 311) % (vw + len * 2));
+            ctx.lineWidth = 2 + (i % 3);
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x + len, y);
+            ctx.stroke();
+          }
         }
       });
     }).then(function () {
       Did.obiettivo(null);
       cerva.vel = 220;
+      M.zoom(1, 0.01);
       return Did.mostra(D.corsaFine);
     }).then(function () {
       hayy.posa = "siede";
@@ -586,15 +680,24 @@
       return attivita({
         giu: function () {
           if (risultati) { if (risultati.t > 1) this.fine(tempi); return; }
-          if (stato === "attesa") { Did.mostra("Troppo presto!", { tocca: false, durata: 1 }); nuovo(); return; }
+          if (stato === "attesa") {
+            M.scritta(D.presto, hayy.x, SUOLO - 380, { colore: "#ff8a8a", dim: 66 });
+            window.Suoni.ops();
+            M.scuoti(6, 0.2);
+            nuovo();
+            return;
+          }
           if (stato === "cade") {
             var ms = Math.round(performance.now() - cocco.t0);
             tempi.push(ms);
             stato = "preso";
             cocco.stato = "preso";
-            M.emetti("stella", cocco.x, cocco.y, 14, { dispersione: 220 });
-            window.Suoni.scoperta();
-            etichetta(ms + " ms", "#fff3b0");
+            M.emetti("stella", cocco.x, cocco.y, 24, { dispersione: 360 });
+            M.onda(cocco.x, cocco.y, { r: 180, colore: [255, 240, 160], vita: 0.5, spessore: 14 });
+            var voto = ms < 260 ? [100, D.fulmine2, "#9cf0ff"] : ms < 340 ? [80, D.ottimo, "#ffd27a"] : ms < 460 ? [50, D.bene, "#ffe9a8"] : [20, D.lento, "#ffffff"];
+            if (ms < 260) { M.lampo([255, 250, 200], 0.5); M.scuoti(12, 0.25); M.rallenta(0.3, 0.35); }
+            S.premio(voto[0], cocco.x, cocco.y - 120, voto[1], { colore: voto[2], nota: tempi.length * 2 });
+            M.scritta(ms + " ms", cocco.x, cocco.y + 10, { colore: "#ffffff", dim: 42, vita: 1.6, sale: 20 });
             if (tempi.length >= 3) { risultati = { t: 0 }; Did.obiettivo(null); }
             else setTimeout(nuovo, 900);
           }
@@ -618,7 +721,8 @@
               stato = "terra";
               window.Suoni.tonfo();
               M.emetti("polvere", cocco.x, SUOLO, 10);
-              Did.mostra("Riprova!", { tocca: false, durata: 1 });
+              M.scuoti(7, 0.2);
+              M.scritta(D.riprova, cocco.x, SUOLO - 200, { colore: "#ffffff", dim: 54 });
               setTimeout(nuovo, 1000);
             }
           }
@@ -698,7 +802,7 @@
             if (navigator.vibrate && window.Salvataggio.impostazioni().vibrazione) { try { navigator.vibrate(30); } catch (e) { /* niente */ } }
             battito++;
             if (battito === 3 && !detto) { detto = true; Did.mostra(D.cuoreCerva, { tocca: false, durata: 3.2 }); }
-            if (battito >= intervalli.length) { this.fine(); return; }
+            if (battito >= intervalli.length) { S.premio(60, cerva.x, SUOLO - 260, null, { colore: "#ffb3c1" }); this.fine(); return; }
             attesaBattito = intervalli[battito];
           }
         }
@@ -716,7 +820,9 @@
         giu: function (wx) {
           var x = Math.max(cerva.x - 220, Math.min(cerva.x + 160, wx));
           mondo.fiori.push({ x: x, s: 0, c: colori[mondo.fiori.length % 3] });
-          M.emetti("foglia", x, SUOLO - 40, 4);
+          M.emetti("foglia", x, SUOLO - 40, 8, { dispersione: 200 });
+          M.onda(x, SUOLO - 40, { r: 110, colore: [255, 200, 220], vita: 0.6 });
+          S.premio(20, x, SUOLO - 180, null, { colore: "#ffc2d6", nota: mondo.fiori.length + 2, dim: 46 });
           if (mondo.fiori.length >= 3) this.fine();
         }
       });
@@ -736,6 +842,8 @@
       hayy.posa = "fermo";
       hayy.raggiX = true;
       hayy.cuore = 104;
+      return S.indovina(D.indovinaCuore, [{ icona: "⚡", testo: D.subito }, { icona: "〰", testo: D.piano }], 1);
+    }).then(function () {
       return Did.mostra(D.tuoCuore);
     }).then(function () {
       return attivita({
@@ -765,9 +873,14 @@
       var lampo = document.getElementById("lampo");
       lampo.classList.add("acceso");
       setTimeout(function () { lampo.classList.remove("acceso"); }, 180);
-      window.Suoni.tonfo();
+      M.lampo([235, 240, 255], 1);
+      M.scuoti(34, 0.8);
+      M.zoom(1.18, 1.4, { x: mondo.canneX, y: SUOLO - 200 });
+      window.Suoni.tuono();
+      setTimeout(function () { window.Suoni.fiammata(); }, 250);
       mondo.canneFuoco = true;
-      M.emetti("scintilla", mondo.canneX, SUOLO - 200, 40, { dispersione: 400 });
+      M.emetti("scintilla", mondo.canneX, SUOLO - 200, 80, { dispersione: 700 });
+      M.emetti("brace", mondo.canneX, SUOLO - 260, 40, { vy: -600, dispersione: 600 });
       return Did.mostra(D.fulmine);
     }).then(accendi);
 
@@ -789,7 +902,10 @@
       }).then(function () {
         hayy.equip.fuoco = true;
         hayy.fuocoForza = 1;
-        M.emetti("scintilla", hayy.x + 60, SUOLO - 260, 20, { dispersione: 200 });
+        M.emetti("scintilla", hayy.x + 60, SUOLO - 260, 40, { dispersione: 320 });
+        M.onda(hayy.x + 40, SUOLO - 270, { r: 220, colore: [255, 170, 80], vita: 0.6, spessore: 14 });
+        window.Suoni.fiammata();
+        S.premio(50, hayy.x, SUOLO - 380, D.fuocoPreso, { colore: "#ffb36a" });
         return Did.mostra(D.acceso, { tocca: false, durata: 2 });
       }).then(porta);
     }
@@ -806,13 +922,22 @@
           hayy.dest = mondo.grottaX + 150;
           hayy.vel = 120;
           vento.prossimo -= dt;
-          if (vento.prossimo <= 0 && vento.avviso <= 0 && vento.soffia <= 0) vento.avviso = 0.9;
+          if (vento.prossimo <= 0 && vento.avviso <= 0 && vento.soffia <= 0) {
+            vento.avviso = 0.9;
+            M.scritta(D.vento, hayy.x + 200, SUOLO - 420, { colore: "#cfe6ff", dim: 60, vita: 1 });
+          }
           if (vento.avviso > 0) {
             vento.avviso -= dt;
-            if (vento.avviso <= 0) { vento.soffia = 1.3; window.Suoni.vento && window.Suoni.vento(); }
+            if (vento.avviso <= 0) { vento.soffia = 1.3; vento.tenuto = 0; vento.totale = 0; window.Suoni.vento && window.Suoni.vento(); M.scuoti(7, 1.3); }
           }
           if (vento.soffia > 0) {
             vento.soffia -= dt;
+            vento.totale += dt;
+            if (tiene) vento.tenuto += dt;
+            if (vento.soffia <= 0 && vento.tenuto / vento.totale > 0.7) {
+              S.serie();
+              S.premio(30, hayy.x, SUOLO - 380, D.parata, { serie: true, colore: "#9cf0ff" });
+            }
             if (Math.random() < dt * 40) M.emetti("foglia", hayy.x + 500, SUOLO - 100 - Math.random() * 300, 1, { vx: -700, dispersione: 40 });
             if (!tiene) hayy.fuocoForza = Math.max(0, hayy.fuocoForza - dt * 0.75);
             if (vento.soffia <= 0) vento.prossimo = 1.6 + Math.random() * 1.6;
@@ -845,7 +970,10 @@
         hayy.posa = "fermo";
         hayy.dest = hayy.x;
         if (esito === "spento") {
-          M.emetti("fumo", hayy.x + 40, SUOLO - 270, 8);
+          M.emetti("fumo", hayy.x + 40, SUOLO - 270, 14);
+          M.scritta(D.spentoBreve, hayy.x, SUOLO - 380, { colore: "#bbbbbb", dim: 66 });
+          window.Suoni.ops();
+          S.rompi();
           return Did.mostra(D.spento, { tocca: false, durata: 1.8 }).then(accendi);
         }
         hayy.equip.fuoco = false;
@@ -855,6 +983,11 @@
             if (mondo.grottaLuce >= 1) this.fine();
           }
         }).then(function () {
+          M.lampo([255, 180, 90], 0.6);
+          M.emetti("scintilla", mondo.grottaX, SUOLO - 120, 70, { dispersione: 600 });
+          M.zoom(1.15, 1.6, { x: mondo.grottaX, y: SUOLO - 150 });
+          window.Suoni.fiammata();
+          S.premio(100, mondo.grottaX, SUOLO - 380, D.casa, { colore: "#ffb36a" });
           progressi.grotta = true;
           return Did.mostra(D.grotta, { tocca: false, durata: 2 });
         });
@@ -877,13 +1010,16 @@
     var bottone = document.getElementById("btn-calore");
     return vai(hayy, 3700, 260).then(function () {
       hayy.verso = 1;
-      return Did.mostra(D.calore);
+      return S.indovina(D.indovinaCalore, [{ icona: "🪨", testo: D.ilSasso }, { icona: "🐐", testo: D.laCapra }], 1);
+    }).then(function () {
+      return Did.mostra(D.calore, { tocca: false, durata: 1.6 });
     }).then(function () {
       bottone.classList.remove("nascosto");
       bottone.onclick = function () {
         var attivo = !bottone.classList.contains("attivo");
         bottone.classList.toggle("attivo", attivo);
         M.termica(attivo);
+        if (attivo) { M.lampo([80, 140, 255], 0.5); window.Suoni.whoosh(); }
       };
       Did.obiettivo(OB.calore);
       var visti = {};
@@ -898,7 +1034,9 @@
           bersagli.forEach(function (b) {
             if (visti[b[0]] || !vicino(wx, wy, b[1], b[2], b[3])) return;
             visti[b[0]] = true;
-            if (!bottone.classList.contains("attivo")) { bottone.classList.add("attivo"); M.termica(true); }
+            if (!bottone.classList.contains("attivo")) { bottone.classList.add("attivo"); M.termica(true); M.lampo([80, 140, 255], 0.5); window.Suoni.whoosh(); }
+            S.premio(30, b[1], b[2] - 260, D[b[0]].replace(/[^0-9]/g, "") + "°", { colore: b[4], dim: 90 });
+            M.onda(b[1], b[2], { r: 200, colore: b[0] === "sasso" ? [120, 180, 255] : [255, 150, 90], vita: 0.6, spessore: 14 });
             mondo.temperature.push({ testo: D[b[0]].replace(/:.*/, "") + " " + D[b[0]].replace(/[^0-9]/g, "") + "°", x: b[1], y: b[2] - 150, colore: b[4], t: 0 });
             Did.mostra(D[b[0]], { tocca: false, durata: 1.8 });
             if (Object.keys(visti).length === 3) setTimeout(function () { self.fine(); }, 2000);
@@ -1000,7 +1138,12 @@
         aggiorna: function (dt) {
           if (!arrivata) {
             mondo.barca.x = Math.max(4560, mondo.barca.x - dt * 120);
-            if (mondo.barca.x <= 4560) { arrivata = true; absal.visibile = true; absal.x = 4470; absal.dest = 4380; absal.vel = 120; }
+            if (mondo.barca.x <= 4560) {
+              arrivata = true; absal.visibile = true; absal.x = 4470; absal.dest = 4380; absal.vel = 120;
+              M.emetti("goccia", 4520, SUOLO - 20, 30, { vy: -400, dispersione: 400 });
+              M.scritta("!", 4470, SUOLO - 360, { colore: "#ffd27a", dim: 120 });
+              window.Suoni.pop();
+            }
           }
           if (arrivata && hayy.x > 4100) this.fine();
         }
@@ -1008,6 +1151,10 @@
     }).then(function () {
       Did.obiettivo(null);
       hayy.verso = 1;
+      M.zoom(1.2, 4, { x: (hayy.x + absal.x) / 2, y: SUOLO - 180 });
+      M.coriandoli((hayy.x + absal.x) / 2, SUOLO - 400, 90);
+      window.Suoni.fanfara(3);
+      S.premio(100, (hayy.x + absal.x) / 2, SUOLO - 420, D.amico, { colore: "#c9a6ff" });
       return Did.sequenza([D.absal, D.scuola]);
     }).then(function () {
       salvaTappa("fine");
@@ -1022,6 +1169,8 @@
     return new Promise(function (r) {
       P.apri(F.titolo);
       var el = P.elementi();
+      var r = S.riepilogo();
+      el.testo.appendChild(P.paragrafo("✦ " + r.punti + "     ★ " + r.stelle + " / " + r.max, "grande centrato bottino"));
       el.testo.appendChild(P.paragrafo(F.diritto, "grande"));
       el.testo.appendChild(P.paragrafo(F.fonte, "piccolo"));
       el.testo.appendChild(P.paragrafo(F.domanda));
@@ -1077,6 +1226,8 @@
         luci: luci,
         calore: calore
       });
+      window.Fondale.carica("livello1");
+      S.prepara(progressi);
       M.camera.segui = hayy;
       posiziona(progressi.tappa || "segui");
       ripristinaFiori();
@@ -1090,8 +1241,16 @@
       var da = tappa ? ordine.indexOf(tappa) : 0;
       if (tappa === "fine") return finale();
       var inizio = tappa ? Promise.resolve() : P.pagine([T.prologo]);
+      S.mostra();
       return ordine.slice(Math.max(0, da)).reduce(function (pr, nome) {
-        return pr.then(function () { return sequenza[nome](); });
+        return pr.then(function () {
+          return S.sipario(ordine.indexOf(nome) + 1, T.tappe[nome]);
+        }).then(function () {
+          if (MASSIMI[nome]) S.tappa(nome, MASSIMI[nome]);
+          return sequenza[nome]();
+        }).then(function () {
+          if (MASSIMI[nome]) return S.stelle();
+        });
       }, inizio).catch(function (e) { if (window.console) console.error(e); });
     },
 
