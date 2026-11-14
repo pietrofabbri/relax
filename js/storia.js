@@ -15,6 +15,62 @@
     return e.replace(/\*([^*]+)\*/g, '<b class="evidenzia">$1</b>').replace(/\n/g, "<br>");
   }
 
+  /* quanto serve per leggere una frase: circa 3 parole al secondo, mai meno di 1,4 secondi */
+  function tempoLettura(t) {
+    var parole = String(t).replace(/\*/g, "").split(/\s+/).filter(Boolean).length;
+    return Math.max(1.4, parole * 0.33);
+  }
+
+  /* barra che si riempie mentre si legge; poi compare "Tocca per continuare" */
+  function attesaLettura(box, secondi) {
+    var barra = box.querySelector(".barra-lettura i");
+    var invito = box.querySelector(".tocca-racconto");
+    if (invito) invito.classList.add("spento");
+    if (barra) { barra.style.transition = "none"; barra.style.width = "0%"; void barra.offsetWidth; barra.style.transition = "width " + secondi + "s linear"; barra.style.width = "100%"; }
+    return new Promise(function (r) {
+      setTimeout(function () { if (invito) invito.classList.remove("spento"); r(); }, secondi * 1000);
+    });
+  }
+
+  /*
+   * Domanda di comprensione: si va avanti solo con la risposta giusta.
+   * Se si sbaglia, la frase che contiene la risposta si illumina, e si riprova.
+   * dove: elemento in cui mettere la domanda; righe: elementi delle frasi (per illuminarle)
+   */
+  function domanda(dove, d, righe) {
+    var I = window.Icone;
+    var box = document.createElement("div");
+    box.className = "domanda-lettura";
+    box.innerHTML = '<div class="dl-titolo">' + I.svg("occhio") + "<span>" + formatta(d.testo) + '</span></div><div class="dl-scelte"></div>';
+    dove.appendChild(box);
+    var scelte = box.querySelector(".dl-scelte");
+    return new Promise(function (fatto) {
+      d.opzioni.forEach(function (op, i) {
+        var b = document.createElement("button");
+        b.className = "dl-scelta";
+        b.innerHTML = formatta(op);
+        b.addEventListener("click", function (e) {
+          e.stopPropagation();
+          window.Suoni.sblocca();
+          if (i === d.giusta) {
+            b.classList.add("giusta");
+            scelte.querySelectorAll("button").forEach(function (x) { x.disabled = true; });
+            window.Suoni.fanfara(2);
+            if (window.Spettacolo) window.Spettacolo.premio(20);
+            setTimeout(fatto, 700);
+          } else {
+            b.classList.add("sbagliata");
+            b.disabled = true;
+            window.Suoni.ops();
+            var r = righe && righe[d.riga || 0];
+            if (r) { r.classList.remove("rileggi"); void r.offsetWidth; r.classList.add("rileggi"); }
+          }
+        });
+        scelte.appendChild(b);
+      });
+    });
+  }
+
   function immagine(nome) {
     var I = window.Icone, C = window.Cartina;
     if (nome === "cartina-andalus") {
@@ -47,6 +103,7 @@
 
   window.Storia = {
     formatta: formatta,
+    tempoLettura: tempoLettura,
 
     /* prepara il libro del livello: capitoli e ordine */
     usa: function (capitoli, ordine) { corrente = { capitoli: capitoli, ordine: ordine, nome: null }; },
@@ -61,16 +118,20 @@
           var s = schede[i];
           box.innerHTML =
             '<div class="scena-racconto">' + immagine(s.immagine) + "</div>" +
-            '<div class="frase-racconto"><p>' + formatta(s.testo) + "</p></div>" +
+            '<div class="frase-racconto"><p>' + formatta(s.testo) + '</p><div class="barra-lettura"><i></i></div></div>' +
             '<div class="puntini">' + schede.map(function (_, k) { return '<i class="' + (k === i ? "on" : k < i ? "fatto" : "") + '"></i>'; }).join("") + "</div>" +
             '<button class="salta-racconto">' + G().salta + " ▸▸</button>" +
             '<div class="tocca-racconto">' + G().tocchi + " ▸</div>";
           box.classList.remove("nascosto");
           box.querySelector(".salta-racconto").addEventListener("click", function (e) { e.stopPropagation(); chiudi(); });
           window.Suoni.whoosh();
+          pronto = false;
+          attesaLettura(box, tempoLettura(s.testo)).then(function () { pronto = true; });
         }
+        var pronto = false;
         function chiudi() { box.classList.add("nascosto"); box.onclick = null; fatto(); }
         box.onclick = function () {
+          if (!pronto) return;
           window.Suoni.sblocca();
           i++;
           if (i >= schede.length) chiudi(); else mostra();
@@ -85,30 +146,87 @@
       var c = corrente.capitoli[nome], n = corrente.ordine.indexOf(nome) + 1, tot = corrente.ordine.length;
       var I = window.Icone;
       var box = document.getElementById("capitolo");
-      var libro = c.libro.map(function (r, k) { return '<li style="animation-delay:' + (0.5 + k * 0.45) + 's">' + formatta(r) + "</li>"; }).join("");
+      /* ogni frase arriva quando la precedente ha avuto il tempo di essere letta */
+      var t = 0.5, ritardi = c.libro.map(function (r) { var q = t; t += tempoLettura(r) * 0.8; return q; });
+      var tGioco = t;
+      t += tempoLettura(c.gioco) * 0.6;
+      var libro = c.libro.map(function (r, k) { return '<li style="animation-delay:' + ritardi[k].toFixed(2) + 's">' + formatta(r) + "</li>"; }).join("");
       box.innerHTML =
-        '<div class="cap-sinistra"><div class="raggi"></div><div class="cap-icona">' + I.svg(c.icona) + "</div></div>" +
+        '<div class="cap-sinistra"><div class="cap-icona">' + I.svg(c.icona) + "</div></div>" +
         '<div class="cap-destra">' +
         '<div class="cap-nastro">' + G().capitolo + " " + n + " / " + tot + "</div>" +
         '<h2 class="cap-titolo">' + formatta(c.titolo) + "</h2>" +
         '<div class="cap-libro"><span class="etichetta-libro">' + I.svg("libro") + G().nelLibro + "</span><ul>" + libro + "</ul></div>" +
-        '<div class="cap-gioco" style="animation-delay:' + (0.6 + c.libro.length * 0.45) + 's"><span>▶</span> ' + formatta(c.gioco) + "</div>" +
+        '<div class="cap-gioco" style="animation-delay:' + tGioco.toFixed(2) + 's"><span>▶</span> ' + formatta(c.gioco) + "</div>" +
+        '<div class="cap-fondo"></div>' +
         "</div>" +
-        striscia(corrente.capitoli, corrente.ordine, nome) +
-        '<div class="tocca-racconto">' + G().tocchi + " ▸</div>";
+        striscia(corrente.capitoli, corrente.ordine, nome);
       box.classList.remove("nascosto");
-      window.Suoni.fanfara(1);
+      window.Suoni.whoosh();
+      var fondo = box.querySelector(".cap-fondo");
       return new Promise(function (fatto) {
-        var pronto = false;
-        setTimeout(function () { pronto = true; box.classList.add("pronto"); }, 700);
+        function esci() {
+          window.Suoni.pop();
+          box.classList.add("esce");
+          setTimeout(function () { box.classList.add("nascosto"); box.classList.remove("esce"); fatto(); }, 280);
+        }
+        setTimeout(function () {
+          if (c.domanda) {
+            domanda(fondo, c.domanda, box.querySelectorAll(".cap-libro li")).then(esci);
+          } else {
+            var b = document.createElement("button");
+            b.className = "bottone principale vai-avanti";
+            b.textContent = G().avanti;
+            b.addEventListener("click", function (e) { e.stopPropagation(); esci(); });
+            fondo.appendChild(b);
+          }
+        }, t * 1000);
+      });
+    },
+
+    /*
+     * Spiegazione a schede, con schemi (come il prologo): una frase per scheda, lo schema si disegna a passi.
+     * Alla fine una domanda: si passa solo rispondendo giusto.
+     */
+    spiega: function (sp) {
+      var box = document.getElementById("spiegazione");
+      var L = window.TESTI.schemi || {};
+      return new Promise(function (fatto) {
+        var i = 0, pronto = false;
+        function mostra() {
+          var s = sp.schede[i];
+          box.innerHTML =
+            '<div class="sp-testa">' + window.Icone.svg("libro") + "<span>" + formatta(sp.titolo || "") + "</span></div>" +
+            '<div class="sp-schema">' + window.Schemi.svg(s.schema, L[s.schema]) + "</div>" +
+            '<div class="sp-frase"><p>' + formatta(s.testo) + '</p><div class="barra-lettura"><i></i></div></div>' +
+            '<div class="puntini">' + sp.schede.map(function (_, k) { return '<i class="' + (k === i ? "on" : k < i ? "fatto" : "") + '"></i>'; }).join("") + "</div>" +
+            '<div class="tocca-racconto">' + G().tocchi + " ▸</div>";
+          box.classList.remove("nascosto");
+          pronto = false;
+          /* si aspetta lo schema che si disegna e la frase da leggere */
+          attesaLettura(box, Math.max(tempoLettura(s.testo), s.attesa || 2.4)).then(function () { pronto = true; });
+        }
+        function fine() {
+          box.onclick = null;
+          if (!sp.domanda) { box.classList.add("nascosto"); fatto(); return; }
+          box.querySelector(".tocca-racconto").remove();
+          /* riepilogo di tutte le frasi: la risposta è lì, da rileggere se serve */
+          var frase = box.querySelector(".sp-frase");
+          frase.classList.add("con-domanda");
+          frase.innerHTML = '<ul class="riepilogo">' + sp.schede.map(function (q) { return "<li>" + formatta(q.testo) + "</li>"; }).join("") + "</ul>";
+          box.querySelector(".sp-schema").classList.add("piccolo");
+          domanda(frase, sp.domanda, frase.querySelectorAll(".riepilogo li")).then(function () {
+            box.classList.add("nascosto");
+            fatto();
+          });
+        }
         box.onclick = function () {
           if (!pronto) return;
           window.Suoni.sblocca();
           window.Suoni.pop();
-          box.onclick = null;
-          box.classList.add("esce");
-          setTimeout(function () { box.classList.add("nascosto"); box.classList.remove("esce", "pronto"); fatto(); }, 280);
+          if (i < sp.schede.length - 1) { i++; mostra(); } else fine();
         };
+        mostra();
       });
     },
 

@@ -31,6 +31,7 @@ Torna a: [documentazione](README.md) · [presentazione del progetto](../README.m
 | `js/fondale.js` | Il **fondale**: il disegno del ragazzo dietro al livello (da file o da foto del telefono) |
 | `js/spettacolo.js` | **Punti, serie, stelle, "Indovina!", sipario** tra le tappe: valgono per tutti i livelli |
 | `js/app.js` | L'app sul telefono: installazione, schermo intero, aggiornamenti da GitHub |
+| `js/schemi.js` | Gli **schemi** delle spiegazioni (corpo, catena della corsa, riflesso, media, termostato…), a inchiostro con un colore d'accento |
 | `js/storia.js` | **La storia sempre chiara**: prologo a immagini, capitolo a ogni tappa (cosa succede nel libro, cosa fai nel gioco), filo della storia con "Sei qui" |
 | `js/cartina.js` | Cartina disegnata dal codice (Mediterraneo e Oceano Indiano), con spilli e rotte animate |
 | `js/icone.js` | Le icone a colori (cuore, fuoco, gazzella, termometro…): simboli al posto delle frasi |
@@ -39,6 +40,7 @@ Torna a: [documentazione](README.md) · [presentazione del progetto](../README.m
 | `js/main.js` | Avvio, schermata iniziale, impostazioni |
 | `sw.js`, `manifest.webmanifest` | Installazione sul telefono e uso offline quando il gioco è online |
 | `strumenti/prepara_fondale.py` | Dalla scansione o foto dei fogli al fondale (PNG con la carta trasparente) |
+| `strumenti/guida_striscia.py` | Crea la **guida da stampare** per la striscia del fondale (`documentazione/fondali/livello1-guida.pdf`) |
 | `strumenti/qr.py` | Crea il codice QR del gioco (`assets/qr-gioco.png`) |
 | `strumenti/test_livello1.py` | Gioca il livello 1 dall'inizio alla fine e segnala errori |
 
@@ -54,7 +56,9 @@ primo piano (foglie scure)                ← codice
 buio della notte, luci del fuoco           ← codice, sopra a tutto
 ```
 
-**Il foglio.** Una striscia di **3 fogli A4 orizzontali**, uno accanto all'altro: si legge da sinistra (il rifugio, l'alba) a destra (la grotta, la spiaggia). Mentre Hayy cammina, il fondale scorre e alla fine del livello si è visto tutto, senza ripetizioni. Con un foglio solo funziona lo stesso: il disegno si ripete a specchio, così i bordi combaciano.
+**La striscia.** Il formato giusto è una striscia di **5 fogli A4 orizzontali in fila** (148,5 x 21 cm). Copre tutto il livello **alla stessa scala del gioco**: ciò che è disegnato a metà striscia compare a metà livello e scorre insieme al mondo. La **guida da stampare** ([`fondali/livello1-guida.pdf`](fondali/livello1-guida.pdf), creata da `strumenti/guida_striscia.py`) mette su ogni foglio, a matita leggera: il capitolo della storia e l'ora del giorno di quel tratto, la linea del terreno, e a tratteggio il posto degli oggetti che disegna il gioco (grotta, palme, animali), così il paesaggio si costruisce intorno a loro. Strisce più corte funzionano lo stesso (scorrono più piano); con un foglio solo il disegno si ripete a specchio.
+
+**Bianco e nero va benissimo:** il mondo del gioco è a inchiostro, e il disegno a china ci sta dentro senza stonare.
 
 Regole per chi disegna:
 - **il cielo si lascia bianco**: diventa trasparente e lì si vede il cielo animato (niente sole né luna: li fa il gioco, e cambiano con l'ora);
@@ -81,6 +85,24 @@ Regola: **ogni gesto riuscito fa festa, ogni scoperta ha un premio, ogni esperim
 ## L'app sul telefono
 
 `manifest.webmanifest` + `sw.js` + `js/app.js`. L'app installata punta a GitHub Pages; il service worker prende sempre prima la versione in rete e salva una copia per giocare offline. Quando si carica una versione nuova, **alza `VERSIONE` in `sw.js`**: l'app se ne accorge quando torna in primo piano e si aggiorna da sola sulla schermata iniziale.
+
+## Leggere per andare avanti
+
+Il gioco è pieno di stimoli; i momenti di lettura no. Regole:
+
+- **Tempo di lettura:** ogni frase resta da sola il tempo di leggerla (circa 3 parole al secondo, una barra si riempie); solo dopo compare "Tocca per continuare".
+- **Domanda di comprensione:** dopo ogni capitolo e ogni spiegazione c'è una domanda sul testo appena letto. Si va avanti solo con la risposta giusta. Se si sbaglia, la frase con la risposta si illumina e si riprova: nessuna punizione, solo rilettura.
+- **Spiegazioni a schede con schemi** (`Storia.spiega`): come il prologo, una frase per scheda e uno schema che si disegna a passi. Alla fine un riepilogo di tutte le frasi e la domanda. Poi, come premio, la carta dell'album.
+- Durante la lettura: sfondo calmo, niente effetti, niente punti che saltano.
+
+## Stile a inchiostro
+
+Il mondo è disegnato su **due tele**:
+
+- la tela del **mondo** (cielo, paesaggio, personaggi): nello stile "inchiostro" un filtro la rende bianco e nero, un velo color carta la scalda, e ogni forma riceve un **contorno nero** come un disegno a china (`preparaContorno` in `mondo.js`);
+- la tela del **colore**, sopra: fuoco, cuore e organi, cose da toccare, fiori, semi di luce, effetti, scritte. Il colore indica dove guardare.
+
+Così il disegno a matita o a china del ragazzo e il disegno del codice stanno bene insieme. Nelle impostazioni si può scegliere "Mondo a colori". In ogni livello: ciò che va a colori si disegna in `disegnaColore`, il resto in `disegna`.
 
 ## Regole per i testi
 

@@ -37,6 +37,8 @@
     mano: '<path d="M20 56V30l-6-10c-2-4 3-7 6-4l6 8V10c0-4 6-4 6 0v14-18c0-4 6-4 6 0v18-14c0-4 6-4 6 0v16-10c0-4 6-4 6 0v24c0 10-6 16-16 16h-4c-6 0-10-2-12-4z" fill="#d9a07a" stroke="#6a3a1c" stroke-width="3" stroke-linejoin="round"/>',
     luna: '<path d="M40 6a26 26 0 1 0 18 40A22 22 0 0 1 40 6z" fill="#e8ecff" stroke="#5a6a9a" stroke-width="3" stroke-linejoin="round"/>',
     sole: '<circle cx="32" cy="32" r="12" fill="#ffd34d" stroke="#8a6a10" stroke-width="3"/><path d="M32 4v8M32 52v8M4 32h8M52 32h8M12 12l6 6M46 46l6 6M12 52l6-6M46 18l6-6" stroke="#f2a01b" stroke-width="4" stroke-linecap="round"/>',
+    polmoni: '<path d="M32 6v22M32 22c-4 4-8 6-10 6M32 22c4 4 8 6 10 6" stroke="#5a3a52" stroke-width="4" stroke-linecap="round" fill="none"/><path d="M22 16c-10 0-16 14-16 30 0 8 6 12 12 10 6-2 8-6 8-14V20c0-2-2-4-4-4zM42 16c10 0 16 14 16 30 0 8-6 12-12 10-6-2-8-6-8-14V20c0-2 2-4 4-4z" fill="#f48fb1" stroke="#8a3a52" stroke-width="3" stroke-linejoin="round"/>',
+    fiocco: '<path d="M32 4v56M8 18l48 28M8 46l48-28" stroke="#4a90e2" stroke-width="5" stroke-linecap="round"/><path d="M24 8l8 8 8-8M24 56l8-8 8 8M6 28l11-2-4-10M58 36l-11 2 4 10M6 36l11 2-4 10M58 28l-11-2 4-10" stroke="#4a90e2" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>',
     lucchetto: '<rect x="12" y="28" width="40" height="30" rx="6" fill="#8a8aa0" stroke="#3a3a4a" stroke-width="3"/><path d="M20 28v-8a12 12 0 0 1 24 0v8" stroke="#3a3a4a" stroke-width="4" fill="none"/><circle cx="32" cy="42" r="4" fill="#3a3a4a"/>'
   };
 
@@ -44,6 +46,7 @@
     svg: function (nome, classe) {
       return '<svg class="icona ' + (classe || "") + '" viewBox="0 0 64 64" aria-hidden="true">' + (I[nome] || I.stella) + "</svg>";
     },
-    ha: function (nome) { return !!I[nome]; }
+    ha: function (nome) { return !!I[nome]; },
+    svgInterno: function (nome) { return I[nome] || I.stella; }
   };
 })();

@@ -41,6 +41,7 @@ window.TESTI = {
     vibrazione: "Vibrazione col battito",
     suoni: "Suoni",
     movimentoRidotto: "Meno movimento",
+    mondoAColori: "Mondo a colori (invece che a inchiostro)",
     disegno: "Il tuo disegno come fondale",
     scegliFoto: "Scegli le foto",
     togliFoto: "Togli",
@@ -54,6 +55,19 @@ window.TESTI = {
     nuovaPagina: "Nuova carta!",
     raccolte: "carte",
     bloccata: "Ancora da scoprire"
+  },
+
+  /* etichette degli schemi */
+  schemi: {
+    corpo: { cervello: "cervello", cervelloFa: "pensa e comanda", polmoni: "polmoni", polmoniFa: "prendono l'aria", cuore: "cuore", cuoreFa: "spinge il sangue",
+      stomaco: "stomaco", stomacoFa: "digerisce", muscoli: "muscoli", muscoliFa: "muovono" },
+    catena: { muscoli: "muscoli", respiro: "respiro", cuore: "cuore", calore: "calore", sudore: "sudore", insieme: "tutto insieme!" },
+    riflesso: { occhio: "occhio", nervo: "nervo", cervello: "cervello", mano: "mano", tempo: "≈ 0,2 secondi" },
+    media: { media: "media" },
+    cuoreGiorno: { numero: "100.000", alGiorno: "battiti al giorno", ancheDormi: "anche di notte" },
+    dueStrade: { nervi: "nervi", veloce: "velocissimi", breve: "durano poco", sangue: "sangue", lento: "lenti", dura: "durano a lungo" },
+    termostato: { caldo: "caldo", sudi: "sudi", freddo: "freddo", tremi: "tremi", sempre: "il corpo torna sempre a 37 °C" },
+    fuocoAria: { legna: "legna", aria: "aria", corpo: "cibo", energia: "aria + cibo = energia" }
   },
 
   livello1: {
@@ -70,15 +84,23 @@ window.TESTI = {
 
     /* i capitoli della storia: uno per tappa. libro = cosa succede nel libro; gioco = cosa fai tu */
     capitoli: {
-      segui: { icona: "gazzella", titolo: "La gazzella", libro: ["Hayy è un neonato.", "Una gazzella lo trova e lo allatta."], gioco: "Seguila nel bosco." },
-      animali: { icona: "foglia", titolo: "Hayy è diverso", libro: ["Hayy cresce con gli animali.", "Non ha corna, né pelo, né guscio.", "Allora li copia: foglie e bastoni."], gioco: "Copia gli animali." },
-      corsa: { icona: "corsa", titolo: "Forte e veloce", libro: ["Hayy diventa grande e forte.", "Corre con le gazzelle."], gioco: "Corri e guarda dentro il corpo." },
-      cocchi: { icona: "cocco", titolo: "Il cibo dell'isola", libro: ["Hayy mangia i frutti dell'isola."], gioco: "Prendi i cocchi al volo." },
-      cerva: { icona: "cuore", titolo: "La gazzella muore", libro: ["La gazzella diventa vecchia.", "Un giorno smette di muoversi.", "Hayy vuole capire perché."], gioco: "Ascolta il suo cuore." },
-      fuoco: { icona: "fuoco", titolo: "Il fuoco", libro: ["Un fulmine incendia le canne.", "Hayy scopre luce e calore.", "Porta il fuoco nella sua grotta."], gioco: "Proteggi la fiamma dal vento." },
-      calore: { icona: "termometro", titolo: "Il calore della vita", libro: ["Hayy nota una cosa:", "gli animali vivi sono caldi."], gioco: "Guarda il calore delle cose." },
+      segui: { icona: "gazzella", titolo: "La gazzella", libro: ["Hayy è un neonato.", "Una gazzella lo trova e lo allatta."], gioco: "Seguila nel bosco.",
+        domanda: { testo: "Chi cresce Hayy?", opzioni: ["un pescatore", "una gazzella", "una lupa"], giusta: 1, riga: 1 } },
+      animali: { icona: "foglia", titolo: "Hayy è diverso", libro: ["Hayy cresce con gli animali.", "Non ha corna, né pelo, né guscio.", "Allora li copia: foglie e bastoni."], gioco: "Copia gli animali.",
+        domanda: { testo: "Che cosa usa Hayy al posto di corna e pelo?", opzioni: ["foglie e bastoni", "ferro e stoffa"], giusta: 0, riga: 2 } },
+      corsa: { icona: "corsa", titolo: "Forte e veloce", libro: ["Hayy diventa grande e forte.", "Corre con le gazzelle."], gioco: "Corri e guarda dentro il corpo.",
+        domanda: { testo: "Con chi corre Hayy?", opzioni: ["con i cavalli", "da solo", "con le gazzelle"], giusta: 2, riga: 1 } },
+      cocchi: { icona: "cocco", titolo: "Il cibo dell'isola", libro: ["Hayy mangia i frutti dell'isola."], gioco: "Prendi i cocchi al volo.",
+        domanda: { testo: "Che cosa mangia Hayy?", opzioni: ["i frutti dell'isola", "il pane"], giusta: 0, riga: 0 } },
+      cerva: { icona: "cuore", titolo: "La gazzella muore", libro: ["La gazzella diventa vecchia.", "Un giorno smette di muoversi.", "Hayy vuole capire perché."], gioco: "Ascolta il suo cuore.",
+        domanda: { testo: "Che cosa vuole fare Hayy?", opzioni: ["scappare dall'isola", "capire perché non si muove più"], giusta: 1, riga: 2 } },
+      fuoco: { icona: "fuoco", titolo: "Il fuoco", libro: ["Un fulmine incendia le canne.", "Hayy scopre luce e calore.", "Porta il fuoco nella sua grotta."], gioco: "Proteggi la fiamma dal vento.",
+        domanda: { testo: "Come nasce il fuoco?", opzioni: ["lo accende Absal", "un fulmine incendia le canne", "lo porta il mare"], giusta: 1, riga: 0 } },
+      calore: { icona: "termometro", titolo: "Il calore della vita", libro: ["Hayy nota una cosa:", "gli animali vivi sono caldi."], gioco: "Guarda il calore delle cose.",
+        domanda: { testo: "Che cosa nota Hayy?", opzioni: ["gli animali vivi sono freddi", "gli animali vivi sono caldi"], giusta: 1, riga: 1 } },
       misura: { icona: "battito", titolo: "Il tuo cuore", libro: ["Hayy misura e confronta tutto."], gioco: "Ora conta il tuo battito." },
-      alba: { icona: "barca", titolo: "Absal", libro: ["Passano tanti anni.", "Arriva Absal, da un'altra isola.", "Insegna a Hayy a parlare."], gioco: "Impara le parole con Absal." }
+      alba: { icona: "barca", titolo: "Absal", libro: ["Passano tanti anni.", "Arriva Absal, da un'altra isola.", "Insegna a Hayy a parlare."], gioco: "Impara le parole con Absal.",
+        domanda: { testo: "Che cosa insegna Absal a Hayy?", opzioni: ["a parlare", "a nuotare"], giusta: 0, riga: 2 } }
     },
 
     /* obiettivi: la riga fissa in alto */
@@ -140,7 +162,6 @@ window.TESTI = {
       indovinaFuoco: "Per bruciare, il fuoco ha bisogno di…",
       aria: "aria",
       acqua: "acqua",
-      rispostaFuoco: "Aria! Anche il tuo corpo brucia il cibo con l'*aria*.",
 
       inizio: "La gazzella ti chiama.",
       copia: "Niente corna, piume o guscio?\nCopia gli animali!",
@@ -195,6 +216,79 @@ window.TESTI = {
       conferma: "OK",
       strano: "Mmm… Riprova con calma.",
       risultato: "{bpm} battiti al minuto."
+    },
+
+    /* spiegazioni a schede, con uno schema per scheda; alla fine una domanda per andare avanti */
+    spiegazioni: {
+      parti: {
+        titolo: "Come è fatto il corpo",
+        schede: [
+          { schema: "corpo", testo: "Il corpo è fatto di *parti*.", attesa: 3.4 },
+          { schema: "corpo", testo: "Ogni parte ha un *compito*.\nIl cuore spinge il sangue." },
+          { schema: "corpo", testo: "Gli animali hanno parti diverse.\nCorna, piume, guscio: ognuna serve a qualcosa." }
+        ],
+        domanda: { testo: "Che cosa fa il cuore?", opzioni: ["spinge il sangue", "pensa", "digerisce il cibo"], giusta: 0, riga: 1 }
+      },
+      insieme: {
+        titolo: "Quando corri",
+        schede: [
+          { schema: "catena", testo: "I *muscoli* lavorano e chiedono ossigeno.", attesa: 3.6 },
+          { schema: "catena", testo: "Il *respiro* accelera: entra più aria.\nIl *cuore* accelera: porta più sangue." },
+          { schema: "catena", testo: "Il corpo si scalda.\nIl *sudore* lo raffredda." }
+        ],
+        domanda: { testo: "Perché il cuore accelera quando corri?", opzioni: ["perché è stanco", "per portare più ossigeno ai muscoli"], giusta: 1, riga: 1 }
+      },
+      veloci: {
+        titolo: "Messaggi veloci",
+        schede: [
+          { schema: "riflesso", testo: "L'*occhio* vede il cocco.", attesa: 3.6 },
+          { schema: "riflesso", testo: "Un messaggio corre nei *nervi*.\nIl *cervello* decide." },
+          { schema: "riflesso", testo: "Un altro messaggio va alla *mano*.\nTutto in circa due decimi di secondo." }
+        ],
+        domanda: { testo: "Chi decide di muovere la mano?", opzioni: ["l'occhio", "il cervello", "la mano"], giusta: 1, riga: 1 }
+      },
+      ripeti: {
+        titolo: "Come lavora uno scienziato",
+        schede: [
+          { schema: "media", testo: "Tre prove, tre tempi diversi.", attesa: 2.6 },
+          { schema: "media", testo: "Una misura sola può *ingannare*.\nSi ripete e si fa la *media*." }
+        ],
+        domanda: { testo: "Perché si misura più volte?", opzioni: ["perché una misura sola può ingannare", "per fare in fretta"], giusta: 0, riga: 1 }
+      },
+      cuore: {
+        titolo: "Il cuore",
+        schede: [
+          { schema: "cuoreGiorno", testo: "Il cuore batte circa *100.000 volte* al giorno.", attesa: 2.6 },
+          { schema: "cuoreGiorno", testo: "Non si ferma mai.\nNemmeno quando dormi." }
+        ],
+        domanda: { testo: "Quando si ferma il cuore di una persona viva?", opzioni: ["di notte", "mai"], giusta: 1, riga: 1 }
+      },
+      lenti: {
+        titolo: "Due strade per i messaggi",
+        schede: [
+          { schema: "dueStrade", testo: "I messaggi dei *nervi* sono veloci e brevi.", attesa: 2.8 },
+          { schema: "dueStrade", testo: "Altri messaggi viaggiano nel *sangue*.\nSono lenti e durano a lungo." },
+          { schema: "dueStrade", testo: "Per questo un'emozione forte\nresta addosso per un po'." }
+        ],
+        domanda: { testo: "Dopo uno spavento il cuore resta veloce. Perché?", opzioni: ["il messaggio viaggia nel sangue e dura", "il cuore si è rotto"], giusta: 0, riga: 1 }
+      },
+      equilibrio: {
+        titolo: "Il termostato del corpo",
+        schede: [
+          { schema: "termostato", testo: "Il corpo resta intorno ai *37 gradi*.", attesa: 3.4 },
+          { schema: "termostato", testo: "Se fa caldo, *sudi*.\nSe fa freddo, *tremi*." }
+        ],
+        domanda: { testo: "Se hai molto caldo, il corpo…", opzioni: ["trema", "suda"], giusta: 1, riga: 1 }
+      },
+      fuocoAria: {
+        titolo: "Il fuoco e il corpo",
+        schede: [
+          { schema: "fuocoAria", testo: "Il fuoco brucia la legna con l'*aria*.", attesa: 3.2 },
+          { schema: "fuocoAria", testo: "Il corpo fa qualcosa di simile:\nusa l'aria per avere *energia* dal cibo." },
+          { schema: "fuocoAria", testo: "Per questo respiri.\nLo scoprirai con Ulisse!" }
+        ],
+        domanda: { testo: "A che cosa serve l'aria al corpo?", opzioni: ["ad avere energia dal cibo", "a rinfrescare i capelli"], giusta: 0, riga: 1 }
+      }
     },
 
     /* le carte dell'album: titolo, una frase, il simbolo e il passo della roadmap */

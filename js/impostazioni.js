@@ -34,6 +34,8 @@
   function applica() {
     document.body.classList.toggle("testo-grande", !!stato.impostazioni.testoGrande);
     document.body.classList.toggle("movimento-ridotto", !!stato.impostazioni.movimentoRidotto);
+    /* stile del mondo: inchiostro (bianco e nero su carta) è il predefinito, per accordarsi ai disegni */
+    if (window.Mondo && window.Mondo.stile) window.Mondo.stile(stato.impostazioni.mondoAColori ? "colori" : "inchiostro");
   }
 
   window.Salvataggio = {

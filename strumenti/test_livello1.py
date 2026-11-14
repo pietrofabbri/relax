@@ -20,7 +20,7 @@ STATO = """(() => {
   return {
     tappa: d.tappa, obiettivo: vis('suggerimento') ? document.getElementById('suggerimento').textContent : '',
     cattura: vis('cattura'), pannello: vis('pannello'), indovina: vis('indovina'),
-    racconto: vis('racconto'), capitolo: vis('capitolo'), cartaNuova: vis('carta-nuova'),
+    racconto: vis('racconto'), capitolo: vis('capitolo'), cartaNuova: vis('carta-nuova'), spiegazione: vis('spiegazione'),
     parola: m.parola && !m.parola.risolta ? m.parola.w.id : null,
     bersagli: { fuoco: sch(m.grottaX, 700), capra: sch(m.capra2.x, 700), barca: sch(m.barca.x, 680) }, bottoni, testoPannello: document.getElementById('pannello').innerText,
     campo: !!document.querySelector('#pannello input'),
@@ -36,6 +36,31 @@ STATO = """(() => {
     spiaggia: sch(4200, 700), grotta: m.grottaLuce
   };
 })()"""
+
+
+LETTURA = """(sel) => {
+  const box = document.querySelector(sel);
+  const titolo = box.querySelector('.dl-titolo span');
+  const scelte = [...box.querySelectorAll('.dl-scelta')];
+  let giusta = null, sbagliabile = null;
+  const risposta = !!box.querySelector('.dl-scelta.giusta');
+  if (titolo && scelte.length && !risposta) {
+    const tutte = [];
+    const L = TESTI.livello1;
+    Object.values(L.capitoli).forEach(c => c.domanda && tutte.push(c.domanda));
+    Object.values(L.spiegazioni).forEach(c => c.domanda && tutte.push(c.domanda));
+    const d = tutte.find(q => titolo.textContent === q.testo.replace(/\\*/g, ''));
+    if (d) {
+      const testoGiusto = d.opzioni[d.giusta];
+      giusta = scelte.findIndex(b => b.textContent === testoGiusto);
+      sbagliabile = scelte.findIndex((b, i) => i !== giusta && !b.disabled);
+      if (sbagliabile < 0) sbagliabile = null;
+    }
+  }
+  const invito = box.querySelector('.tocca-racconto');
+  return { giusta, sbagliabile, avanti: !!box.querySelector('.vai-avanti'),
+           pronto: sel === '#carta-nuova' || (invito && !invito.classList.contains('spento')) || false };
+}"""
 
 
 async def main():
@@ -57,6 +82,8 @@ async def main():
         fiori, calore_toccati = 0, set()
         ultimo_salto = 0
         misura_fatta = False
+        conta = {}
+        letture = {"domande": 0, "sbagli": 0}
 
         async def tocca(x, y):
             await mouse.click(x, y)
@@ -76,24 +103,42 @@ async def main():
                 await pg.screenshot(path=f"{FOTO}/{len(foto_fatte):02d}-{s['tappa']}.png")
 
             # finestre e didascalie prima di tutto
-            for chiave, sel in (("racconto", "#racconto"), ("capitolo", "#capitolo"), ("cartaNuova", "#carta-nuova")):
+            # lettura obbligatoria: prologo, capitoli, spiegazioni con domanda, carte
+            schermo = None
+            for chiave, sel in (("racconto", "#racconto"), ("capitolo", "#capitolo"), ("spiegazione", "#spiegazione"), ("cartaNuova", "#carta-nuova")):
                 if s[chiave]:
-                    if premuto:
-                        await mouse.up(); premuto = False
-                    nome_foto = f"{FOTO}/{chiave}-{s['tappa']}.png"
-                    if not os.path.exists(nome_foto):
-                        await pg.wait_for_timeout(1300)
-                        await pg.screenshot(path=nome_foto)
-                    await pg.wait_for_timeout(800)
-                    try:
-                        await pg.click(sel, position={"x": 420, "y": 330}, force=True, timeout=1500)
-                    except Exception:
-                        pass  # si è già chiusa da sola
-                    await pg.wait_for_timeout(350)
+                    schermo = (chiave, sel)
                     break
-            else:
-                chiave = None
-            if chiave:
+            if schermo:
+                chiave, sel = schermo
+                if premuto:
+                    await mouse.up(); premuto = False
+                n = conta.get(chiave + str(s["tappa"]), 0)
+                conta[chiave + str(s["tappa"])] = n + 1
+                if n < 3:
+                    await pg.wait_for_timeout(1500)
+                    await pg.screenshot(path=f"{FOTO}/{chiave}-{s['tappa']}-{n}.png")
+                stato_l = await pg.evaluate(LETTURA, sel)
+                if stato_l["giusta"] is not None:
+                    letture["domande"] += 1
+                    if stato_l["sbagliabile"] is not None and letture["sbagli"] < 3:
+                        # una risposta sbagliata, per provare che la frase si illumina e si può riprovare
+                        letture["sbagli"] += 1
+                        await pg.click(f"{sel} .dl-scelta >> nth={stato_l['sbagliabile']}", force=True, timeout=2000)
+                        await pg.wait_for_timeout(600)
+                    await pg.click(f"{sel} .dl-scelta >> nth={stato_l['giusta']}", force=True, timeout=2000)
+                    await pg.wait_for_timeout(900)
+                elif stato_l["avanti"]:
+                    await pg.click(f"{sel} .vai-avanti", force=True, timeout=2000)
+                    await pg.wait_for_timeout(500)
+                elif stato_l["pronto"]:
+                    try:
+                        await pg.click(sel, position={"x": 420, "y": 200}, force=True, timeout=1500)
+                    except Exception:
+                        pass
+                    await pg.wait_for_timeout(350)
+                else:
+                    await pg.wait_for_timeout(300)
                 continue
             if s["indovina"]:
                 if premuto:
@@ -200,6 +245,7 @@ async def main():
 
         await b.close()
         print("misura del battito provata:", misura_fatta)
+        print("domande di lettura risposte:", letture["domande"], "- risposte sbagliate provate:", letture["sbagli"])
         reali = [e for e in errori if "favicon" not in e]
         print("errori:", reali)
         if reali:

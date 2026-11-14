@@ -9,7 +9,16 @@
   var A = window.Arte;
   var ALTEZZA = 1000;
 
+  /*
+   * Due tele sovrapposte:
+   *  - il MONDO (cielo, paesaggio, personaggi): in stile "inchiostro" diventa bianco e nero su carta,
+   *    con i contorni neri, per stare bene accanto ai disegni a matita o a china del ragazzo;
+   *  - il COLORE (fuoco, cuore, cose da toccare, effetti, scritte): resta a colori, sopra a tutto,
+   *    così l'occhio va subito a ciò che conta.
+   */
   var canvas, ctx, dpr = 1, scala = 1, vw = 1000;
+  var cw = null, telaColore = null, cc = null;
+  var inchiostro = false, contorno = false;
   var buio = null, bctx = null, carta = null;
   var scena = null, attivita = null;
   var tempo = 0, ultimo = 0;
@@ -118,6 +127,8 @@
     vw = canvas.width / scala;
     buio.width = canvas.width;
     buio.height = canvas.height;
+    telaColore.width = canvas.width;
+    telaColore.height = canvas.height;
     var ruota = document.getElementById("ruota");
     if (ruota) {
       ruota.textContent = window.TESTI.gioco.ruota;
@@ -147,18 +158,23 @@
   function disegna() {
     var p = A.tavolozza(ora.valore);
     var W = canvas.width, H = canvas.height;
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    var F = window.Fondale;
 
+    /* ===== tela del MONDO ===== */
+    ctx = cw;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     /* cielo: fermo, solo un po' di scossa */
     ctx.setTransform(scala, 0, 0, scala, fx.sx * 0.2 * dpr, fx.sy * 0.2 * dpr);
     A.cielo(ctx, p, vw, tempo);
     A.nuvole(ctx, p, camera.x, vw, tempo);
     /* lontananza: il fondale disegnato dal ragazzo, oppure il paesaggio del codice */
     trasforma(ctx, false, 0.5);
-    var F = window.Fondale;
+    contorno = inchiostro;
     if (!F.sostituisce("isole")) A.isoleLontane(ctx, p, camera.x, vw);
     if (!F.sostituisce("mare")) A.mare(ctx, p, camera.x, vw, tempo);
+    contorno = false;
     F.disegna(ctx, p, ora.valore, camera.x, vw, scena.larghezza);
+    contorno = inchiostro;
     if (!F.sostituisce("giungla")) A.giungla(ctx, p, camera.x, vw, tempo);
 
     /* mondo vicino */
@@ -166,12 +182,11 @@
     A.terreno(ctx, p, camera.x, vw, tempo, scena.larghezza, scena.spiaggiaDa);
     if (scena.disegna) scena.disegna(ctx, p, tempo, camera.x, vw);
     if (attivita && attivita.disegnaMondo) attivita.disegnaMondo(ctx, p, tempo);
-    disegnaParticelle();
-    disegnaScritte(p);
 
     /* primo piano */
     trasforma(ctx, false, 1.4);
     A.primoPiano(ctx, p, camera.x, vw, tempo, scena.larghezza);
+    contorno = false;
 
     /* buio con le fonti di luce */
     var forzaBuio = Math.min(0.88, p.notte * 0.82 + (scena.buio ? scena.buio() : 0));
@@ -195,19 +210,42 @@
       });
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.drawImage(buio, 0, 0);
-      /* bagliore caldo delle luci */
+    }
+
+    /* grana della carta e vignetta */
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalAlpha = inchiostro ? 0.9 : 0.5;
+    ctx.fillStyle = ctx.createPattern(carta, "repeat");
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 1;
+    var agit = window.Battito.agitazione();
+    A.vignetta(ctx, W, H, 0.35 + agit * 0.4);
+
+    /* ===== tela del COLORE ===== */
+    ctx = cc;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+
+    /* bagliore caldo delle luci (fuoco): il colore che scalda il bianco e nero */
+    if (forzaBuio > 0.02 || inchiostro) {
       trasforma(ctx, true);
-      ctx.globalCompositeOperation = "lighter";
       luci.forEach(function (l) {
         if (!l.colore) return;
+        var forza = (l.forza || 1) * (inchiostro ? 0.26 + forzaBuio * 0.1 : 0.22);
         var g2 = ctx.createRadialGradient(l.x, l.y, 0, l.x, l.y, l.r * 0.8);
-        g2.addColorStop(0, A.rgba(l.colore, 0.22 * (l.forza || 1)));
+        g2.addColorStop(0, A.rgba(l.colore, forza));
         g2.addColorStop(1, A.rgba(l.colore, 0));
         ctx.fillStyle = g2;
         ctx.fillRect(l.x - l.r, l.y - l.r, l.r * 2, l.r * 2);
       });
-      ctx.globalCompositeOperation = "source-over";
     }
+
+    /* ciò che va a colori: fuoco, cuore, cose da toccare */
+    trasforma(ctx, true);
+    if (scena.disegnaColore) scena.disegnaColore(ctx, p, tempo, camera.x, vw);
+    if (attivita && attivita.disegnaColore) attivita.disegnaColore(ctx, p, tempo);
+    disegnaParticelle();
+    disegnaScritte(p);
 
     /* vista del calore */
     if (termica.mix > 0.01) {
@@ -227,16 +265,10 @@
         ctx.fillRect(c.x - c.r, c.y - c.r, c.r * 2, c.r * 2);
       });
       ctx.globalCompositeOperation = "source-over";
+      /* le cose calde restano visibili anche sopra il velo blu */
+      trasforma(ctx, true);
+      if (scena.disegnaColore) scena.disegnaColore(ctx, p, tempo, camera.x, vw, true);
     }
-
-    /* grana della carta e vignetta */
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.globalAlpha = 0.5;
-    ctx.fillStyle = ctx.createPattern(carta, "repeat");
-    ctx.fillRect(0, 0, W, H);
-    ctx.globalAlpha = 1;
-    var agit = window.Battito.agitazione();
-    A.vignetta(ctx, W, H, 0.35 + agit * 0.4);
 
     /* onde dei tocchi e lampo */
     ctx.setTransform(scala, 0, 0, scala, 0, 0);
@@ -260,6 +292,46 @@
       attivita.disegnaSchermo(ctx, vw, ALTEZZA, p, tempo);
     }
     disegnaSipario();
+  }
+
+  /*
+   * Contorno a inchiostro: nello stile "inchiostro", ogni forma piena e ben visibile
+   * riceve anche un tratto nero, come un disegno a china. Ombre e bagliori (sfumati o trasparenti) no.
+   */
+  function preparaContorno(c) {
+    /* anche i tratti spessi (zampe, tronchi, steli) ricevono un bordo nero sotto */
+    var traccia = c.stroke;
+    c.stroke = function () {
+      if (contorno && !c._inBordo && c.lineWidth >= 5 && c.globalAlpha >= 0.6 && typeof c.strokeStyle === "string" &&
+          c.strokeStyle !== "#1d1815" && !(c.strokeStyle.charAt(0) === "r" && parseFloat(c.strokeStyle.split(",")[3]) < 0.6)) {
+        var ss = c.strokeStyle, lw = c.lineWidth;
+        c.strokeStyle = "#1d1815";
+        c.lineWidth = lw + 5;
+        traccia.apply(c, arguments);
+        c.strokeStyle = ss;
+        c.lineWidth = lw;
+      }
+      traccia.apply(c, arguments);
+    };
+    var riempi = c.fill;
+    c.fill = function () {
+      riempi.apply(c, arguments);
+      if (!contorno || c.globalAlpha < 0.6 || typeof c.fillStyle !== "string") return;
+      var fs = c.fillStyle;
+      if (fs.charAt(0) === "r") {
+        var a = parseFloat(fs.split(",")[3]);
+        if (!isNaN(a) && a < 0.6) return;
+      }
+      var lw = c.lineWidth, ss = c.strokeStyle, lj = c.lineJoin, ld = c.getLineDash();
+      c.setLineDash([]);
+      c.lineWidth = 3.4;
+      c.lineJoin = "round";
+      c.strokeStyle = "#1d1815";
+      c._inBordo = true;
+      if (arguments.length && typeof arguments[0] === "object") c.stroke(arguments[0]); else c.stroke();
+      c._inBordo = false;
+      c.lineWidth = lw; c.strokeStyle = ss; c.lineJoin = lj; c.setLineDash(ld);
+    };
   }
 
   /* ---------- scritte che saltano fuori ("PERFETTO!", "+10") ---------- */
@@ -433,7 +505,10 @@
     SUOLO: 790,
     prepara: function () {
       canvas = document.getElementById("mondo");
-      ctx = canvas.getContext("2d");
+      cw = ctx = canvas.getContext("2d");
+      telaColore = document.getElementById("colore");
+      cc = telaColore.getContext("2d");
+      preparaContorno(cw);
       buio = document.createElement("canvas");
       bctx = buio.getContext("2d");
       carta = preparaCarta();
@@ -456,6 +531,13 @@
       ora.da = ora.valore; ora.a = valore; ora.t = 0; ora.durata = durata;
     },
     termica: function (si) { termica.attiva = !!si; },
+    /* stile: "inchiostro" (bianco e nero su carta, colore solo dove conta) oppure "colori" */
+    stile: function (nome) {
+      inchiostro = nome !== "colori";
+      A.inchiostro = inchiostro;
+      document.body.classList.toggle("stile-inchiostro", inchiostro);
+    },
+    inchiostro: function () { return inchiostro; },
     emetti: emetti,
 
     /* --- effetti --- */

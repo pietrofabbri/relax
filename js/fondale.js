@@ -1,10 +1,11 @@
 /*
  * Il fondale: il disegno del ragazzo dietro a tutto il livello, come il fondale di un teatro.
  *
- * Un livello = un fondale, sempre lo stesso. Il formato migliore è una striscia di 3 fogli A4
- * orizzontali affiancati: mentre Hayy cammina il fondale scorre piano, e dal primo all'ultimo passo
- * del livello si vede tutto il disegno, da sinistra a destra (alba a sinistra, spiaggia a destra).
- * Con un foglio solo il disegno si ripete a specchio, così i bordi combaciano.
+ * Un livello = un fondale, sempre lo stesso. Il formato migliore è una STRISCIA di 5 fogli A4
+ * orizzontali in fila (148,5 x 21 cm): copre tutto il livello alla stessa scala del gioco e scorre
+ * insieme al mondo. La guida da stampare (strumenti/guida_striscia.py) mostra dove cadono
+ * i capitoli della storia e gli oggetti del gioco.
+ * Strisce più corte scorrono più piano; con un foglio solo il disegno si ripete a specchio.
  * Davanti restano, disegnati dal codice, il sentiero, i personaggi, gli oggetti e il primo piano.
  *
  * La carta bianca diventa trasparente: dove il ragazzo non ha colorato si vede il cielo animato
@@ -22,7 +23,7 @@
   window.FONDALI = {
     livello1: {
       file: null,               /* per esempio "assets/fondali/livello1.png" */
-      alto: 60,                 /* dove comincia il disegno (0 = cima dello schermo, 1000 = fondo) */
+      alto: 140,                /* dove comincia il disegno (0 = cima dello schermo, 1000 = fondo) */
       basso: 805,               /* dove finisce: appena sotto la linea su cui camminano i personaggi */
       sostituisce: ["isole", "mare", "giungla"]  /* strati del codice che il disegno prende il posto di */
     }
@@ -217,6 +218,9 @@
       var cfg = stato.cfg, alto = cfg.alto === undefined ? 60 : cfg.alto, basso = cfg.basso === undefined ? 805 : cfg.basso;
       var h = basso - alto;
       var w = stato.img.width * h / stato.img.height;
+      /* striscia lunga quanto il livello (o di più): si allarga esattamente al livello e scorre con il mondo,
+         così ciò che è disegnato a metà striscia sta a metà livello (vedi la guida da stampare) */
+      if (w > larghezza) { h = h * larghezza / w; w = larghezza; alto = basso - h; }
       var img = tinta(p, ora);
       if (w >= vw * 1.05) {
         /* fondale lungo (più fogli affiancati): scorre in modo che all'inizio del livello

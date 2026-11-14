@@ -12,7 +12,7 @@ Torna a: [indice dei livelli](README.md) · Storia: [opera](../didattica/storie/
 | **Passi della roadmap** | B1.1-B1.6, R1.1 |
 | **Ruolo nel gioco** | Tutorial: si impara a muoversi, a osservare e a usare il quaderno |
 | **Chi lo progetta** | Noi, completo prima della sessione 1 |
-| **Stato** | **Fatto, versione 4** (14 novembre 2026): prologo con cartina, capitoli del libro con "Sei qui", album di carte, inventario, parole in arabo con Absal, testi rivisti e più corti |
+| **Stato** | **Fatto, versione 5** (14 novembre 2026): si legge per andare avanti (tempo di lettura e 16 domande di comprensione), 8 spiegazioni a schede con schemi, mondo a inchiostro con colore solo dove conta, striscia del fondale con guida da stampare |
 | **Codice** | `js/livello1.js` (tappe), `js/testi-it.js` (testi), `js/arte.js` (disegni), `js/mondo.js` (motore) |
 
 ## 2. Ambientazione
@@ -44,6 +44,21 @@ Regola: **si capisce facendo**. Il testo è una riga in basso; in alto, una fras
 Prima di ogni tappa si chiude il sipario e si apre il **capitolo**: icona grande, "Nel libro" (2-3 frasi brevi, solo ciò che il libro racconta davvero), "▶" (cosa si fa nel gioco) e il filo dei 9 capitoli con **Sei qui**. Il filo si può riaprire in ogni momento con il bottone del libro in alto.
 
 Il **prologo** è fatto di 5 immagini con una frase ciascuna: la cartina di Al-Andalus, Ibn Tufayl che scrive, la rotta fino all'isola (immaginaria) vicino all'India, la gazzella e il neonato, "Ora Hayy sei tu!".
+
+### Spiegazioni con schema (prima di ogni carta)
+
+| Carta | Schema | Domanda per andare avanti |
+| --- | --- | --- |
+| B1.1 Ogni parte ha un compito | il corpo con cervello, polmoni, cuore, stomaco, muscoli | Che cosa fa il cuore? |
+| B1.2 Lavorano insieme | la catena muscoli → respiro → cuore → calore → sudore | Perché il cuore accelera quando corri? |
+| B1.3 Messaggi veloci | occhio → nervo → cervello → nervo → mano, 0,2 s | Chi decide di muovere la mano? |
+| B1.6 Misura più volte | tre barre e la media | Perché si misura più volte? |
+| R1.1 Il cuore non si ferma | 100.000 battiti al giorno, anche di notte | Quando si ferma il cuore di una persona viva? |
+| B1.4 Messaggi lenti | due strade: nervi (veloci, brevi) e sangue (lenti, lunghi) | Dopo uno spavento il cuore resta veloce. Perché? |
+| B1.5 Sempre 37 gradi | il termostato: caldo → sudi, freddo → tremi | Se hai molto caldo, il corpo… |
+| (ponte al livello 2) | fuoco e corpo: aria + cibo = energia | A che cosa serve l'aria al corpo? |
+
+Ogni capitolo della storia ha anche la sua domanda (per esempio: "Chi cresce Hayy?").
 
 ### Absal insegna le parole
 

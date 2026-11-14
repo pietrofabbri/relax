@@ -86,7 +86,8 @@
         ["voce", I.voce, !window.Voce.disponibile],
         ["suoni", I.suoni],
         ["vibrazione", I.vibrazione, !navigator.vibrate],
-        ["movimentoRidotto", I.movimentoRidotto]
+        ["movimentoRidotto", I.movimentoRidotto],
+        ["mondoAColori", I.mondoAColori]
       ].forEach(function (op) {
         if (op[2]) return;
         var etichetta = document.createElement("label");
@@ -143,6 +144,7 @@
     window.Didascalia.prepara();
     window.Quaderno.carica();
     window.Mondo.prepara();
+    window.Salvataggio.applica();
     window.Livello1.carica();
 
     document.getElementById("btn-storia").addEventListener("click", function () {

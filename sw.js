@@ -1,5 +1,5 @@
 /* Service worker: conserva i file del gioco per giocare anche senza connessione. */
-var VERSIONE = "respira-v5";
+var VERSIONE = "respira-v7";
 var FILE = [
   "./",
   "index.html",
@@ -12,6 +12,7 @@ var FILE = [
   "js/pannello.js",
   "js/icone.js",
   "js/cartina.js",
+  "js/schemi.js",
   "js/storia.js",
   "js/didascalia.js",
   "js/arte.js",

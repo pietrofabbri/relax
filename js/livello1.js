@@ -73,7 +73,12 @@
     var pg = T.pagine[chiave];
     var testo = pg.testo;
     Object.keys(sostituzioni || {}).forEach(function (k) { testo = testo.replace("{" + k + "}", sostituzioni[k]); });
-    return Q.aggiungi({ id: chiave, titolo: pg.titolo, testo: testo, roadmap: pg.roadmap, icona: pg.icona });
+    /* prima la spiegazione a schede (con domanda), poi la carta come premio */
+    var sp = T.spiegazioni && T.spiegazioni[chiave];
+    var prima = sp ? window.Storia.spiega(sp) : Promise.resolve();
+    return prima.then(function () {
+      return Q.aggiungi({ id: chiave, titolo: pg.titolo, testo: testo, roadmap: pg.roadmap, icona: pg.icona });
+    });
   }
 
   /* Imposta l'attività corrente e risolve quando l'attività chiama fine(). */
@@ -155,7 +160,6 @@
 
   function disegna(ctx, p, tempo, camX, vw) {
     var visibile = function (x, m) { return x > camX - (m || 400) && x < camX + vw + (m || 400); };
-    disegnaSemi(ctx, tempo, visibile);
 
     /* rifugio di Hayy */
     if (visibile(150)) A.roccia(ctx, p, 120, SUOLO - 20, 360, 230, 11);
@@ -171,24 +175,6 @@
     if (visibile(an.uccello.x)) A.uccello(ctx, p, an.uccello.x, SUOLO - 130, tempo, false);
     if (visibile(an.tartaruga.x)) A.tartaruga(ctx, p, an.tartaruga.x, SUOLO + 6, tempo);
 
-    /* anelli che indicano cosa si può toccare */
-    if (progressi.tappa === "animali") {
-      ["capra", "uccello", "tartaruga"].forEach(function (k) {
-        if (an[k].fatto || mondo.oggetto) return;
-        var y = k === "uccello" ? SUOLO - 160 : SUOLO - 80;
-        anelloInvito(ctx, an[k].x, y, tempo);
-      });
-    }
-    if (mondo.evidenzia) {
-      var e = mondo.evidenzia;
-      ctx.strokeStyle = "rgba(255,240,180," + (0.6 + Math.sin(tempo * 6) * 0.3) + ")";
-      ctx.lineWidth = 4;
-      ctx.setLineDash([10, 8]);
-      ctx.beginPath();
-      ctx.arc(e.x, e.y, e.r + Math.sin(tempo * 4) * 4, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.setLineDash([]);
-    }
 
     /* ostacoli della corsa */
     mondo.ostacoli.forEach(function (o, i) {
@@ -204,7 +190,6 @@
 
     /* grotta, sasso, tomba */
     if (visibile(mondo.grottaX, 600)) A.grotta(ctx, p, mondo.grottaX, SUOLO - 4, mondo.grottaLuce, tempo);
-    if (mondo.grottaLuce > 0.3) A.fiamma(ctx, mondo.grottaX, SUOLO - 20, 0.9, tempo, 1);
     if (visibile(mondo.sasso.x)) A.roccia(ctx, p, mondo.sasso.x, SUOLO + 6, 110, 64, 33);
     if (mondo.tomba) {
       ctx.fillStyle = A.rgba(A.mescola(p.terra, [60, 50, 40], 0.3));
@@ -212,20 +197,10 @@
       ctx.ellipse(3420 - 150, SUOLO + 2, 110, 30, 0, Math.PI, 0);
       ctx.fill();
     }
-    mondo.fiori.forEach(function (f) { fiore(ctx, f.x, SUOLO - 2, f.s, f.c, tempo); });
 
     /* canne e fuoco */
     if (visibile(mondo.canneX, 500)) {
       A.canne(ctx, p, mondo.canneX, SUOLO - 6, tempo, false);
-      if (mondo.canneFuoco) {
-        A.fiamma(ctx, mondo.canneX - 90, SUOLO - 30, 1.8, tempo, 1);
-        A.fiamma(ctx, mondo.canneX + 20, SUOLO - 40, 2.2, tempo, 2);
-        A.fiamma(ctx, mondo.canneX + 120, SUOLO - 25, 1.6, tempo, 3);
-      }
-    }
-    if (mondo.bastone.visibile) {
-      capsulaBastone(ctx, mondo.bastone.x, SUOLO + 4);
-      anelloInvito(ctx, mondo.bastone.x, SUOLO - 10, tempo);
     }
 
     /* capra che dorme vicino alla grotta */
@@ -241,29 +216,8 @@
       A.cerva(ctx, p, cerva, tempo);
       ctx.globalAlpha = 1;
     }
-    mondo.anelli.forEach(function (a) {
-      ctx.strokeStyle = "rgba(255,150,150," + (0.7 * (1 - a.t / 1.6)) + ")";
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.arc(a.x, a.y, 20 + a.t * 120, 0, Math.PI * 2);
-      ctx.stroke();
-    });
+    hayy.strato = "corpo";
     A.persona(ctx, p, hayy, tempo);
-    if (mondo.parola && absal.visibile) fumetto(ctx, absal.x - 40, SUOLO - 330, mondo.parola, tempo);
-
-    /* cocco che cade */
-    if (mondo.cocco && mondo.cocco.stato !== "preso") A.cocco(ctx, p, mondo.cocco.x, mondo.cocco.y, 16);
-
-    /* oggetto da trascinare */
-    if (mondo.oggetto) disegnaOggetto(ctx, p, mondo.oggetto, tempo);
-
-    /* etichette sopra Hayy */
-    mondo.etichette.forEach(function (e, i) {
-      pillola(ctx, e.testo, hayy.x + 90, SUOLO - 280 - i * 46 - e.dy, e.colore, Math.min(1, e.vita));
-    });
-    mondo.temperature.forEach(function (e) {
-      pillola(ctx, e.testo, e.x, e.y - Math.min(30, e.t * 60), e.colore, Math.min(1, e.t * 3));
-    });
   }
 
   function anelloInvito(ctx, x, y, tempo) {
@@ -305,6 +259,75 @@
     ctx.beginPath();
     ctx.ellipse(x + 58, y - 24, 10, 21, 0, 0, Math.PI * 2);
     ctx.fill();
+  }
+
+
+  /*
+   * Lo strato a COLORI, sopra al mondo a inchiostro: solo ciò che conta.
+   * Fuoco, cuore e organi, cose da toccare, fiori, semi di luce, fumetti.
+   * soloCaldo: durante la vista del calore si ridisegnano solo le fiamme.
+   */
+  function disegnaColore(ctx, p, tempo, camX, vw, soloCaldo) {
+    var visibile = function (x, m) { return x > camX - (m || 400) && x < camX + vw + (m || 400); };
+    var an = mondo.animali;
+    if (mondo.grottaLuce > 0.3) A.fiamma(ctx, mondo.grottaX, SUOLO - 20, 0.9, tempo, 1);
+    if (visibile(mondo.canneX, 500)) {
+      if (mondo.canneFuoco) {
+        A.fiamma(ctx, mondo.canneX - 90, SUOLO - 30, 1.8, tempo, 1);
+        A.fiamma(ctx, mondo.canneX + 20, SUOLO - 40, 2.2, tempo, 2);
+        A.fiamma(ctx, mondo.canneX + 120, SUOLO - 25, 1.6, tempo, 3);
+      }
+    }
+    hayy.strato = "colore";
+    A.persona(ctx, p, hayy, tempo);
+    hayy.strato = "corpo";
+    if (soloCaldo) return;
+    disegnaSemi(ctx, tempo, visibile);
+    /* anelli che indicano cosa si può toccare */
+    if (progressi.tappa === "animali") {
+      ["capra", "uccello", "tartaruga"].forEach(function (k) {
+        if (an[k].fatto || mondo.oggetto) return;
+        var y = k === "uccello" ? SUOLO - 160 : SUOLO - 80;
+        anelloInvito(ctx, an[k].x, y, tempo);
+      });
+    }
+    if (mondo.evidenzia) {
+      var e = mondo.evidenzia;
+      ctx.strokeStyle = "rgba(255,240,180," + (0.6 + Math.sin(tempo * 6) * 0.3) + ")";
+      ctx.lineWidth = 4;
+      ctx.setLineDash([10, 8]);
+      ctx.beginPath();
+      ctx.arc(e.x, e.y, e.r + Math.sin(tempo * 4) * 4, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+    mondo.fiori.forEach(function (f) { fiore(ctx, f.x, SUOLO - 2, f.s, f.c, tempo); });
+    if (mondo.bastone.visibile) {
+      capsulaBastone(ctx, mondo.bastone.x, SUOLO + 4);
+      anelloInvito(ctx, mondo.bastone.x, SUOLO - 10, tempo);
+    }
+    mondo.anelli.forEach(function (a) {
+      ctx.strokeStyle = "rgba(255,150,150," + (0.7 * (1 - a.t / 1.6)) + ")";
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(a.x, a.y, 20 + a.t * 120, 0, Math.PI * 2);
+      ctx.stroke();
+    });
+    if (mondo.parola && absal.visibile) fumetto(ctx, absal.x - 40, SUOLO - 330, mondo.parola, tempo);
+
+    /* cocco che cade */
+    if (mondo.cocco && mondo.cocco.stato !== "preso") A.cocco(ctx, p, mondo.cocco.x, mondo.cocco.y, 16);
+
+    /* oggetto da trascinare */
+    if (mondo.oggetto) disegnaOggetto(ctx, p, mondo.oggetto, tempo);
+
+    /* etichette sopra Hayy */
+    mondo.etichette.forEach(function (e, i) {
+      pillola(ctx, e.testo, hayy.x + 90, SUOLO - 280 - i * 46 - e.dy, e.colore, Math.min(1, e.vita));
+    });
+    mondo.temperature.forEach(function (e) {
+      pillola(ctx, e.testo, e.x, e.y - Math.min(30, e.t * 60), e.colore, Math.min(1, e.t * 3));
+    });
   }
 
   /* fumetto con la parola in arabo, la pronuncia e (dopo la risposta) l'italiano */
@@ -1024,7 +1047,7 @@
           /* il fuoco respira: ponte verso il livello 2 */
           return S.indovina(D.indovinaFuoco, [{ icona: "🌬️", testo: D.aria }, { icona: "💧", testo: D.acqua }], 0);
         }).then(function () {
-          return Did.mostra(D.rispostaFuoco);
+          return window.Storia.spiega(T.spiegazioni.fuocoAria);
         });
       });
     }
@@ -1307,6 +1330,7 @@
         spiaggiaDa: 4300,
         /* Quando arriverà la scansione del disegno del ragazzo, si potrà aggiungere qui come strato. */
         disegna: disegna,
+        disegnaColore: disegnaColore,
         aggiorna: aggiorna,
         luci: luci,
         calore: calore

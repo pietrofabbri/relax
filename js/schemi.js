@@ -1,0 +1,147 @@
+/*
+ * Schemi per le spiegazioni: disegni a inchiostro su carta, con un solo colore d'accento.
+ * Le parti compaiono una dopo l'altra (classe "passo", con ritardo), così l'occhio segue l'ordine giusto.
+ * Schemi.svg(nome, etichette) — le etichette arrivano da testi-it.js (TESTI.schemi), per poterle tradurre.
+ */
+(function () {
+  "use strict";
+
+  var INK = "#2b2622", CARTA = "#fbf6ea";
+  var k = 0;
+  function passo(contenuto, ritardo) {
+    return '<g class="passo" style="animation-delay:' + (ritardo !== undefined ? ritardo : (k++ * 0.45)).toFixed(2) + 's">' + contenuto + "</g>";
+  }
+  function testo(x, y, t, o) {
+    o = o || {};
+    return '<text x="' + x + '" y="' + y + '" text-anchor="' + (o.ancora || "middle") + '" font-size="' + (o.dim || 26) +
+      '" font-weight="' + (o.peso || 800) + '" fill="' + (o.colore || INK) + '" font-family="Trebuchet MS, sans-serif">' + t + "</text>";
+  }
+  function freccia(x1, y1, x2, y2, colore, curva) {
+    var mx = (x1 + x2) / 2 + (curva || 0), my = (y1 + y2) / 2 - (curva || 0) * 0.3;
+    var a = Math.atan2(y2 - my, x2 - mx), L = 16;
+    return '<path d="M' + x1 + " " + y1 + "Q" + mx + " " + my + " " + x2 + " " + y2 + '" stroke="' + (colore || INK) + '" stroke-width="5" fill="none" stroke-linecap="round"/>' +
+      '<path d="M' + x2 + " " + y2 + "L" + (x2 - L * Math.cos(a - 0.45)) + " " + (y2 - L * Math.sin(a - 0.45)) + "M" + x2 + " " + y2 + "L" +
+      (x2 - L * Math.cos(a + 0.45)) + " " + (y2 - L * Math.sin(a + 0.45)) + '" stroke="' + (colore || INK) + '" stroke-width="5" stroke-linecap="round"/>';
+  }
+  function tondo(x, y, r, icona, colore) {
+    return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + CARTA + '" stroke="' + (colore || INK) + '" stroke-width="5"/>' +
+      '<g transform="translate(' + (x - r * 0.62) + "," + (y - r * 0.62) + ") scale(" + (r * 1.24 / 64) + ')">' + window.Icone.svgInterno(icona) + "</g>";
+  }
+  /* sagoma di una persona, a inchiostro */
+  function sagoma(x, y, s) {
+    return '<g transform="translate(' + x + "," + y + ") scale(" + s + ')" fill="' + CARTA + '" stroke="' + INK + '" stroke-width="4" stroke-linejoin="round">' +
+      '<circle cx="0" cy="-150" r="30"/>' +
+      '<path d="M-42 -110 Q0 -122 42 -110 L50 -10 Q0 4 -50 -10 Z"/>' +
+      '<path d="M-42 -104 L-70 -20 M42 -104 L70 -20" fill="none" stroke-width="16" stroke-linecap="round"/>' +
+      '<path d="M-42 -104 L-70 -20 M42 -104 L70 -20" fill="none" stroke="' + CARTA + '" stroke-width="8" stroke-linecap="round"/>' +
+      '<path d="M-22 -6 L-28 110 M22 -6 L28 110" fill="none" stroke-width="20" stroke-linecap="round"/>' +
+      '<path d="M-22 -6 L-28 110 M22 -6 L28 110" fill="none" stroke="' + CARTA + '" stroke-width="12" stroke-linecap="round"/></g>';
+  }
+
+  var S = {
+    /* le parti del corpo e i loro compiti */
+    corpo: function (L) {
+      var h = passo(sagoma(400, 230, 1.15), 0);
+      var parti = [
+        ["cervello", 400, 58, 560, 50, "#c4421a"],
+        ["polmoni", 378, 130, 210, 110, "#4a90e2"],
+        ["cuore", 412, 132, 600, 150, "#e5484d"],
+        ["stomaco", 400, 185, 220, 215, "#2fb27a"],
+        ["muscoli", 432, 300, 590, 300, "#9a6a2a"]
+      ];
+      parti.forEach(function (q, i) {
+        var g = '<circle cx="' + q[1] + '" cy="' + q[2] + '" r="13" fill="' + q[5] + '" stroke="' + INK + '" stroke-width="3"/>' +
+          '<path d="M' + q[1] + " " + q[2] + "L" + q[3] + " " + q[4] + '" stroke="' + INK + '" stroke-width="2.5" stroke-dasharray="6 5"/>' +
+          testo(q[3] + (q[3] > 400 ? 12 : -12), q[4] - 6, L[q[0]], { ancora: q[3] > 400 ? "start" : "end", colore: q[5] }) +
+          testo(q[3] + (q[3] > 400 ? 12 : -12), q[4] + 22, L[q[0] + "Fa"], { ancora: q[3] > 400 ? "start" : "end", dim: 20, peso: 600 });
+        h += passo(g, 0.6 + i * 0.55);
+      });
+      return h;
+    },
+
+    /* corsa: tutto cambia insieme, a catena */
+    catena: function (L) {
+      var nodi = [["corsa", 130, 120, L.muscoli], ["polmoni", 400, 70, L.respiro], ["cuore", 670, 120, L.cuore], ["fuoco", 560, 300, L.calore], ["goccia", 240, 300, L.sudore]];
+      var h = "", icone = { corsa: "corsa", polmoni: "ingranaggi", cuore: "cuore", fuoco: "fuoco", goccia: "goccia" };
+      nodi.forEach(function (n, i) {
+        var g = tondo(n[1], n[2], 48, icone[n[0]] === "ingranaggi" ? "polmoni" : icone[n[0]]) + testo(n[1], n[2] + 80, n[3], { dim: 24 });
+        h += passo(g, i * 0.6);
+        if (i < nodi.length - 1) {
+          var m = nodi[i + 1];
+          h += passo(freccia(n[1] + (m[1] - n[1]) * 0.25, n[2] + (m[2] - n[2]) * 0.25, n[1] + (m[1] - n[1]) * 0.72, n[2] + (m[2] - n[2]) * 0.72, "#c4421a", 20), i * 0.6 + 0.3);
+        }
+      });
+      h += passo(testo(400, 210, L.insieme, { dim: 30, colore: "#c4421a" }), 3.2);
+      return h;
+    },
+
+    /* il messaggio veloce: occhio, nervo, cervello, nervo, mano */
+    riflesso: function (L) {
+      var h = "", xs = [90, 400, 710];
+      h += passo(tondo(xs[0], 170, 62, "occhio") + testo(xs[0], 270, L.occhio), 0);
+      h += passo('<path d="M152 170 C230 120 290 220 338 170" stroke="#f2a01b" stroke-width="7" fill="none" stroke-dasharray="10 8"/>' + testo(245, 125, L.nervo, { dim: 20, colore: "#b0600a" }) + freccia(310, 178, 338, 170, "#f2a01b"), 0.6);
+      h += passo(tondo(xs[1], 170, 62, "cervello") + testo(xs[1], 270, L.cervello), 1.1);
+      h += passo('<path d="M462 170 C510 220 570 120 648 170" stroke="#f2a01b" stroke-width="7" fill="none" stroke-dasharray="10 8"/>' + testo(555, 125, L.nervo, { dim: 20, colore: "#b0600a" }) + freccia(620, 162, 648, 170, "#f2a01b"), 1.7);
+      h += passo(tondo(xs[2], 170, 62, "mano") + testo(xs[2], 270, L.mano), 2.2);
+      h += passo('<rect x="230" y="310" width="340" height="56" rx="28" fill="#ffd34d" stroke="' + INK + '" stroke-width="4"/>' + testo(400, 348, L.tempo, { dim: 28 }), 2.9);
+      return h;
+    },
+
+    /* misurare più volte: tre barre e la media */
+    media: function (L) {
+      var h = "", v = [310, 240, 275], x0 = 230;
+      v.forEach(function (n, i) {
+        var hh = n * 0.8;
+        h += passo('<rect x="' + (x0 + i * 130) + '" y="' + (340 - hh) + '" width="90" height="' + hh + '" rx="10" fill="#f2b84b" stroke="' + INK + '" stroke-width="4"/>' +
+          testo(x0 + i * 130 + 45, 330 - hh, n + " ms", { dim: 22 }), i * 0.5);
+      });
+      var m = 275 * 0.8;
+      h += passo('<path d="M200 ' + (340 - m) + 'H620" stroke="#c4421a" stroke-width="5" stroke-dasharray="14 10"/>' + testo(640, 345 - m, L.media, { ancora: "start", colore: "#c4421a" }), 1.7);
+      h += passo('<path d="M200 340H620" stroke="' + INK + '" stroke-width="4"/>', 0);
+      return h;
+    },
+
+    /* il cuore non si ferma mai */
+    cuoreGiorno: function (L) {
+      var h = passo('<g class="batte-svg">' + tondo(250, 190, 110, "cuore", "#e5484d") + "</g>", 0);
+      h += passo(testo(560, 150, L.numero, { dim: 54, colore: "#e5484d" }) + testo(560, 195, L.alGiorno, { dim: 28 }), 0.8);
+      h += passo(tondo(500, 290, 40, "luna") + testo(620, 300, L.ancheDormi, { dim: 24, ancora: "start" }), 1.6);
+      return h;
+    },
+
+    /* due strade per i messaggi: nervi (veloci) e sangue (lenti) */
+    dueStrade: function (L) {
+      var h = "";
+      h += passo('<rect x="30" y="30" width="350" height="330" rx="26" fill="#fff4cc" stroke="' + INK + '" stroke-width="4"/>' + tondo(205, 120, 58, "fulmine") +
+        testo(205, 220, L.nervi, { dim: 30 }) + testo(205, 262, L.veloce, { dim: 24, peso: 600 }) + testo(205, 300, L.breve, { dim: 24, peso: 600 }), 0);
+      h += passo('<rect x="420" y="30" width="350" height="330" rx="26" fill="#ffe1e1" stroke="' + INK + '" stroke-width="4"/>' + tondo(595, 120, 58, "goccia") +
+        testo(595, 220, L.sangue, { dim: 30 }) + testo(595, 262, L.lento, { dim: 24, peso: 600 }) + testo(595, 300, L.dura, { dim: 24, peso: 600 }), 1);
+      return h;
+    },
+
+    /* il termostato del corpo */
+    termostato: function (L) {
+      var h = passo(tondo(400, 170, 80, "termometro") + testo(400, 290, "37 °C", { dim: 44, colore: "#c4421a" }), 0);
+      h += passo(freccia(300, 170, 180, 170, "#e5484d") + testo(150, 110, L.caldo, { dim: 28, colore: "#e5484d" }) + tondo(130, 200, 44, "sole") + testo(130, 280, L.sudi, { dim: 24 }), 0.9);
+      h += passo(freccia(500, 170, 620, 170, "#4a90e2") + testo(650, 110, L.freddo, { dim: 28, colore: "#4a90e2" }) + tondo(670, 200, 44, "fiocco") + testo(670, 280, L.tremi, { dim: 24 }), 1.7);
+      h += passo(testo(400, 360, L.sempre, { dim: 26 }), 2.5);
+      return h;
+    },
+
+    /* fuoco e corpo: tutti e due usano l'aria per "bruciare" */
+    fuocoAria: function (L) {
+      var h = passo(tondo(170, 170, 80, "fuoco") + testo(170, 290, L.legna, { dim: 24 }), 0);
+      h += passo(testo(400, 120, "+", { dim: 60 }) + tondo(400, 190, 56, "polmoni") + testo(400, 280, L.aria, { dim: 26, colore: "#4a90e2" }), 0.8);
+      h += passo(freccia(470, 190, 560, 190, INK) + tondo(640, 170, 80, "cuore") + testo(640, 290, L.corpo, { dim: 24 }), 1.6);
+      h += passo(testo(400, 360, L.energia, { dim: 26, colore: "#c4421a" }), 2.4);
+      return h;
+    }
+  };
+
+  window.Schemi = {
+    svg: function (nome, etichette) {
+      k = 0;
+      return '<svg class="schema" viewBox="0 0 800 400" aria-hidden="true">' + (S[nome] ? S[nome](etichette || {}) : "") + "</svg>";
+    }
+  };
+})();

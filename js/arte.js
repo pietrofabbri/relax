@@ -21,6 +21,8 @@
   }
 
   /* Quattro momenti della giornata: alba, giorno, tramonto, notte. */
+  var INCHIOSTRO = "#1d1815";
+
   var MOMENTI = [
     { cieloAlto: "#2d3e6b", cieloMezzo: "#c27d8c", cieloBasso: "#f7c38c", sole: "#ffd59a", soleY: 430,
       mareAlto: "#3d5d80", mareBasso: "#d39581", lontano: "#7d7395", medio: "#3f5560", medioScuro: "#2c3d48",
@@ -66,25 +68,32 @@
       Math.sin(x * 0.013 + seme * 0.7) * ampiezza * 0.15;
   }
 
+  /* spessore in più per il contorno a inchiostro (si disegna prima in nero, più grosso) */
+  var extra = 0;
+
   function capsula(ctx, x1, y1, x2, y2, spessore, colore) {
     ctx.beginPath();
     ctx.moveTo(x1, y1);
     ctx.lineTo(x2, y2);
-    ctx.lineWidth = spessore;
+    ctx.lineWidth = spessore + extra;
     ctx.lineCap = "round";
     ctx.strokeStyle = colore;
     ctx.stroke();
   }
 
   /* arto a due segmenti: anca/spalla -> ginocchio/gomito -> piede/mano */
-  function arto(ctx, x, y, a1, l1, a2, l2, spessore, colore) {
+  function puntoArto(x, y, a1, l1, a2, l2) {
     var x1 = x + Math.sin(a1) * l1, y1 = y + Math.cos(a1) * l1;
-    var x2 = x1 + Math.sin(a1 + a2) * l2, y2 = y1 + Math.cos(a1 + a2) * l2;
+    return [x1, y1, x1 + Math.sin(a1 + a2) * l2, y1 + Math.cos(a1 + a2) * l2];
+  }
+
+  function arto(ctx, x, y, a1, l1, a2, l2, spessore, colore) {
+    var q = puntoArto(x, y, a1, l1, a2, l2), x1 = q[0], y1 = q[1], x2 = q[2], y2 = q[3];
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.lineTo(x1, y1);
     ctx.lineTo(x2, y2);
-    ctx.lineWidth = spessore;
+    ctx.lineWidth = spessore + extra;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.strokeStyle = colore;
@@ -810,7 +819,7 @@
      */
     persona: function (ctx, p, o, tempo) {
       var x = o.x, y = o.y || 790;
-      ombra(ctx, x, y, 70, 0.32);
+      if (o.strato !== "colore") ombra(ctx, x, y, 70, 0.32);
       ctx.save();
       ctx.translate(x, y - (o.salto || 0));
       ctx.scale(o.verso || 1, 1);
@@ -826,6 +835,52 @@
       var respiro = Math.sin(tempo * (o.respiro || 1.6)) * 2;
       var fianco = posa === "siede" || posa === "inginocchiato";
       var hipY = fianco ? -70 : -96 - Math.abs(Math.sin(ph)) * (posa === "corre" ? 8 : 3);
+      /* braccio davanti: serve anche allo strato a colori (fiamma in mano) */
+      var braccioF = posa === "corre" ? Math.sin(ph + Math.PI) * 1.1 : posa === "cammina" ? Math.sin(ph + Math.PI) * 0.4 : -0.1;
+      var gomitoF = -0.5;
+      if (o.equip && (o.equip.bastone || o.equip.fuoco)) { braccioF = -0.9; gomitoF = -0.9; }
+      if (o.ripara) { braccioF = -1.6; gomitoF = -1.2; }
+      if (posa === "inginocchiato") { braccioF = -0.7; gomitoF = -0.6; }
+
+      /* strato a colori: solo organi (vista ai raggi X) e fiamma, sopra al mondo in bianco e nero */
+      if (o.strato === "colore") {
+        var sp0 = hipY - 72 + respiro * 0.3;
+        if (o.raggiX) organi(sp0);
+        if (o.equip && o.equip.fuoco) {
+          var m0 = puntoArto(6, sp0, braccioF, 38, gomitoF, 36);
+          Arte.fiamma(ctx, m0[2] + 20, m0[3] - 66, 0.45 * (o.fuocoForza === undefined ? 1 : o.fuocoForza), tempo, 3);
+        }
+        ctx.restore();
+        return;
+      }
+
+      function organi(spalla) {
+        var by = spalla + 18;
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        var calore = o.calore || 0;
+        if (calore > 0.05) {
+          var gc = ctx.createRadialGradient(0, by + 10, 4, 0, by + 10, 90);
+          gc.addColorStop(0, "rgba(255,120,60," + (0.35 * calore) + ")");
+          gc.addColorStop(1, "rgba(255,120,60,0)");
+          ctx.fillStyle = gc;
+          ctx.fillRect(-90, by - 80, 180, 180);
+        }
+        var polmoni = 1 + Math.sin(tempo * (o.respiro || 1.6)) * 0.12;
+        ctx.fillStyle = "rgba(140,200,255,0.55)";
+        ctx.beginPath();
+        ctx.ellipse(-7, by, 7 * polmoni, 15 * polmoni, 0.1, 0, Math.PI * 2);
+        ctx.ellipse(9, by, 7 * polmoni, 15 * polmoni, -0.1, 0, Math.PI * 2);
+        ctx.fill();
+        var bpm = o.cuore || 70;
+        var fase = (tempo * bpm / 60) % 1;
+        var pulsa = 1 + Math.max(0, 1 - fase * 6) * 0.45;
+        ctx.fillStyle = "rgba(255,80,90,0.9)";
+        ctx.beginPath();
+        ctx.arc(4, by + 8, 6 * pulsa, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
 
       function figura(dx, dy, colore, retro, capelli) {
         retro = retro || colore; capelli = capelli || colore;
@@ -935,7 +990,8 @@
       }
 
       /* bordo di luce: la figura disegnata in chiaro e spostata, poi la figura scura sopra */
-      figura(-2.5, -1.5, luce);
+      if (Arte.inchiostro) { extra = 6; figura(0, 0, INCHIOSTRO); extra = 0; }
+      else figura(-2.5, -1.5, luce);
       var spalla = figura(0, 0, pelle, pelleScura, capelliCol);
       /* perizoma di corteccia */
       if (!o.veste) {
@@ -978,41 +1034,10 @@
           ctx.fill();
         }
       }
-      /* corpo trasparente: cuore, polmoni, calore */
-      if (o.raggiX) {
-        var by = spalla + 18;
-        ctx.save();
-        ctx.globalCompositeOperation = "lighter";
-        var calore = o.calore || 0;
-        if (calore > 0.05) {
-          var gc = ctx.createRadialGradient(0, by + 10, 4, 0, by + 10, 90);
-          gc.addColorStop(0, "rgba(255,120,60," + (0.35 * calore) + ")");
-          gc.addColorStop(1, "rgba(255,120,60,0)");
-          ctx.fillStyle = gc;
-          ctx.fillRect(-90, by - 80, 180, 180);
-        }
-        var polmoni = 1 + Math.sin(tempo * (o.respiro || 1.6)) * 0.12;
-        ctx.fillStyle = "rgba(140,200,255,0.55)";
-        ctx.beginPath();
-        ctx.ellipse(-7, by, 7 * polmoni, 15 * polmoni, 0.1, 0, Math.PI * 2);
-        ctx.ellipse(9, by, 7 * polmoni, 15 * polmoni, -0.1, 0, Math.PI * 2);
-        ctx.fill();
-        var bpm = o.cuore || 70;
-        var fase = (tempo * bpm / 60) % 1;
-        var pulsa = 1 + Math.max(0, 1 - fase * 6) * 0.45;
-        ctx.fillStyle = "rgba(255,80,90,0.9)";
-        ctx.beginPath();
-        ctx.arc(4, by + 8, 6 * pulsa, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      }
+      if (o.raggiX && o.strato !== "corpo") organi(spalla);
       /* braccio davanti, con gli attrezzi */
-      var braccio = posa === "corre" ? Math.sin(ph + Math.PI) * 1.1 : posa === "cammina" ? Math.sin(ph + Math.PI) * 0.4 : -0.1;
-      var gomito = -0.5;
-      if (o.equip && (o.equip.bastone || o.equip.fuoco)) { braccio = -0.9; gomito = -0.9; }
-      if (o.ripara) { braccio = -1.6; gomito = -1.2; }
-      if (posa === "inginocchiato") { braccio = -0.7; gomito = -0.6; }
-      var mano = arto(ctx, 6, spalla, braccio, 38, gomito, 36, 12, pelle);
+      if (Arte.inchiostro) { extra = 6; arto(ctx, 6, spalla, braccioF, 38, gomitoF, 36, 12, INCHIOSTRO); extra = 0; }
+      var mano = arto(ctx, 6, spalla, braccioF, 38, gomitoF, 36, 12, pelle);
       if (o.equip && o.equip.scudo) {
         ctx.save();
         ctx.translate(-14, spalla + 30);
@@ -1034,7 +1059,7 @@
       if (o.equip && (o.equip.bastone || o.equip.fuoco)) {
         var punta = [mano[0] + 20, mano[1] - 70];
         capsula(ctx, mano[0] - 10, mano[1] + 30, punta[0], punta[1], 6, rgba(mescola([120, 85, 50], p.bordo, 0.2)));
-        if (o.equip.fuoco) Arte.fiamma(ctx, punta[0], punta[1] + 4, 0.45 * (o.fuocoForza === undefined ? 1 : o.fuocoForza), tempo, 3);
+        if (o.equip.fuoco && o.strato !== "corpo") Arte.fiamma(ctx, punta[0], punta[1] + 4, 0.45 * (o.fuocoForza === undefined ? 1 : o.fuocoForza), tempo, 3);
       }
       if (o.barba) {
         ctx.fillStyle = capelliCol;
