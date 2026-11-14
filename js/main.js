@@ -14,12 +14,20 @@
 
     P.apri("");
     var el = P.elementi();
+    document.getElementById("pannello").classList.add("titolo");
+    var I = window.Icone;
     var h = document.createElement("h1");
     h.className = "titolo-gioco";
-    h.textContent = G.titolo;
+    h.innerHTML = G.titolo.split("").map(function (c, i) { return '<span style="animation-delay:' + (i * 0.08) + 's">' + c + "</span>"; }).join("");
+    var giro = document.createElement("div");
+    giro.className = "giro-icone";
+    giro.innerHTML = ["cuore", "cervello", "fuoco", "foglia", "barca", "stella"].map(function (n, i) {
+      return '<span style="--i:' + i + '">' + I.svg(n) + "</span>";
+    }).join("");
+    el.testo.appendChild(giro);
     el.testo.appendChild(h);
     el.testo.appendChild(P.paragrafo(G.sottotitolo, "sottotitolo"));
-    el.testo.appendChild(P.paragrafo(G.avviso, "piccolo centrato"));
+    el.testo.appendChild(P.paragrafo(G.avviso, "piccolo centrato avviso-titolo"));
 
     el.azioni.appendChild(P.bottone(G.impostazioni, "secondario", function () {
       impostazioni().then(schermataIniziale);
@@ -37,7 +45,8 @@
         else istruzioniIos().then(schermataIniziale);
       }));
     }
-    var b = P.bottone(giaIniziato ? G.continua : G.inizia, "principale", function () {
+    var b = P.bottone(giaIniziato ? G.continua : G.inizia, "principale grande-gioca", function () {
+      document.getElementById("pannello").classList.remove("titolo");
       suTitolo = false;
       window.App.schermoIntero();
       P.chiudi();
@@ -136,6 +145,12 @@
     window.Mondo.prepara();
     window.Livello1.carica();
 
+    document.getElementById("btn-storia").addEventListener("click", function () {
+      if (!P.aperto()) window.Storia.mostraFilo();
+    });
+    document.querySelectorAll("#inventario .slot").forEach(function (sl) {
+      sl.innerHTML = window.Icone.svg(sl.getAttribute("data-oggetto"));
+    });
     document.getElementById("btn-quaderno").addEventListener("click", function () {
       if (!P.aperto()) window.Quaderno.mostra();
     });
@@ -151,7 +166,7 @@
     window.App.registra();
 
     /* Per i test automatici */
-    window.RESPIRA = { livello: window.Livello1, mondo: window.Mondo, battito: window.Battito, quaderno: window.Quaderno, didascalia: window.Didascalia };
+    window.RESPIRA = { storia: window.Storia, livello: window.Livello1, mondo: window.Mondo, battito: window.Battito, quaderno: window.Quaderno, didascalia: window.Didascalia };
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", avvia);

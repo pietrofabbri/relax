@@ -142,9 +142,23 @@
     },
 
     /* cambio di scena: il cerchio si chiude, compare la tappa, si riapre */
-    sipario: function (numero, titolo, alBuio, x, y) {
+    sipario: function (numero, titolo, alBuio, x, y, attendi) {
       window.Suoni.whoosh();
-      return M.sipario({ numero: String(numero), titolo: titolo, alBuio: alBuio, x: x, y: y, pausa: 1.0 });
-    }
+      return M.sipario({ numero: numero ? String(numero) : "", titolo: titolo, alBuio: alBuio, x: x, y: y, pausa: 0.4, attendi: attendi });
+    },
+
+    /* inventario: gli oggetti di Hayy in alto, con un salto quando arrivano */
+    oggetto: function (nome, si) {
+      var el = document.querySelector('#inventario [data-oggetto="' + nome + '"]');
+      if (!el) return;
+      var prima = el.classList.contains("preso");
+      el.classList.toggle("preso", !!si);
+      if (si && !prima) {
+        el.classList.remove("arriva");
+        void el.offsetWidth;
+        el.classList.add("arriva");
+      }
+    },
+    mostraInventario: function () { document.getElementById("inventario").classList.remove("nascosto"); }
   };
 })();

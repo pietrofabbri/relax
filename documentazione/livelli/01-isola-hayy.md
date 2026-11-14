@@ -12,7 +12,7 @@ Torna a: [indice dei livelli](README.md) · Storia: [opera](../didattica/storie/
 | **Passi della roadmap** | B1.1-B1.6, R1.1 |
 | **Ruolo nel gioco** | Tutorial: si impara a muoversi, a osservare e a usare il quaderno |
 | **Chi lo progetta** | Noi, completo prima della sessione 1 |
-| **Stato** | **Fatto, versione 3** (13 novembre 2026): punti, serie, stelle per tappa, tre "Indovina!", semi di luce, effetti (scosse, zoom, lampi, rallentatore, coriandoli), sipario tra le tappe; il test automatico lo gioca tutto senza errori |
+| **Stato** | **Fatto, versione 4** (14 novembre 2026): prologo con cartina, capitoli del libro con "Sei qui", album di carte, inventario, parole in arabo con Absal, testi rivisti e più corti |
 | **Codice** | `js/livello1.js` (tappe), `js/testi-it.js` (testi), `js/arte.js` (disegni), `js/mondo.js` (motore) |
 
 ## 2. Ambientazione
@@ -28,24 +28,35 @@ Regola: **si capisce facendo**. Il testo è una riga in basso; in alto, una fras
 
 | Tappa | Ora del giorno | Cosa fa il giocatore | Pagina del quaderno |
 | --- | --- | --- | --- |
-| Segui | Alba | Tocca il sentiero e segue la cerva | — |
+| Segui | Alba | Tocca il sentiero e segue la gazzella | — |
 | Animali | Giorno | Tocca capra, uccello, tartaruga: la parte del corpo si illumina (corna, ali, guscio). Poi trascina su Hayy l'oggetto che la imita: bastone, mantello di foglie, scudo di corteccia. Hayy si equipaggia | B1.1 Ogni parte ha un compito |
-| Corsa | Giorno | Corre dietro la cerva e tocca per saltare quattro ostacoli. Il corpo diventa trasparente: cuore che accelera, polmoni che si gonfiano, calore, sudore. Poi si siede e tutto torna giù | B1.2 Le parti lavorano insieme |
+| Corsa | Giorno | Corre dietro la gazzella e tocca per saltare quattro ostacoli. Il corpo diventa trasparente: cuore che accelera, polmoni che si gonfiano, calore, sudore. Poi si siede e tutto torna giù | B1.2 Le parti lavorano insieme |
 | Cocchi | Giorno | Tocca appena un cocco si stacca: tre prove, tempi in millesimi e grafico a barre | B1.3 Messaggi velocissimi · B1.6 Misura più volte |
-| Cerva | Tramonto | Tiene il dito sulla cerva e sente il suo cuore rallentare (anelli e vibrazione) fino a fermarsi. Pianta tre fiori; la cerva sfuma. Il cuore di Hayy resta alto, poi torna giù da solo | R1.1 Il cuore batte sempre · B1.4 Messaggi lenti |
+| Gazzella (tappa `cerva`) | Tramonto | Tiene il dito sulla gazzella e sente il suo cuore rallentare (anelli e vibrazione) fino a fermarsi. Pianta tre fiori; la gazzella sfuma. Il cuore di Hayy resta alto, poi torna giù da solo | R1.1 Il cuore batte sempre · B1.4 Messaggi lenti |
 | Fuoco | Notte | Un fulmine incendia le canne. Tocca il bastone per accenderlo, poi tiene premuto per riparare la fiamma dalle raffiche mentre Hayy la porta alla grotta. Se si spegne, si riaccende | — |
 | Calore | Notte | Accende la vista del calore (bottone con l'occhio) e tocca sasso (18°), capra (39°), sé stesso (37°) | B1.5 Il corpo cerca l'equilibrio |
 | Misura | Notte | Facoltativo: conta il proprio polso per 30 secondi | R1.2 Il mio battito |
 | Alba | Alba | Arriva una barca: va alla spiaggia e incontra Absal | — |
 | Fine | — | Diritto (art. 26) e una domanda aperta | — |
 
+### La storia, capitolo per capitolo
+
+Prima di ogni tappa si chiude il sipario e si apre il **capitolo**: icona grande, "Nel libro" (2-3 frasi brevi, solo ciò che il libro racconta davvero), "▶" (cosa si fa nel gioco) e il filo dei 9 capitoli con **Sei qui**. Il filo si può riaprire in ogni momento con il bottone del libro in alto.
+
+Il **prologo** è fatto di 5 immagini con una frase ciascuna: la cartina di Al-Andalus, Ibn Tufayl che scrive, la rotta fino all'isola (immaginaria) vicino all'India, la gazzella e il neonato, "Ora Hayy sei tu!".
+
+### Absal insegna le parole
+
+Absal dice una parola nella sua lingua (in arabo, con la pronuncia): نار *nār* (fuoco), ماعز *māʿiz* (capra), قارب *qārib* (barca). Hayy tocca la cosa giusta e scopre la parola italiana. È il diritto di imparare, giocato: da soli si fatica, insieme si impara prima.
+
 ### Indovina! (prima dell'esperimento)
 
 | Tappa | Domanda | Risposta |
 | --- | --- | --- |
 | Corsa | Se Hayy corre, il cuore… accelera o rallenta? | accelera |
-| Cerva | Dopo un'emozione forte, il cuore si calma… subito o piano piano? | piano piano |
+| Gazzella | Dopo un'emozione forte, il cuore si calma… subito o piano piano? | piano piano |
 | Calore | Chi è più caldo, il sasso o la capra? | la capra |
+| Fuoco | Per bruciare, il fuoco ha bisogno di… aria o acqua? | aria (ponte verso il livello 2: anche il corpo "brucia" il cibo con l'aria) |
 
 ### Premi
 
@@ -59,7 +70,11 @@ Semi di luce lungo il sentiero (+10), oggetto copiato (+50), salti puliti di fil
 
 Portare il fuoco alla grotta nel vento: è la prima prova in cui si può fallire (e riprovare).
 
-## 6. Pagina del quaderno
+## 6. Le carte dell'album (8)
+
+Ogni scoperta è una carta con simbolo, titolo, una frase e codice della roadmap: B1.1 puzzle, B1.2 ingranaggi, B1.3 fulmine, B1.6 frecce, R1.1 cuore, B1.4 goccia, B1.5 termometro, R1.2 battito.
+
+## 6b. In sintesi
 
 Il corpo è fatto di parti con compiti diversi, che lavorano insieme e si mandano messaggi. Per capirlo bisogna osservare, ripetere, confrontare. E si può sbagliare: anche Hayy si è sbagliato.
 
@@ -69,8 +84,8 @@ Ognuno ha una mente per ragionare (art. 1) e il diritto di imparare (art. 26). [
 
 ## 8. Adattamenti e cose da evitare
 
-- La dissezione della cerva **non si mostra**: Hayy ascolta il suo cuore, che non batte più.
-- La morte della cerva è un lutto: tono delicato, nessun dettaglio crudo.
+- La dissezione della gazzella **non si mostra**: Hayy ascolta il suo cuore, che non batte più.
+- La morte della gazzella è un lutto: tono delicato, nessun dettaglio crudo.
 
 ## 9. Accessibilità
 
@@ -80,7 +95,7 @@ Ognuno ha una mente per ragionare (art. 1) e il diritto di imparare (art. 26). [
 ## 10. Decisioni prese e aperte
 
 - [x] I tre animali da osservare: capra, uccello, tartaruga
-- [x] La scena del lutto: evocata con il suono del cuore che rallenta, senza immagini; Hayy seppellisce la cerva, come nel libro dopo aver osservato i corvi
+- [x] La scena del lutto: evocata con il suono del cuore che rallenta, senza immagini; Hayy seppellisce la gazzella, come nel libro dopo aver osservato i corvi
 - [x] La misura del battito è facoltativa ("Non ora"), e i numeri impossibili vengono rifiutati
 - [ ] Sostituire il disegno provvisorio con la scansione dell'ambientazione del ragazzo (vedi `documentazione/sviluppo.md`)
 - [ ] Far provare il livello a un bambino e annotare dove si blocca

@@ -32,6 +32,19 @@
     <span id="punti-numero">0</span>
   </div>
 
+  <!-- Oggetti di Hayy -->
+  <div id="inventario" class="nascosto" aria-hidden="true">
+    <div class="slot" data-oggetto="bastone"></div>
+    <div class="slot" data-oggetto="foglia"></div>
+    <div class="slot" data-oggetto="scudo"></div>
+    <div class="slot" data-oggetto="fuoco"></div>
+  </div>
+
+  <!-- Prologo e capitoli della storia -->
+  <div id="racconto" class="nascosto" role="dialog" aria-live="polite"></div>
+  <div id="capitolo" class="nascosto" role="dialog" aria-live="polite"></div>
+  <div id="carta-nuova" class="nascosto" role="status" aria-live="polite"></div>
+
   <!-- Stelle di fine tappa -->
   <div id="stelle" class="nascosto" aria-hidden="true">
     <svg class="stella" viewBox="0 0 24 24"><path d="M12 2l3 7 7.5.6-5.7 5 1.8 7.4L12 18l-6.6 4 1.8-7.4L1.5 9.6 9 9z"/></svg>
@@ -54,8 +67,13 @@
     <button id="btn-calore" class="tondo nascosto" aria-label="Vista del calore">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3.5" fill="currentColor"/></svg>
     </button>
-    <button id="btn-quaderno" class="tondo" aria-label="Quaderno">
+    <button id="btn-storia" class="tondo" aria-label="La storia">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5c3-1.5 6-1.5 9 0v15c-3-1.5-6-1.5-9 0zM21 5c-3-1.5-6-1.5-9 0v15c3-1.5 6-1.5 9 0z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span id="num-capitolo" class="distintivo"></span>
+    </button>
+    <button id="btn-quaderno" class="tondo" aria-label="Album delle scoperte">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="11" height="15" rx="2" transform="rotate(-8 8 12)" fill="none" stroke="currentColor" stroke-width="1.8"/><rect x="10" y="4" width="11" height="15" rx="2" transform="rotate(8 15 11)" fill="currentColor" opacity="0.9"/></svg>
+      <span id="num-carte" class="distintivo"></span>
     </button>
     <button id="btn-impostazioni" class="tondo" aria-label="Impostazioni">
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -94,6 +112,9 @@
   <script src="js/suoni.js"></script>
   <script src="js/battito.js"></script>
   <script src="js/pannello.js"></script>
+  <script src="js/icone.js"></script>
+  <script src="js/cartina.js"></script>
+  <script src="js/storia.js"></script>
   <script src="js/didascalia.js"></script>
   <script src="js/quaderno.js"></script>
   <script src="js/arte.js"></script>

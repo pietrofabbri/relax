@@ -34,11 +34,13 @@
       o = o || {};
       return new Promise(function (risolvi) {
         if (attesa) { var vecchia = attesa; attesa = null; vecchia(); }
-        testo.textContent = frase;
+        testo.innerHTML = (o.icona ? window.Icone.svg(o.icona, "chi") : "") + window.Storia.formatta(frase);
+        box.classList.remove("visibile");
+        void box.offsetWidth;
         box.classList.add("visibile");
         var tocca = o.tocca !== false;
         freccia.classList.toggle("nascosto", !tocca);
-        if (window.Salvataggio.impostazioni().voce) window.Voce.leggi(frase);
+        if (window.Salvataggio.impostazioni().voce) window.Voce.leggi(frase.replace(/\*/g, ""));
         attesa = risolvi;
         if (tocca) {
           cattura.classList.remove("nascosto");
@@ -59,7 +61,7 @@
     /* Indicazione fissa in alto ("cosa devo fare"), finché non cambia. */
     obiettivo: function (frase) {
       if (!frase) { suggerimento.classList.add("nascosto"); return; }
-      suggerimento.textContent = frase;
+      suggerimento.innerHTML = "<span class=\"freccia-obiettivo\">▶</span>" + window.Storia.formatta(frase);
       suggerimento.classList.remove("nascosto");
     }
   };

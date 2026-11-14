@@ -42,7 +42,7 @@ Sette storie da cinque continenti, una per livello, **in ordine di roadmap**: og
 
 Il Guardiano ha un quaderno di viaggio. Ogni volta che lo apre, entra in una storia di un altro luogo e di un altro tempo, e diventa uno dei suoi personaggi.
 
-**1. Hayy, il ragazzo dell'isola.** Su un'isola deserta, un bambino viene cresciuto da una cerva. Crescendo, si accorge di essere diverso dagli animali e impara a coprirsi, a costruire attrezzi, a osservare. Quando la cerva muore, cerca dentro il suo corpo il punto da cui se n'è andata la vita e trova il cuore. Poi scopre il fuoco e capisce che i corpi vivi sono caldi. Anni dopo incontra un altro essere umano, e scopre che la conoscenza ha senso solo se si condivide. *Il Guardiano impara cos'è il corpo e come si fa a studiarlo.*
+**1. Hayy, il ragazzo dell'isola.** Su un'isola deserta, un bambino viene cresciuto da una gazzella. Crescendo, si accorge di essere diverso dagli animali e impara a coprirsi, a costruire attrezzi, a osservare. Quando la gazzella muore, cerca dentro il suo corpo il punto da cui se n'è andata la vita e trova il cuore. Poi scopre il fuoco e capisce che i corpi vivi sono caldi. Anni dopo incontra un altro essere umano, e scopre che la conoscenza ha senso solo se si condivide. *Il Guardiano impara cos'è il corpo e come si fa a studiarlo.*
 
 **2. Ulisse e l'otre dei venti.** Il re dei venti regala a Ulisse un otre in cui ha chiuso tutti i venti contrari. Ulisse guida la nave per nove giorni senza mai dormire; quando vede già la sua isola, crolla dal sonno. I compagni aprono l'otre credendo che contenga oro, e i venti, usciti tutti insieme, scatenano una tempesta che li riporta indietro. *Il Guardiano impara che il respiro si può guidare, e che l'aria va lasciata uscire piano.*
 

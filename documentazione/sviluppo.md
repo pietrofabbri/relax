@@ -25,12 +25,15 @@ Torna a: [documentazione](README.md) · [presentazione del progetto](../README.m
 | `js/suoni.js` | Battito, suono di scoperta, tonfo |
 | `js/battito.js` | Il battito **simulato** del personaggio: sale, poi torna da solo verso la base |
 | `js/pannello.js` | Finestre di racconto e di scelta (restituiscono Promise, così le scene si scrivono in ordine) |
-| `js/quaderno.js` | Il quaderno: ogni pagina ha il codice del passo della roadmap |
+| `js/quaderno.js` | L'**album delle scoperte**: ogni scoperta è una carta da collezionare, con simbolo e codice della roadmap |
 | `js/arte.js` | **Tutti i disegni**: cielo, mare, palme, grotta, animali, persone; colori che cambiano con l'ora del giorno |
 | `js/mondo.js` | Il motore: telecamera, strati in parallasse, ora del giorno, buio e luci, vista del calore, particelle, tocchi |
 | `js/fondale.js` | Il **fondale**: il disegno del ragazzo dietro al livello (da file o da foto del telefono) |
 | `js/spettacolo.js` | **Punti, serie, stelle, "Indovina!", sipario** tra le tappe: valgono per tutti i livelli |
 | `js/app.js` | L'app sul telefono: installazione, schermo intero, aggiornamenti da GitHub |
+| `js/storia.js` | **La storia sempre chiara**: prologo a immagini, capitolo a ogni tappa (cosa succede nel libro, cosa fai nel gioco), filo della storia con "Sei qui" |
+| `js/cartina.js` | Cartina disegnata dal codice (Mediterraneo e Oceano Indiano), con spilli e rotte animate |
+| `js/icone.js` | Le icone a colori (cuore, fuoco, gazzella, termometro…): simboli al posto delle frasi |
 | `js/didascalia.js` | La riga di testo in basso e la frase fissa in alto ("cosa devo fare") |
 | `js/livello1.js` | Il livello 1: oggetti, tappe, scene |
 | `js/main.js` | Avvio, schermata iniziale, impostazioni |
@@ -78,6 +81,14 @@ Regola: **ogni gesto riuscito fa festa, ogni scoperta ha un premio, ogni esperim
 ## L'app sul telefono
 
 `manifest.webmanifest` + `sw.js` + `js/app.js`. L'app installata punta a GitHub Pages; il service worker prende sempre prima la versione in rete e salva una copia per giocare offline. Quando si carica una versione nuova, **alza `VERSIONE` in `sw.js`**: l'app se ne accorge quando torna in primo piano e si aggiorna da sola sulla schermata iniziale.
+
+## Regole per i testi
+
+- **Una idea per frase.** Frasi di 3-8 parole; due righe al massimo per volta.
+- **Prima il simbolo, poi la parola:** ogni capitolo, carta e scelta ha un'icona.
+- Le parole importanti tra `*asterischi*`: il gioco le colora.
+- **Libro e gioco separati:** nei capitoli, "Nel libro" dice solo cose che il libro racconta davvero; ciò che è inventato per giocare sta nella riga verde (▶).
+- Italiano corretto prima di tutto: accenti (è, perché, più), apostrofi (un'isola, un altro), maiuscole solo dove servono.
 
 ## Come tradurre il gioco
 

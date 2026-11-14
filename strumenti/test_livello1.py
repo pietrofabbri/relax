@@ -19,7 +19,10 @@ STATO = """(() => {
   const bottoni = [...document.querySelectorAll('#pannello-azioni button')].map(b => b.textContent);
   return {
     tappa: d.tappa, obiettivo: vis('suggerimento') ? document.getElementById('suggerimento').textContent : '',
-    cattura: vis('cattura'), pannello: vis('pannello'), indovina: vis('indovina'), bottoni, testoPannello: document.getElementById('pannello').innerText,
+    cattura: vis('cattura'), pannello: vis('pannello'), indovina: vis('indovina'),
+    racconto: vis('racconto'), capitolo: vis('capitolo'), cartaNuova: vis('carta-nuova'),
+    parola: m.parola && !m.parola.risolta ? m.parola.w.id : null,
+    bersagli: { fuoco: sch(m.grottaX, 700), capra: sch(m.capra2.x, 700), barca: sch(m.barca.x, 680) }, bottoni, testoPannello: document.getElementById('pannello').innerText,
     campo: !!document.querySelector('#pannello input'),
     hayy: [h.x, h.salto], hayySch: sch(h.x, 660),
     oggetto: m.oggetto ? sch(m.oggetto.x, m.oggetto.y) : null,
@@ -73,12 +76,31 @@ async def main():
                 await pg.screenshot(path=f"{FOTO}/{len(foto_fatte):02d}-{s['tappa']}.png")
 
             # finestre e didascalie prima di tutto
+            for chiave, sel in (("racconto", "#racconto"), ("capitolo", "#capitolo"), ("cartaNuova", "#carta-nuova")):
+                if s[chiave]:
+                    if premuto:
+                        await mouse.up(); premuto = False
+                    nome_foto = f"{FOTO}/{chiave}-{s['tappa']}.png"
+                    if not os.path.exists(nome_foto):
+                        await pg.wait_for_timeout(1300)
+                        await pg.screenshot(path=nome_foto)
+                    await pg.wait_for_timeout(800)
+                    try:
+                        await pg.click(sel, position={"x": 420, "y": 330}, force=True, timeout=1500)
+                    except Exception:
+                        pass  # si è già chiusa da sola
+                    await pg.wait_for_timeout(350)
+                    break
+            else:
+                chiave = None
+            if chiave:
+                continue
             if s["indovina"]:
                 if premuto:
                     await mouse.up(); premuto = False
                 await pg.wait_for_timeout(500)
                 await pg.screenshot(path=f"{FOTO}/indovina-{s['tappa']}.png")
-                await pg.click("#indovina .scelta >> nth=0")
+                await pg.click("#indovina .scelta >> nth=0", force=True)
                 await pg.wait_for_timeout(1600)
                 continue
             if s["pannello"]:
@@ -96,7 +118,7 @@ async def main():
                 elif "Via" in s["bottoni"]:
                     await pg.click("#pannello-azioni button:has-text('Via')")
                 elif s["bottoni"]:
-                    await pg.click("#pannello-azioni button:last-child")
+                    await pg.click("#pannello-azioni button:last-child", force=True)
                 await pg.wait_for_timeout(250)
                 continue
             if s["cattura"]:
@@ -168,7 +190,12 @@ async def main():
                         await pg.wait_for_timeout(2000)
                         break
             elif t == "alba":
-                await tocca(min(830, s["spiaggia"]["x"]), 330)
+                if s["parola"]:
+                    bb = s["bersagli"][s["parola"]]
+                    await tocca(min(830, max(5, bb["x"])), bb["y"])
+                    await pg.wait_for_timeout(1700)
+                else:
+                    await tocca(min(830, s["spiaggia"]["x"]), 330)
             await pg.wait_for_timeout(150)
 
         await b.close()

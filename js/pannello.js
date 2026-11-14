@@ -35,7 +35,7 @@
     titolo.textContent = t || "";
     testo.innerHTML = "";
     azioni.innerHTML = "";
-    radice.classList.remove("nascosto");
+    radice.classList.remove("nascosto", "titolo");
     aperto = true;
   }
 

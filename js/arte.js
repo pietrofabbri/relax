@@ -1039,7 +1039,9 @@
       if (o.barba) {
         ctx.fillStyle = capelliCol;
         ctx.beginPath();
-        ctx.ellipse(16, spalla - 18, 12, 14, 0.3, 0, Math.PI * 2);
+        ctx.moveTo(-2, spalla - 24);
+        ctx.quadraticCurveTo(8, spalla + 2, 26, spalla - 22);
+        ctx.quadraticCurveTo(14, spalla - 14, -2, spalla - 24);
         ctx.fill();
       }
       ctx.restore();

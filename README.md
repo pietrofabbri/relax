@@ -100,7 +100,8 @@ relax/
 - Documentazione didattica (storie e diritti) e schede dei livelli
 - **App installabile** sul telefono (Android e iPhone), aggiornata da GitHub Pages
 - **Fondale disegnato**: il disegno del ragazzo dietro a tutto il livello, anche fotografato dal telefono
-- **Livello 1 giocabile, versione 3** (punti, serie, stelle, "Indovina!", effetti), con: poco testo, grafica disegnata dal codice con ora del giorno, luci e notte, nove attività diverse (imitare gli animali, corsa con il corpo trasparente, riflessi, il cuore della cerva, il fuoco nel vento, la vista del calore, la misura del battito, l'arrivo di Absal)
+- **Storia sempre chiara**: prologo con cartina, capitoli con "Sei qui", album di carte da collezionare
+- **Livello 1 giocabile, versione 4** (punti, serie, stelle, "Indovina!", effetti), con: poco testo, grafica disegnata dal codice con ora del giorno, luci e notte, nove attività diverse (imitare gli animali, corsa con il corpo trasparente, riflessi, il cuore della gazzella, il fuoco nel vento, la vista del calore, la misura del battito, l'arrivo di Absal)
 
 **Da fare**
 - [ ] Livello 2 (il respiro, con Ulisse): da costruire prima della sessione 1

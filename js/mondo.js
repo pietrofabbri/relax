@@ -350,7 +350,15 @@
       sp.t += dt;
       if (sp.t >= sp.durata) {
         sp.t = 0;
-        if (sp.fase === "chiude") { sp.fase = "pausa"; sp.durata = sp.pausa; if (sp.alBuio) sp.alBuio(); }
+        if (sp.fase === "chiude") {
+          sp.fase = "pausa"; sp.durata = sp.pausa;
+          if (sp.alBuio) sp.alBuio();
+          /* attendi: il sipario resta chiuso finché la Promise non si risolve (per esempio il capitolo) */
+          if (sp.attendi) {
+            sp.durata = Infinity;
+            sp.attendi().then(function () { sp.t = 0; sp.fase = "apre"; sp.durata = 0.7; });
+          }
+        }
         else if (sp.fase === "pausa") { sp.fase = "apre"; sp.durata = 0.7; }
         else { var fatto = sp.fatto; fx.sipario = null; if (fatto) fatto(); }
       }
@@ -480,7 +488,7 @@
       o = o || {};
       return new Promise(function (r) {
         fx.sipario = { fase: "chiude", t: 0, durata: 0.6, pausa: o.pausa || 1.1, titolo: o.titolo, numero: o.numero,
-          x: o.x, y: o.y, alBuio: o.alBuio, fatto: r };
+          x: o.x, y: o.y, alBuio: o.alBuio, attendi: o.attendi, fatto: r };
       });
     },
     aSchermo: function (wx, wy) {

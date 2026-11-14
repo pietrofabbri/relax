@@ -30,7 +30,7 @@
 
   var hayy = { x: 260, y: SUOLO, verso: 1, passo: 0, posa: "fermo", salto: 0, vy: 0, equip: {}, dest: 260, vel: 340, cuore: 74, respiro: 1.6, calore: 0 };
   var cerva = { x: 520, y: SUOLO, verso: 1, passo: 0, stato: "ferma", dest: 520, vel: 300, visibile: true, alfa: 1 };
-  var absal = { x: 4380, y: SUOLO, verso: -1, passo: 0, posa: "fermo", veste: "#6b4f8a", barba: true, visibile: false };
+  var absal = { x: 4380, y: SUOLO, verso: -1, passo: 0, posa: "fermo", veste: "#6b4f8a", barba: true, capelli: [150, 140, 130], pelleColore: [196, 150, 112], visibile: false };
 
   var mondo = {
     animali: { capra: { x: 860, fatto: false }, uccello: { x: 1130, fatto: false }, tartaruga: { x: 1420, fatto: false } },
@@ -47,6 +47,7 @@
     sasso: { x: 3420 },
     capra2: { x: 3980, visibile: false },
     barca: { x: 5000, visibile: false },
+    parola: null,           /* la parola che Absal sta insegnando */
     etichette: [],
     anelli: [],
     oggetto: null,          /* oggetto da trascinare */
@@ -60,7 +61,7 @@
   };
 
   /* punteggio pieno di ogni tappa: serve per le stelle */
-  var MASSIMI = { segui: 30, animali: 170, corsa: 250, cocchi: 240, cerva: 170, fuoco: 220, calore: 140, alba: 140 };
+  var MASSIMI = { segui: 30, animali: 170, corsa: 250, cocchi: 240, cerva: 170, fuoco: 270, calore: 140, alba: 260 };
 
   /* ---------- utilità ---------- */
 
@@ -72,7 +73,7 @@
     var pg = T.pagine[chiave];
     var testo = pg.testo;
     Object.keys(sostituzioni || {}).forEach(function (k) { testo = testo.replace("{" + k + "}", sostituzioni[k]); });
-    return Q.aggiungi({ id: chiave, titolo: pg.titolo, testo: testo, roadmap: pg.roadmap });
+    return Q.aggiungi({ id: chiave, titolo: pg.titolo, testo: testo, roadmap: pg.roadmap, icona: pg.icona });
   }
 
   /* Imposta l'attività corrente e risolve quando l'attività chiama fine(). */
@@ -248,6 +249,7 @@
       ctx.stroke();
     });
     A.persona(ctx, p, hayy, tempo);
+    if (mondo.parola && absal.visibile) fumetto(ctx, absal.x - 40, SUOLO - 330, mondo.parola, tempo);
 
     /* cocco che cade */
     if (mondo.cocco && mondo.cocco.stato !== "preso") A.cocco(ctx, p, mondo.cocco.x, mondo.cocco.y, 16);
@@ -276,7 +278,7 @@
   function pillola(ctx, testo, x, y, colore, alfa) {
     ctx.save();
     ctx.globalAlpha = Math.max(0, alfa);
-    ctx.font = "600 30px Georgia, serif";
+    ctx.font = "800 30px 'Trebuchet MS', sans-serif";
     var w = ctx.measureText(testo).width + 36;
     ctx.fillStyle = "rgba(20,20,30,0.72)";
     ctx.beginPath();
@@ -303,6 +305,32 @@
     ctx.beginPath();
     ctx.ellipse(x + 58, y - 24, 10, 21, 0, 0, Math.PI * 2);
     ctx.fill();
+  }
+
+  /* fumetto con la parola in arabo, la pronuncia e (dopo la risposta) l'italiano */
+  function fumetto(ctx, x, y, parola, tempo) {
+    var k = Math.min(1, parola.t * 4), w = parola.w;
+    var s = k < 1 ? 0.4 + 0.7 * k : 1 + Math.sin(tempo * 3) * 0.02;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(s, s);
+    ctx.fillStyle = "#fffdf6";
+    ctx.strokeStyle = "#3a2a5a";
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(-190, -150, 380, 170, 40); else ctx.rect(-190, -150, 380, 170);
+    ctx.moveTo(40, 18); ctx.lineTo(70, 70); ctx.lineTo(90, 18);
+    ctx.fill();
+    ctx.stroke();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "#3a2a5a";
+    ctx.font = "700 76px 'Geeza Pro', 'Noto Naskh Arabic', 'Arial', sans-serif";
+    ctx.fillText(w.ar, 0, -82);
+    ctx.font = "italic 600 34px Georgia, serif";
+    ctx.fillStyle = "#7a5ab0";
+    ctx.fillText(parola.risolta ? "« " + w.tr + " » = " + w.it : "« " + w.tr + " »", 0, -18);
+    ctx.restore();
   }
 
   function disegnaSemi(ctx, tempo, visibile) {
@@ -488,6 +516,7 @@
           if (Math.abs(o.x - hayy.x) < 110 && o.y > SUOLO - 300 && o.y < SUOLO + 20) {
             var d = dati[o.animale];
             hayy.equip[d.equip] = true;
+            S.oggetto(d.equip === "mantello" ? "foglia" : d.equip, true);
             mondo.animali[o.animale].fatto = true;
             mondo.oggetto = null;
             M.emetti("stella", hayy.x, SUOLO - 150, 30, { dispersione: 420, spazio: 80 });
@@ -750,7 +779,7 @@
             if (ctx.roundRect) ctx.roundRect(x, base - hh, bw, hh, 14); else ctx.rect(x, base - hh, bw, hh);
             ctx.fill();
             ctx.fillStyle = "#fff";
-            ctx.font = "600 30px Georgia, serif";
+            ctx.font = "800 30px 'Trebuchet MS', sans-serif";
             ctx.textAlign = "center";
             ctx.fillText(t + " ms", x + bw / 2, base - hh - 16);
           });
@@ -989,7 +1018,13 @@
           window.Suoni.fiammata();
           S.premio(100, mondo.grottaX, SUOLO - 380, D.casa, { colore: "#ffb36a" });
           progressi.grotta = true;
+          S.oggetto("fuoco", true);
           return Did.mostra(D.grotta, { tocca: false, durata: 2 });
+        }).then(function () {
+          /* il fuoco respira: ponte verso il livello 2 */
+          return S.indovina(D.indovinaFuoco, [{ icona: "🌬️", testo: D.aria }, { icona: "💧", testo: D.acqua }], 0);
+        }).then(function () {
+          return Did.mostra(D.rispostaFuoco);
         });
       });
     }
@@ -1155,7 +1190,12 @@
       M.coriandoli((hayy.x + absal.x) / 2, SUOLO - 400, 90);
       window.Suoni.fanfara(3);
       S.premio(100, (hayy.x + absal.x) / 2, SUOLO - 420, D.amico, { colore: "#c9a6ff" });
-      return Did.sequenza([D.absal, D.scuola]);
+      return Did.mostra(D.absal, { icona: "barca" });
+    }).then(function () {
+      return Did.mostra(D.absalParole, { tocca: false, durata: 2 });
+    }).then(paroleConAbsal).then(function () {
+      M.coriandoli(hayy.x, SUOLO - 400, 60);
+      return Did.mostra(D.scuola, { icona: "scuola" });
     }).then(function () {
       salvaTappa("fine");
       progressi.completato = true;
@@ -1164,17 +1204,62 @@
     });
   }
 
+  /* Absal dice una parola nella sua lingua (arabo): Hayy tocca la cosa giusta */
+  function paroleConAbsal() {
+    var bersagli = {
+      fuoco: function () { return [mondo.grottaX, SUOLO - 90, 170]; },
+      capra: function () { return [mondo.capra2.x, SUOLO - 90, 130]; },
+      barca: function () { return [mondo.barca.x, SUOLO - 110, 190]; }
+    };
+    return T.parole.reduce(function (pr, w) {
+      return pr.then(function () {
+        mondo.parola = { w: w, t: 0, risolta: false };
+        Did.obiettivo(OB.parole);
+        window.Suoni.pop();
+        return attivita({
+          giu: function (wx, wy) {
+            var self = this;
+            if (mondo.parola.risolta) return;
+            var b = bersagli[w.id](), giusto = vicino(wx, wy, b[0], b[1], b[2]);
+            var altro = Object.keys(bersagli).some(function (k) { var q = bersagli[k](); return k !== w.id && vicino(wx, wy, q[0], q[1], q[2]); });
+            if (giusto) {
+              mondo.parola.risolta = true;
+              S.serie();
+              S.premio(40, b[0], b[1] - 220, D.giusto, { serie: true, colore: "#9cf0b6" });
+              M.onda(b[0], b[1], { r: 220, colore: [160, 255, 190], vita: 0.6, spessore: 14 });
+              M.scritta(w.ar + " = " + w.it, b[0], b[1] - 120, { colore: "#ffffff", dim: 50, vita: 2, sale: 10 });
+              setTimeout(function () { self.fine(); }, 1500);
+            } else if (altro) {
+              S.rompi();
+              window.Suoni.ops();
+              M.scuoti(6, 0.2);
+              M.scritta(D.sbagliato, wx, wy - 100, { colore: "#ff8a8a", dim: 56 });
+            }
+          },
+          aggiorna: function (dt) { mondo.parola.t += dt; }
+        });
+      });
+    }, Promise.resolve()).then(function () { mondo.parola = null; Did.obiettivo(null); });
+  }
+
   function finale() {
     var F = T.finale;
     return new Promise(function (r) {
       P.apri(F.titolo);
       var el = P.elementi();
-      var r = S.riepilogo();
-      el.testo.appendChild(P.paragrafo("✦ " + r.punti + "     ★ " + r.stelle + " / " + r.max, "grande centrato bottino"));
-      el.testo.appendChild(P.paragrafo(F.diritto, "grande"));
-      el.testo.appendChild(P.paragrafo(F.fonte, "piccolo"));
-      el.testo.appendChild(P.paragrafo(F.domanda));
-      el.testo.appendChild(P.paragrafo(F.prossimo, "piccolo"));
+      var r = S.riepilogo(), I = window.Icone, Fm = window.Storia.formatta;
+      var box = document.createElement("div");
+      box.className = "finale";
+      box.innerHTML =
+        '<div class="bottino">' +
+        '<div class="premio-finale"><b>' + r.punti + "</b><span>" + F.punti + "</span></div>" +
+        '<div class="premio-finale">' + I.svg("stella") + "<b>" + r.stelle + "/" + r.max + "</b><span>" + F.stelle + "</span></div>" +
+        '<div class="premio-finale">' + I.svg("puzzle") + "<b>" + Q.numero() + "/" + Q.totale() + "</b><span>" + F.carte + "</span></div>" +
+        "</div>" +
+        '<div class="diritto-finale">' + I.svg("scuola") + "<div><p class=\"grande\">" + Fm(F.diritto) + '</p><p class="piccolo">' + Fm(F.fonte) + "</p></div></div>" +
+        '<p class="domanda-finale">' + Fm(F.domanda) + "</p>" +
+        '<div class="prossimo-finale">' + I.svg("barca") + "<span>" + Fm(F.prossimo) + "</span></div>";
+      el.testo.appendChild(box);
       el.azioni.appendChild(P.bottone(window.TESTI.gioco.quaderno, "secondario", function () {
         Q.mostra().then(finale).then(r);
       }));
@@ -1228,6 +1313,8 @@
       });
       window.Fondale.carica("livello1");
       S.prepara(progressi);
+      Q.catalogo(T.pagine);
+      window.Storia.usa(T.capitoli, ["segui", "animali", "corsa", "cocchi", "cerva", "fuoco", "calore", "misura", "alba"]);
       M.camera.segui = hayy;
       posiziona(progressi.tappa || "segui");
       ripristinaFiori();
@@ -1240,11 +1327,15 @@
       var ordine = ["segui", "animali", "corsa", "cocchi", "cerva", "fuoco", "calore", "misura", "alba"];
       var da = tappa ? ordine.indexOf(tappa) : 0;
       if (tappa === "fine") return finale();
-      var inizio = tappa ? Promise.resolve() : P.pagine([T.prologo]);
+      var inizio = tappa ? Promise.resolve() : window.Storia.prologo(T.prologo);
       S.mostra();
+      S.mostraInventario();
+      ["bastone", "mantello", "scudo"].forEach(function (k) { if (hayy.equip[k]) S.oggetto(k === "mantello" ? "foglia" : k, true); });
+      if (progressi.grotta) S.oggetto("fuoco", true);
       return ordine.slice(Math.max(0, da)).reduce(function (pr, nome) {
         return pr.then(function () {
-          return S.sipario(ordine.indexOf(nome) + 1, T.tappe[nome]);
+          document.getElementById("num-capitolo").textContent = ordine.indexOf(nome) + 1;
+          return S.sipario(null, null, null, undefined, undefined, function () { return window.Storia.capitolo(nome); });
         }).then(function () {
           if (MASSIMI[nome]) S.tappa(nome, MASSIMI[nome]);
           return sequenza[nome]();
