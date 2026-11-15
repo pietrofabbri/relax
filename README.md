@@ -91,6 +91,13 @@ relax/
 
 ---
 
+## Presentazioni
+
+- **Hayy ibn Yaqzan: riferimenti letterari e diritti umani** (documento formale per docenti): https://claude.ai/artifact/MWjxVprbEfePH5ADPawYLu
+- **Respira: come lavoreremo insieme** (per lo studente): https://claude.ai/artifact/GbhX6y7dsoVYMNp3c4Ugen
+
+Le presentazioni sono private finché non vengono condivise dal proprietario.
+
 ## Stato e prossimi passi
 
 **Fatto**
