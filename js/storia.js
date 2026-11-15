@@ -62,8 +62,13 @@
             b.classList.add("sbagliata");
             b.disabled = true;
             window.Suoni.ops();
-            var r = righe && righe[d.riga || 0];
-            if (r) { r.classList.remove("rileggi"); void r.offsetWidth; r.classList.add("rileggi"); }
+            /* un aiuto per ragionare, non la risposta */
+            if (d.aiuto) {
+              var a = box.querySelector(".dl-aiuto");
+              if (!a) { a = document.createElement("div"); a.className = "dl-aiuto"; box.appendChild(a); }
+              a.innerHTML = window.Icone.svg("cervello") + "<span>" + formatta(d.aiuto) + "</span>";
+              a.classList.remove("rileggi"); void a.offsetWidth; a.classList.add("rileggi");
+            }
           }
         });
         scelte.appendChild(b);
@@ -197,7 +202,7 @@
           var s = sp.schede[i];
           box.innerHTML =
             '<div class="sp-testa">' + window.Icone.svg("libro") + "<span>" + formatta(sp.titolo || "") + "</span></div>" +
-            '<div class="sp-schema">' + window.Schemi.svg(s.schema, L[s.schema]) + "</div>" +
+            '<div class="sp-schema">' + window.Schemi.svg(s.schema, L[s.schema], { fino: s.fino, da: (i > 0 && sp.schede[i - 1].schema === s.schema) ? sp.schede[i - 1].fino : undefined }) + "</div>" +
             '<div class="sp-frase"><p>' + formatta(s.testo) + '</p><div class="barra-lettura"><i></i></div></div>' +
             '<div class="puntini">' + sp.schede.map(function (_, k) { return '<i class="' + (k === i ? "on" : k < i ? "fatto" : "") + '"></i>'; }).join("") + "</div>" +
             '<div class="tocca-racconto">' + G().tocchi + " ▸</div>";
@@ -210,12 +215,12 @@
           box.onclick = null;
           if (!sp.domanda) { box.classList.add("nascosto"); fatto(); return; }
           box.querySelector(".tocca-racconto").remove();
-          /* riepilogo di tutte le frasi: la risposta è lì, da rileggere se serve */
+          /* la domanda chiede di usare ciò che si è capito, in una situazione nuova */
           var frase = box.querySelector(".sp-frase");
           frase.classList.add("con-domanda");
-          frase.innerHTML = '<ul class="riepilogo">' + sp.schede.map(function (q) { return "<li>" + formatta(q.testo) + "</li>"; }).join("") + "</ul>";
+          frase.innerHTML = "";
           box.querySelector(".sp-schema").classList.add("piccolo");
-          domanda(frase, sp.domanda, frase.querySelectorAll(".riepilogo li")).then(function () {
+          domanda(frase, sp.domanda).then(function () {
             box.classList.add("nascosto");
             fatto();
           });

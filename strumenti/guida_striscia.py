@@ -6,11 +6,11 @@ La striscia è fatta di 5 fogli A4 orizzontali messi in fila (148,5 x 21 cm).
 Copre tutto il livello, da sinistra (inizio) a destra (fine), alla stessa scala del gioco:
 quello che il ragazzo disegna a 30 cm dall'inizio comparirà esattamente lì nel gioco.
 
-Ogni foglio porta, a matita leggera:
-- in alto, i capitoli della storia e l'ora del giorno di quel tratto;
-- in basso, la linea del terreno su cui camminano i personaggi;
-- a tratteggio, il posto degli oggetti che disegna il gioco (grotta, palme, animali…),
-  così il disegno si costruisce intorno a loro.
+Il ragazzo disegna il FONDALE come vuole. Il gioco ci mette sopra tutto il resto:
+il terreno, le palme, la grotta, gli animali, Hayy.
+Ogni foglio porta solo, a matita leggera:
+- in alto, il capitolo della storia e l'ora del giorno di quel tratto (un'idea, non un obbligo);
+- in basso, la fascia che verrà coperta dal terreno del gioco.
 La prima pagina spiega come fare.
 """
 import sys
@@ -53,18 +53,6 @@ CAPITOLI = [  # (da, a, numero, titolo, ora)
     (4100, 4700, 9, "Absal arriva dal mare", "alba"),
 ]
 
-# oggetti disegnati dal gioco: (nome, x, larghezza, altezza)
-OGGETTI = [
-    ("rifugio di Hayy (roccia)", 120, 360, 230),
-    ("cespuglio", 700, 180, 120), ("capra", 860, 170, 190), ("uccello", 1130, 90, 60),
-    ("roccia", 1150, 200, 110), ("tartaruga", 1420, 120, 60), ("cespuglio", 1600, 200, 130),
-    ("tronco", 1900, 120, 50), ("sasso", 2160, 90, 60), ("tronco", 2420, 120, 50), ("sasso", 2640, 90, 60),
-    ("palma", 2960, 120, 470), ("palma", 3150, 120, 500), ("palma", 3340, 120, 530),
-    ("sasso", 3420, 110, 64), ("grotta", 3720, 480, 300), ("bastone", 4040, 110, 30),
-    ("canneto", 4180, 300, 260), ("barca (arriva dal mare)", 4560, 260, 220),
-]
-
-
 def foglio_istruzioni(c):
     c.setFont("Helvetica-Bold", 26)
     c.drawString(2 * cm, H - 2.6 * cm, "Respira - La striscia del livello 1: L'isola")
@@ -73,10 +61,11 @@ def foglio_istruzioni(c):
         "1. Metti in fila 5 fogli A4 orizzontali: dal foglio 1 (inizio del livello) al foglio 5 (fine).",
         "2. Disegna a matita, poi ripassa a china o pennarello nero. Pochi colori, o nessuno.",
         "3. Il CIELO resta bianco: nel gioco diventa il cielo animato. Niente sole e niente luna: li fa il gioco.",
-        "4. La parte BASSA del foglio resta semplice: li camminano Hayy e gli animali.",
-        "5. Le sagome tratteggiate sono gli oggetti che disegna il gioco: costruisci il paesaggio intorno a loro.",
-        "6. In alto trovi il capitolo della storia e l'ora del giorno di ogni tratto: alba, giorno, tramonto, notte.",
-        "7. Fotografa i fogli dall'alto, uno alla volta, con buona luce. Poi:",
+        "4. Disegna il paesaggio come vuoi: monti, mare, boschi, nuvole, rovine, tutto quello che immagini.",
+        "5. Palme, grotta, animali, Hayy e il terreno li mette il gioco, sopra al tuo disegno.",
+        "6. La fascia grigia in basso verra' coperta dal terreno: li' non serve disegnare molto.",
+        "7. In alto trovi il capitolo della storia e l'ora del giorno di ogni tratto: se vuoi, lasciati ispirare.",
+        "8. Fotografa i fogli dall'alto, uno alla volta, con buona luce. Poi:",
         "     - dal telefono: Impostazioni > Il tuo disegno come fondale > scegli le foto da sinistra a destra;",
         "     - per tutti: python3 strumenti/prepara_fondale.py foglio1.jpg ... foglio5.jpg assets/fondali/livello1.png",
     ]
@@ -122,30 +111,18 @@ def foglio(c, i):
         c.setFont("Helvetica-Oblique", 10)
         c.drawString(max(x1, x_inizio) + 6, H - 1.4 * cm, ora)
         c.setFont("Helvetica-Bold", 11)
-    # linea del terreno e zona dei personaggi
-    yt = py(SUOLO)
+    # fascia coperta dal terreno del gioco (la sabbia comincia a y = 632)
+    yt = py(632)
+    c.setFillColor(Color(0.6, 0.6, 0.65, alpha=0.12))
+    c.rect(x_inizio, 0, W, yt, stroke=0, fill=1)
     c.setStrokeColor(MATITA)
-    c.setLineWidth(1)
+    c.setLineWidth(0.8)
     c.setDash(8, 5)
     c.line(x_inizio, yt, x_inizio + W, yt)
     c.setDash()
-    c.setFillColor(Color(0.6, 0.6, 0.65, alpha=0.08))
-    c.rect(x_inizio, 0, W, py(SUOLO - 260), stroke=0, fill=1)
     c.setFillColor(MATITA)
-    c.setFont("Helvetica", 8)
-    c.drawString(x_inizio + 8, yt + 4, "terreno: qui camminano i personaggi (tieni semplice questa fascia)")
-    # oggetti del gioco
-    c.setFont("Helvetica", 8)
-    for (nome, ox, lw, lh) in OGGETTI:
-        x1 = px(ox - lw / 2)
-        if x1 > x_inizio + W or px(ox + lw / 2) < x_inizio:
-            continue
-        c.setStrokeColor(CHIARO)
-        c.setDash(4, 3)
-        c.roundRect(x1, yt, px(lw), py(SUOLO - lh) - yt, 6)
-        c.setDash()
-        c.setFillColor(CHIARO)
-        c.drawCentredString(px(ox), yt + (py(SUOLO - lh) - yt) / 2, nome)
+    c.setFont("Helvetica", 9)
+    c.drawString(x_inizio + 8, yt - 14, "qui sotto il gioco disegna il terreno: questa fascia sara' coperta")
     # numero del foglio e righello in cm
     c.setFillColor(MATITA)
     c.setFont("Helvetica-Bold", 10)

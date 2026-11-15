@@ -750,3 +750,6 @@ body.movimento-ridotto .bottone.grande-gioca, body.movimento-ridotto .giro-icone
 }
 body.stile-inchiostro #velo-carta { display: block; }
 body.stile-inchiostro #mondo { filter: grayscale(1) brightness(1.4) contrast(1.05); }
+.dl-aiuto { display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 6px 12px; border-radius: 12px; background: #fff3c4; color: #2b2622; font: 700 0.85em/1.25 var(--gioco); }
+.dl-aiuto .icona { width: 28px; height: 28px; flex: none; }
+#spiegazione .puntini { top: 2.6vh; bottom: auto; left: 4vw; }

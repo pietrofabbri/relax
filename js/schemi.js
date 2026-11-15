@@ -7,9 +7,14 @@
   "use strict";
 
   var INK = "#2b2622", CARTA = "#fbf6ea";
-  var k = 0;
+  var k = 0, indice = 0, opz = {};
+  /* un passo dello schema. opz.fino: quanti passi mostrare; opz.da: passi già visti (compaiono subito) */
   function passo(contenuto, ritardo) {
-    return '<g class="passo" style="animation-delay:' + (ritardo !== undefined ? ritardo : (k++ * 0.45)).toFixed(2) + 's">' + contenuto + "</g>";
+    var i = indice++;
+    if (opz.fino !== undefined && i >= opz.fino) return "";
+    var r = ritardo !== undefined ? ritardo : (k++ * 0.45);
+    if (opz.da !== undefined) r = i < opz.da ? 0 : (i - opz.da) * 0.5 + 0.2;
+    return '<g class="passo" style="animation-delay:' + r.toFixed(2) + 's">' + contenuto + "</g>";
   }
   function testo(x, y, t, o) {
     o = o || {};
@@ -87,6 +92,42 @@
       return h;
     },
 
+    /* il neurone: corpo, filo lungo (assone), segnale elettrico, sinapsi */
+    neurone: function (L) {
+      var h = "";
+      var corpo = '<path d="M120 200 m-46 0 a46 46 0 1 0 92 0 a46 46 0 1 0 -92 0" fill="#f4d9c0" stroke="' + INK + '" stroke-width="5"/>' +
+        '<circle cx="120" cy="200" r="14" fill="#c4421a"/>' +
+        '<path d="M80 176 L40 140 M40 140 L22 150 M40 140 L36 118 M84 226 L44 262 M44 262 L26 254 M44 262 L42 286 M118 154 L112 112 M112 112 L96 100 M112 112 L126 96" stroke="' + INK + '" stroke-width="5" stroke-linecap="round" fill="none"/>';
+      h += passo(corpo + testo(120, 330, L.neurone, { dim: 26 }), 0);
+      var assone = '<path id="assone" d="M166 200 H560" stroke="' + INK + '" stroke-width="6"/>';
+      for (var i = 0; i < 6; i++) assone += '<rect x="' + (182 + i * 64) + '" y="188" width="48" height="24" rx="12" fill="#fff" stroke="' + INK + '" stroke-width="4"/>';
+      h += passo(assone + testo(360, 168, L.filo, { dim: 22, peso: 600 }), 0.8);
+      h += passo('<circle r="12" fill="#ffd34d" stroke="#b0600a" stroke-width="3"><animateMotion dur="1.4s" repeatCount="indefinite" path="M166 200 H560"/></circle>' +
+        testo(360, 262, L.elettrico, { dim: 26, colore: "#b0600a" }) + testo(360, 296, L.velocita, { dim: 22, peso: 600 }), 1.6);
+      h += passo('<path d="M560 200 L600 182 M560 200 L600 218" stroke="' + INK + '" stroke-width="5" stroke-linecap="round"/>' +
+        '<path d="M630 160 Q650 200 630 240" stroke="' + INK + '" stroke-width="6" fill="#f4d9c0"/>' +
+        '<circle cx="614" cy="190" r="4" fill="#4a90e2"/><circle cx="618" cy="206" r="4" fill="#4a90e2"/><circle cx="610" cy="214" r="4" fill="#4a90e2"/>' +
+        testo(640, 120, L.sinapsi, { dim: 24, colore: "#4a90e2" }) + testo(640, 290, L.chimica, { dim: 20, peso: 600 }), 2.5);
+      return h;
+    },
+
+    /* dove si spende il tempo di una reazione */
+    tempi: function (L) {
+      var h = "", x0 = 90, W = 620;
+      var parti = [[0.12, "#f2a01b", L.viaggio1], [0.72, "#c4421a", L.cervello], [0.16, "#4a90e2", L.muscolo]];
+      var x = x0;
+      parti.forEach(function (q, i) {
+        var w = W * q[0];
+        h += passo('<rect x="' + x + '" y="150" width="' + w + '" height="70" rx="8" fill="' + q[1] + '" stroke="' + INK + '" stroke-width="4"/>' +
+          testo(x + w / 2, i === 1 ? 194 : 120 + (i === 2 ? 0 : 0), i === 1 ? q[2] : "", { dim: 24, colore: "#fff" }), i * 0.7);
+        if (i !== 1) h += passo(testo(x + w / 2, i === 0 ? 120 : 260, q[2], { dim: 20, peso: 700 }), i * 0.7 + 0.2);
+        x += w;
+      });
+      h += passo('<path d="M' + x0 + ' 300H' + (x0 + W) + '" stroke="' + INK + '" stroke-width="4"/><path d="M' + x0 + ' 290v20M' + (x0 + W) + ' 290v20" stroke="' + INK + '" stroke-width="4"/>' +
+        testo(x0 + W / 2, 345, L.totale, { dim: 26 }), 2.2);
+      return h;
+    },
+
     /* misurare più volte: tre barre e la media */
     media: function (L) {
       var h = "", v = [310, 240, 275], x0 = 230;
@@ -139,8 +180,8 @@
   };
 
   window.Schemi = {
-    svg: function (nome, etichette) {
-      k = 0;
+    svg: function (nome, etichette, o) {
+      k = 0; indice = 0; opz = o || {};
       return '<svg class="schema" viewBox="0 0 800 400" aria-hidden="true">' + (S[nome] ? S[nome](etichette || {}) : "") + "</svg>";
     }
   };

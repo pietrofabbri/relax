@@ -12,7 +12,7 @@ Torna a: [indice dei livelli](README.md) · Storia: [opera](../didattica/storie/
 | **Passi della roadmap** | B1.1-B1.6, R1.1 |
 | **Ruolo nel gioco** | Tutorial: si impara a muoversi, a osservare e a usare il quaderno |
 | **Chi lo progetta** | Noi, completo prima della sessione 1 |
-| **Stato** | **Fatto, versione 5** (14 novembre 2026): si legge per andare avanti (tempo di lettura e 16 domande di comprensione), 8 spiegazioni a schede con schemi, mondo a inchiostro con colore solo dove conta, striscia del fondale con guida da stampare |
+| **Stato** | **Fatto, versione 5** (14 novembre 2026): si legge per andare avanti (tempo di lettura e 16 domande di comprensione), 8 spiegazioni a schede con schemi, mondo a inchiostro con colore solo dove conta, striscia del fondale con guida da stampare. 15 novembre: domande di ragionamento con aiuto, spiegazione dei nervi con neuroni e sinapsi, fondale libero con gli oggetti del gioco sopra |
 | **Codice** | `js/livello1.js` (tappe), `js/testi-it.js` (testi), `js/arte.js` (disegni), `js/mondo.js` (motore) |
 
 ## 2. Ambientazione
@@ -47,18 +47,20 @@ Il **prologo** è fatto di 5 immagini con una frase ciascuna: la cartina di Al-A
 
 ### Spiegazioni con schema (prima di ogni carta)
 
-| Carta | Schema | Domanda per andare avanti |
-| --- | --- | --- |
-| B1.1 Ogni parte ha un compito | il corpo con cervello, polmoni, cuore, stomaco, muscoli | Che cosa fa il cuore? |
-| B1.2 Lavorano insieme | la catena muscoli → respiro → cuore → calore → sudore | Perché il cuore accelera quando corri? |
-| B1.3 Messaggi veloci | occhio → nervo → cervello → nervo → mano, 0,2 s | Chi decide di muovere la mano? |
-| B1.6 Misura più volte | tre barre e la media | Perché si misura più volte? |
-| R1.1 Il cuore non si ferma | 100.000 battiti al giorno, anche di notte | Quando si ferma il cuore di una persona viva? |
-| B1.4 Messaggi lenti | due strade: nervi (veloci, brevi) e sangue (lenti, lunghi) | Dopo uno spavento il cuore resta veloce. Perché? |
-| B1.5 Sempre 37 gradi | il termostato: caldo → sudi, freddo → tremi | Se hai molto caldo, il corpo… |
-| (ponte al livello 2) | fuoco e corpo: aria + cibo = energia | A che cosa serve l'aria al corpo? |
+Le domande **non chiedono di ripetere una frase**: chiedono di usare ciò che si è capito in una situazione nuova. Se si sbaglia, compare un aiuto per ragionare (non la risposta) e si riprova.
 
-Ogni capitolo della storia ha anche la sua domanda (per esempio: "Chi cresce Hayy?").
+| Carta | Schema (si costruisce scheda dopo scheda) | Domanda di ragionamento |
+| --- | --- | --- |
+| B1.1 Ogni parte ha un compito | il corpo e i suoi organi | Stai leggendo: quale organo lavora di più? |
+| B1.2 Lavorano insieme | muscoli → ossigeno → respiro → cuore → calore → sudore | Sali le scale di corsa: che cosa NON succede? |
+| B1.3 Neuroni e riflessi | neurone, assone, segnale elettrico (fino a 100 m/s), sinapsi; occhio → cervello → mano; dove si spende il tempo | Stanco o distratto, prendi il cocco più tardi: perché? |
+| B1.6 Misura più volte | tre misure e la media | 300, 200 e 250 millesimi: qual è la media? |
+| R1.1 Il cuore non si ferma | il cuore-muscolo, 100.000 battiti al giorno | Quanti battiti in 10 giorni? |
+| B1.4 Ormoni: messaggi lenti | nervi (veloci, brevi) e sangue (ormoni, adrenalina: lenti, durano minuti) | Dopo una lite sei ancora agitato: perché? |
+| B1.5 Sempre 37 gradi | il termostato del cervello: sudore che raffredda, brividi che scaldano | Batti i denti dal freddo: a che cosa serve? |
+| (ponte al livello 2) | fuoco e cellule: ossigeno + combustibile = energia | Una candela sotto un barattolo: che cosa succede? |
+
+Anche i capitoli della storia hanno domande di ragionamento (per esempio: "Sull'isola non ci sono adulti né libri: come potrà imparare Hayy?").
 
 ### Absal insegna le parole
 

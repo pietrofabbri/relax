@@ -91,8 +91,8 @@ Regola: **ogni gesto riuscito fa festa, ogni scoperta ha un premio, ogni esperim
 Il gioco è pieno di stimoli; i momenti di lettura no. Regole:
 
 - **Tempo di lettura:** ogni frase resta da sola il tempo di leggerla (circa 3 parole al secondo, una barra si riempie); solo dopo compare "Tocca per continuare".
-- **Domanda di comprensione:** dopo ogni capitolo e ogni spiegazione c'è una domanda sul testo appena letto. Si va avanti solo con la risposta giusta. Se si sbaglia, la frase con la risposta si illumina e si riprova: nessuna punizione, solo rilettura.
-- **Spiegazioni a schede con schemi** (`Storia.spiega`): come il prologo, una frase per scheda e uno schema che si disegna a passi. Alla fine un riepilogo di tutte le frasi e la domanda. Poi, come premio, la carta dell'album.
+- **Domanda di ragionamento:** dopo ogni capitolo e ogni spiegazione c'è una domanda che chiede di **usare** ciò che si è letto in una situazione nuova (non di ripeterlo). Si va avanti solo con la risposta giusta. Se si sbaglia compare un aiuto per ragionare (campo `aiuto`), e si riprova.
+- **Spiegazioni a schede con schemi** (`Storia.spiega`): come il prologo, una frase per scheda e uno schema che si disegna a passi. Lo schema si costruisce scheda dopo scheda (campo `fino`: quanti pezzi mostrare). Alla fine la domanda. Poi, come premio, la carta dell'album.
 - Durante la lettura: sfondo calmo, niente effetti, niente punti che saltano.
 
 ## Stile a inchiostro

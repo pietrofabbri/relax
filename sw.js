@@ -1,5 +1,5 @@
 /* Service worker: conserva i file del gioco per giocare anche senza connessione. */
-var VERSIONE = "respira-v7";
+var VERSIONE = "respira-v8";
 var FILE = [
   "./",
   "index.html",
