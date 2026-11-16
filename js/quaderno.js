@@ -18,7 +18,7 @@
 
   function colore(roadmap) {
     var f = (roadmap || "B")[0];
-    return { B: "verde", R: "rosso", A: "oro", E: "viola", S: "blu", M: "rosa" }[f] || "verde";
+    return { B: "verde", R: "rosso", A: "oro", "★": "oro", E: "viola", S: "blu", M: "rosa" }[f] || "verde";
   }
 
   function htmlCarta(pg, girata) {
@@ -64,7 +64,7 @@
     },
     /* le carte che si possono trovare nel livello: { id: { titolo, testo, icona, roadmap } } */
     catalogo: function (tutte) {
-      catalogo = Object.keys(tutte).map(function (id) { var c = tutte[id]; return { id: id, titolo: c.titolo, testo: c.testo, icona: c.icona, roadmap: c.roadmap }; });
+      catalogo = Object.keys(tutte).map(function (id) { var c = tutte[id]; return { id: id, titolo: c.titolo, testo: c.testo, icona: c.icona, roadmap: c.roadmap, oro: !!c.oro }; });
     },
     azzera: function () { pagine = []; salva(); },
     ha: function (id) { return pagine.some(function (x) { return x.id === id; }); },
@@ -102,8 +102,8 @@
             cella.innerHTML = htmlCarta(trovata);
             cella.addEventListener("click", function () { cella.classList.toggle("ingrandita"); window.Suoni.pop(); });
           } else {
-            cella.innerHTML = '<div class="carta bloccata"><div class="carta-faccia"><div class="carta-icona">' + I.svg("lucchetto") +
-              '</div><div class="carta-titolo">?</div><div class="carta-testo">' + Q.bloccata + "</div></div></div>";
+            cella.innerHTML = '<div class="carta bloccata' + (c.oro ? " oro" : "") + '"><div class="carta-faccia"><div class="carta-icona">' + I.svg(c.oro ? "stella" : "lucchetto") +
+              '</div><div class="carta-titolo">?</div><div class="carta-testo">' + (c.oro ? Q.bloccataOro : Q.bloccata) + "</div></div></div>";
           }
           griglia.appendChild(cella);
         });

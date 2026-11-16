@@ -44,6 +44,7 @@
     box.innerHTML = '<div class="dl-titolo">' + I.svg("occhio") + "<span>" + formatta(d.testo) + '</span></div><div class="dl-scelte"></div>';
     dove.appendChild(box);
     var scelte = box.querySelector(".dl-scelte");
+    var errori = 0;
     return new Promise(function (fatto) {
       d.opzioni.forEach(function (op, i) {
         var b = document.createElement("button");
@@ -55,12 +56,21 @@
           if (i === d.giusta) {
             b.classList.add("giusta");
             scelte.querySelectorAll("button").forEach(function (x) { x.disabled = true; });
-            window.Suoni.fanfara(2);
-            if (window.Spettacolo) window.Spettacolo.premio(20);
-            setTimeout(fatto, 700);
+            window.Suoni.fanfara(errori ? 1 : 3);
+            /* al primo colpo vale molto di più: è un premio vero */
+            if (window.Spettacolo) window.Spettacolo.premio(errori ? 10 : 60);
+            if (!errori) {
+              b.classList.add("perfetta");
+              var bollo = document.createElement("div");
+              bollo.className = "bollo-perfetto";
+              bollo.innerHTML = window.Icone.svg("stella") + "<span>" + (window.TESTI.gioco.primoColpo || "") + "</span><b>+60</b>";
+              box.appendChild(bollo);
+            }
+            setTimeout(fatto, errori ? 700 : 1500);
           } else {
             b.classList.add("sbagliata");
             b.disabled = true;
+            errori++;
             window.Suoni.ops();
             /* un aiuto per ragionare, non la risposta */
             if (d.aiuto) {
@@ -199,9 +209,17 @@
       return new Promise(function (fatto) {
         var i = 0, pronto = false;
         function mostra() {
-          var s = sp.schede[i];
-          box.innerHTML =
-            '<div class="sp-testa">' + window.Icone.svg("libro") + "<span>" + formatta(sp.titolo || "") + "</span></div>" +
+          var s = sp.schede[i], testa;
+          if (s.parola) {
+            /* parola nuova: prima di usarla, la si vede con un disegno */
+            var PN = window.TESTI.paroleNuove, pn = PN[s.parola];
+            s = { schema: s.parola, testo: pn.frase, attesa: 3.6 };
+            testa = '<div class="sp-testa sp-parola"><span class="pn-nastro">' + PN.nastro + '</span><span class="pn-parola">' + formatta(pn.parola) + "</span></div>";
+            window.Suoni.scoperta();
+          } else {
+            testa = '<div class="sp-testa">' + window.Icone.svg("libro") + "<span>" + formatta(sp.titolo || "") + "</span></div>";
+          }
+          box.innerHTML = testa +
             '<div class="sp-schema">' + window.Schemi.svg(s.schema, L[s.schema], { fino: s.fino, da: (i > 0 && sp.schede[i - 1].schema === s.schema) ? sp.schede[i - 1].fino : undefined }) + "</div>" +
             '<div class="sp-frase"><p>' + formatta(s.testo) + '</p><div class="barra-lettura"><i></i></div></div>' +
             '<div class="puntini">' + sp.schede.map(function (_, k) { return '<i class="' + (k === i ? "on" : k < i ? "fatto" : "") + '"></i>'; }).join("") + "</div>" +

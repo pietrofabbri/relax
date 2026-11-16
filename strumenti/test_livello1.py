@@ -33,7 +33,9 @@ STATO = """(() => {
     bastone: m.bastone && m.bastone.visibile ? sch(m.bastone.x, 770) : null,
     sasso: sch(m.sasso.x, 760), capra2: sch(m.capra2.x, 700), hayyCorpo: sch(h.x, 660),
     fuoco: h.equip.fuoco, forza: h.fuocoForza, calore: vis('btn-calore'),
-    spiaggia: sch(4200, 700), grotta: m.grottaLuce
+    spiaggia: sch(4200, 700), grotta: m.grottaLuce,
+    avv: window.Avventura.attivo(), avvX: window.Avventura.attivo() ? window.Avventura.debug().p.x : 0,
+    risultato: vis('avv-risultato'), sconfitta: vis('sconfitta')
   };
 })()"""
 
@@ -93,7 +95,7 @@ async def main():
             if s["tappa"] != tappa_vista:
                 print(f"{time.strftime('%H:%M:%S')} tappa: {s['tappa']}")
                 tappa_vista, inizio_tappa = s["tappa"], time.time()
-            if time.time() - inizio_tappa > 90:
+            if time.time() - inizio_tappa > 240:
                 await pg.screenshot(path=f"{FOTO}/bloccato.png")
                 raise SystemExit(f"BLOCCATO nella tappa {s['tappa']}: obiettivo={s['obiettivo']!r} hayy={s['hayy']} errori={errori}")
             chiave = (s["tappa"], s["obiettivo"])
@@ -138,6 +140,39 @@ async def main():
                         pass
                     await pg.wait_for_timeout(350)
                 else:
+                    await pg.wait_for_timeout(300)
+                continue
+            if s["sconfitta"]:
+                await pg.wait_for_timeout(900)
+                await pg.screenshot(path=f"{FOTO}/sconfitta-{s['tappa']}.png")
+                await pg.click("#sc-riprova", force=True)
+                await pg.wait_for_timeout(500)
+                continue
+            if s["risultato"]:
+                await pg.wait_for_timeout(1600)
+                await pg.screenshot(path=f"{FOTO}/risultato-{s['tappa']}.png")
+                await pg.click("#avv-risultato .bottone.principale", force=True)
+                await pg.wait_for_timeout(600)
+                continue
+            if s["avv"]:
+                n = conta.get("avv" + str(s["tappa"]), 0)
+                conta["avv" + str(s["tappa"])] = n + 1
+                if n == 0:
+                    # gioca davvero per qualche secondo, con i comandi a schermo
+                    await pg.wait_for_timeout(800)
+                    await pg.screenshot(path=f"{FOTO}/prova-{s['tappa']}-0.png")
+                    dx = await pg.query_selector("#cmd-dx")
+                    bb = await dx.bounding_box()
+                    await mouse.move(bb["x"] + bb["width"] / 2, bb["y"] + bb["height"] / 2); await mouse.down()
+                    for i in range(10):
+                        await pg.keyboard.press("Space")
+                        await pg.wait_for_timeout(260)
+                    await mouse.up()
+                    await pg.screenshot(path=f"{FOTO}/prova-{s['tappa']}-1.png")
+                    print("  prova: dopo 3 s Hayy è a x =", (await pg.evaluate(STATO))["avvX"])
+                else:
+                    await pg.evaluate("(() => { const q = Avventura.debug(); if (!q || q.fermo) return; q.p.invul = 3; q.p.x = q.def.fine - 40; q.p.y = 790; q.p.vy = 0; q.p.su = null; })()")
+                    await pg.keyboard.down("ArrowRight"); await pg.wait_for_timeout(400); await pg.keyboard.up("ArrowRight")
                     await pg.wait_for_timeout(300)
                 continue
             if s["indovina"]:

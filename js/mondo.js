@@ -482,6 +482,8 @@
     try { canvas.setPointerCapture(e.pointerId); } catch (x) { /* niente */ }
     var c = coordinate(e);
     onda(c.sx, c.sy, { r: 70, vita: 0.45, colore: [255, 255, 255], spessore: 6 });
+    /* le cose del paesaggio rispondono sempre al tocco (solo effetti: non cambiano l'attività) */
+    if (scena && scena.tocca) scena.tocca(c.wx, c.wy);
     if (attivita && attivita.giu) attivita.giu(c.wx, c.wy, c.sx, c.sy);
   }
   function muovi(e) {
@@ -530,6 +532,7 @@
       if (!durata) { ora.valore = ora.a = ora.da = valore; ora.t = 1; return; }
       ora.da = ora.valore; ora.a = valore; ora.t = 0; ora.durata = durata;
     },
+    oraAttuale: function () { return ora.t < 1 ? ora.a : ora.valore; },
     termica: function (si) { termica.attiva = !!si; },
     /* stile: "inchiostro" (bianco e nero su carta, colore solo dove conta) oppure "colori" */
     stile: function (nome) {

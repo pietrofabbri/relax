@@ -30,6 +30,8 @@
 
   var hayy = { x: 260, y: SUOLO, verso: 1, passo: 0, posa: "fermo", salto: 0, vy: 0, equip: {}, dest: 260, vel: 340, cuore: 74, respiro: 1.6, calore: 0 };
   var cerva = { x: 520, y: SUOLO, verso: 1, passo: 0, stato: "ferma", dest: 520, vel: 300, visibile: true, alfa: 1 };
+  window.Livello1Hayy = hayy;
+  window.Livello1Cerva = cerva;
   var absal = { x: 4380, y: SUOLO, verso: -1, passo: 0, posa: "fermo", veste: "#6b4f8a", barba: true, capelli: [150, 140, 130], pelleColore: [196, 150, 112], visibile: false };
 
   var mondo = {
@@ -57,11 +59,17 @@
     semi: [380, 480, 580, 680, 780, 1000, 1280, 1550, 3500, 3640, 3780, 3920, 4060].map(function (x, i) {
       return { x: x, y: SUOLO - 70 - (i % 3) * 30, preso: false, t: 0 };
     }),
-    semiPresi: 0
+    semiPresi: 0,
+    /* il paesaggio risponde al tocco */
+    salti: {},              /* chiave -> tempo rimasto del saltello */
+    cocchiLiberi: [],       /* cocchi fatti cadere toccando le palme */
+    scoperte: {},           /* cose toccate almeno una volta */
+    noTocchi: false         /* durante i giochi di precisione il paesaggio non reagisce */
   };
 
   /* punteggio pieno di ogni tappa: serve per le stelle */
-  var MASSIMI = { segui: 30, animali: 170, corsa: 250, cocchi: 240, cerva: 170, fuoco: 270, calore: 140, alba: 260 };
+  var MASSIMI = { segui: 30, animali: 170, corsa: 900, cocchi: 1100, cerva: 170, fuoco: 270, calore: 1100, alba: 260 };
+  var scenaLivello = null;
 
   /* ---------- utilità ---------- */
 
@@ -105,6 +113,75 @@
     mondo.etichette.push({ testo: testo, colore: colore || "#ffffff", vita: 2.6, dy: 0 });
   }
 
+  /* ---------- il paesaggio si tocca ---------- */
+
+  function saltello(k, alto) {
+    var t = mondo.salti[k] || 0;
+    return t > 0 ? -Math.sin((1 - t / 0.7) * Math.PI) * (alto || 60) : 0;
+  }
+
+  function scopri(k, x, y) {
+    if (mondo.scoperte[k]) return;
+    mondo.scoperte[k] = true;
+    /* la prima volta, dalle cose nascoste esce un seme di luce: esplorare conviene */
+    S.premio(15, x, y - 120, null, { colore: "#ffe27a", scintille: 16, dim: 48 });
+    M.coriandoli(x, y - 60, 18);
+  }
+
+  function tocca(wx, wy) {
+    if (mondo.noTocchi) return;
+    var an = mondo.animali, Su = window.Suoni;
+    function su(x, y, r, ry) { return Math.abs(wx - x) < r && Math.abs(wy - y) < (ry || r); }
+    if (su(an.capra.x, SUOLO - 90, 110)) {
+      mondo.salti.capra = 0.7; Su.pop(); M.scritta("BEEE!", an.capra.x, SUOLO - 260, { dim: 54, colore: "#fff", vita: 1 });
+      M.emetti("polvere", an.capra.x, SUOLO, 12, { dispersione: 260 }); scopri("capra", an.capra.x, SUOLO - 120); return;
+    }
+    if (su(an.uccello.x, SUOLO - 140, 100)) {
+      mondo.salti.uccello = 0.7; Su.whoosh(); M.scritta("CIP CIP!", an.uccello.x, SUOLO - 320, { dim: 50, colore: "#fff", vita: 1 });
+      M.emetti("foglia", an.uccello.x, SUOLO - 150, 14, { dispersione: 380, vy: -200, colori: [[250, 250, 255], [210, 220, 240]] }); scopri("uccello", an.uccello.x, SUOLO - 160); return;
+    }
+    if (su(an.tartaruga.x, SUOLO - 30, 100, 70)) {
+      mondo.salti.tartaruga = 0.7; Su.tonfo(); M.scritta("zzz…", an.tartaruga.x, SUOLO - 160, { dim: 44, colore: "#fff", vita: 1.2 });
+      scopri("tartaruga", an.tartaruga.x, SUOLO - 60); return;
+    }
+    for (var i = 0; i < mondo.palme.length; i++) {
+      var px = mondo.palme[i], alt = 470 + i * 30;
+      if (Math.abs(wx - px) < 150 && wy < SUOLO - 60 && wy > SUOLO - alt - 120) {
+        Su.whoosh();
+        M.emetti("foglia", px + 30, SUOLO - alt, 20, { dispersione: 500, vy: 100 });
+        if (mondo.cocchiLiberi.length < 4) mondo.cocchiLiberi.push({ x: px + 40, y: SUOLO - alt + 20, vy: 0, vx: (Math.random() - 0.5) * 120, a: 0, t: 0 });
+        scopri("palma" + i, px, SUOLO - alt / 2); return;
+      }
+    }
+    if (su(mondo.grottaX, SUOLO - 120, 190, 150)) {
+      Su.pop();
+      for (var k = 0; k < 3; k++) (function (k) { setTimeout(function () { M.onda(mondo.grottaX, SUOLO - 120, { r: 220 + k * 70, colore: [255, 230, 190], vita: 0.8 }); }, k * 180); })(k);
+      M.scritta("Ooo… ooo…", mondo.grottaX, SUOLO - 330, { dim: 46, colore: "#fff", vita: 1.6 });
+      scopri("grotta", mondo.grottaX, SUOLO - 200); return;
+    }
+    if (su(mondo.sasso.x, SUOLO - 30, 90, 60) || su(1150, SUOLO - 80, 120, 70) || su(150, SUOLO - 120, 200, 120)) {
+      Su.tonfo(); M.emetti("scintilla", wx, wy, 14, { dispersione: 300 }); M.scritta("TOC!", wx, wy - 120, { dim: 46, colore: "#fff", vita: 0.9 });
+      scopri("sasso" + Math.round(wx / 600), wx, wy); return;
+    }
+    if (su(700, SUOLO - 70, 120, 80) || su(1600, SUOLO - 70, 130, 90) || su(mondo.canneX, SUOLO - 160, 170, 180)) {
+      Su.whoosh(); M.emetti("foglia", wx, wy, 18, { dispersione: 420, vy: -160 });
+      scopri("cespuglio" + Math.round(wx / 500), wx, wy); return;
+    }
+    if (cerva.visibile && su(cerva.x, SUOLO - 110, 120, 110)) {
+      mondo.salti.cerva = 0.7; Su.battito(0.5);
+      M.emetti("stella", cerva.x, SUOLO - 160, 12, { dispersione: 260, colori: [[255, 120, 150]] }); scopri("cerva", cerva.x, SUOLO - 180); return;
+    }
+    if (su(hayy.x, SUOLO - 110, 70, 120) && !hayy.inCorsa) {
+      mondo.salti.hayy = 0.7; Su.salto(); scopri("hayy", hayy.x, SUOLO - 200); return;
+    }
+    if (wy < 300) {
+      /* il cielo: una stella cadente */
+      Su.ding(Math.floor(Math.random() * 8));
+      M.emetti("stella", wx, wy, 16, { vx: 500, vy: 200, dispersione: 120 });
+      M.onda(wx, wy, { r: 90, colore: [255, 250, 210], vita: 0.5 });
+    }
+  }
+
   /* ---------- aggiornamento continuo ---------- */
 
   function muovi(ent, dt, corsa) {
@@ -142,6 +219,17 @@
       }
     });
 
+    Object.keys(mondo.salti).forEach(function (k) { mondo.salti[k] = Math.max(0, mondo.salti[k] - dt); });
+    mondo.cocchiLiberi.forEach(function (c) {
+      c.t += dt;
+      if (c.y < SUOLO - 26 || c.vy < 0) { c.vy += 2200 * dt; c.y += c.vy * dt; c.x += c.vx * dt; c.a += dt * 6; }
+      if (c.y >= SUOLO - 26 && c.vy > 0) {
+        c.y = SUOLO - 26;
+        if (c.vy > 300) { c.vy = -c.vy * 0.4; window.Suoni.tonfo(); M.emetti("polvere", c.x, SUOLO, 8); M.scuoti(4, 0.1); }
+        else { c.vy = 0; c.x += c.vx * dt; c.vx *= 0.98; c.a += c.vx * dt * 0.04; }
+      }
+    });
+    mondo.cocchiLiberi = mondo.cocchiLiberi.filter(function (c) { return c.t < 5; });
     mondo.etichette.forEach(function (e) { e.vita -= dt; e.dy += dt * 30; });
     mondo.etichette = mondo.etichette.filter(function (e) { return e.vita > 0; });
     mondo.anelli.forEach(function (a) { a.t += dt; });
@@ -171,9 +259,9 @@
       A.cespuglio(ctx, p, 1600, SUOLO - 40, 1.3, tempo, 3);
     }
     var an = mondo.animali;
-    if (visibile(an.capra.x)) A.capra(ctx, p, an.capra.x, SUOLO + 10, -1, tempo);
-    if (visibile(an.uccello.x)) A.uccello(ctx, p, an.uccello.x, SUOLO - 130, tempo, false);
-    if (visibile(an.tartaruga.x)) A.tartaruga(ctx, p, an.tartaruga.x, SUOLO + 6, tempo);
+    if (visibile(an.capra.x)) A.capra(ctx, p, an.capra.x, SUOLO + 10 + saltello("capra"), -1, tempo);
+    if (visibile(an.uccello.x)) A.uccello(ctx, p, an.uccello.x, SUOLO - 130 + saltello("uccello", 140), tempo, mondo.salti.uccello > 0);
+    if (visibile(an.tartaruga.x)) A.tartaruga(ctx, p, an.tartaruga.x, SUOLO + 6 + saltello("tartaruga", 16), tempo);
 
 
     /* ostacoli della corsa */
@@ -187,6 +275,8 @@
     mondo.palme.forEach(function (x, i) {
       if (visibile(x, 500)) A.palma(ctx, p, x, SUOLO - 10, 470 + i * 30, tempo, 3);
     });
+
+    mondo.cocchiLiberi.forEach(function (c) { if (visibile(c.x)) A.cocco(ctx, p, c.x, c.y, 26); });
 
     /* grotta, sasso, tomba */
     if (visibile(mondo.grottaX, 600)) A.grotta(ctx, p, mondo.grottaX, SUOLO - 4, mondo.grottaLuce, tempo);
@@ -213,11 +303,15 @@
     /* cerva e Hayy */
     if (cerva.visibile) {
       ctx.globalAlpha = cerva.alfa;
+      ctx.save(); ctx.translate(0, saltello("cerva", 40));
       A.cerva(ctx, p, cerva, tempo);
+      ctx.restore();
       ctx.globalAlpha = 1;
     }
     hayy.strato = "corpo";
+    ctx.save(); ctx.translate(0, saltello("hayy", 70));
     A.persona(ctx, p, hayy, tempo);
+    ctx.restore();
   }
 
   function anelloInvito(ctx, x, y, tempo) {
@@ -481,6 +575,87 @@
     return c;
   }
 
+  /* ================= PROVE PLATFORM ================= */
+
+  /*
+   * Una prova "platform": si cambia scena, si gioca (si può perdere), poi il risultato.
+   * I tre pezzi di carta aprono la carta d'oro: un premio vero, che si può anche mancare.
+   */
+  function prova(nome, oro, xDopo) {
+    var def = window.AVVENTURE1[nome], TA = window.TESTI.avventura;
+    var prima = { x: xDopo || hayy.x, cx: cerva.x, cv: cerva.visibile, ora: M.oraAttuale() };
+    Did.obiettivo(null);
+    return S.sipario(null, TA.nomi[nome], function () {
+      M.caricaScena(window.Avventura.scena(def));
+      if (def.ora !== undefined) M.ora(def.ora);
+      hayy.x = def.inizio; hayy.inCorsa = true;
+      M.camera.segui = hayy;
+      M.camera.x = 0;
+    }).then(function () {
+      var gioco = window.Avventura.gioca(def);
+      /* i comandi lampeggiano: si capisce subito che cosa toccare */
+      ["cmd-dx", "cmd-salta"].concat(def.bastone === false ? [] : ["cmd-colpo"]).forEach(function (id) {
+        var b = document.getElementById(id);
+        b.classList.add("invito");
+        setTimeout(function () { b.classList.remove("invito"); }, 3500);
+      });
+      Did.mostra(TA.intro[nome], { tocca: false, durata: 3.2 });
+      return gioco;
+    }).then(function (ris) {
+      return risultato(ris, oro);
+    }).then(function (scelta) {
+      if (scelta === "riprova") return prova(nome, oro, xDopo || prima.x);
+      return S.sipario(null, null, function () {
+        M.caricaScena(scenaLivello);
+        M.ora(prima.ora);
+        hayy.inCorsa = false; hayy.x = hayy.dest = prima.x; hayy.y = SUOLO; hayy.salto = 0; hayy.posa = "fermo"; hayy.verso = 1;
+        cerva.x = cerva.dest = prima.cx; cerva.visibile = prima.cv; cerva.stato = "ferma";
+        M.camera.segui = hayy;
+        M.camera.x = Math.max(0, hayy.x - M.vista() * 0.38);
+      });
+    });
+  }
+
+  function risultato(r, oro) {
+    var TA = window.TESTI.avventura, I = window.Icone, F = window.Storia.formatta;
+    var box = document.getElementById("avv-risultato");
+    var tutti = r.frammenti >= r.totFrammenti;
+    var framm = "";
+    for (var i = 0; i < r.totFrammenti; i++) framm += '<span class="' + (i < r.frammenti ? "" : "manca") + '">' + I.svg("stella") + "</span>";
+    box.innerHTML = '<p class="ris-titolo">' + TA.risultato + "</p>" +
+      '<div class="ris-righe">' +
+      '<div class="ris-voce" style="animation-delay:.2s"><div class="ris-framm">' + framm + "</div><small>" + r.frammenti + "/" + r.totFrammenti + " " + TA.pezzi + "</small></div>" +
+      '<div class="ris-voce" style="animation-delay:.6s">' + I.svg("sole") + "<span>" + r.semi + "</span><small>" + TA.semi + "</small></div>" +
+      '<div class="ris-voce" style="animation-delay:1s">' + I.svg("cuore") + "<span>" + (r.cadute + r.colpiti) + "</span><small>" + TA.cadute + "</small></div>" +
+      "</div>" +
+      '<p class="ris-nota">' + F(tutti ? TA.tuttiPezzi : TA.mancano) + "</p>" +
+      '<div class="ris-azioni"></div>';
+    box.classList.remove("nascosto");
+    window.Suoni.fanfara(tutti ? 3 : 1);
+    var az = box.querySelector(".ris-azioni");
+    return new Promise(function (fatto) {
+      function bottone(testo, classe, valore) {
+        var b = document.createElement("button");
+        b.className = "bottone " + classe;
+        b.textContent = testo;
+        b.addEventListener("click", function () {
+          window.Suoni.pop();
+          box.classList.add("nascosto");
+          if (valore === "avanti" && tutti && oro && !Q.ha(oro)) {
+            var pg = T.pagine[oro];
+            Q.aggiungi({ id: oro, titolo: pg.titolo, testo: pg.testo, roadmap: pg.roadmap, icona: pg.icona, oro: true }).then(function () { fatto(valore); });
+          } else fatto(valore);
+        });
+        az.appendChild(b);
+        return b;
+      }
+      setTimeout(function () {
+        if (!tutti) bottone(TA.riprovaPezzi, "secondario", "riprova");
+        bottone(TA.avanti, "principale", "avanti").focus();
+      }, 1300);
+    });
+  }
+
   /* ================= TAPPE ================= */
 
   /* 1 — seguire la cerva */
@@ -596,102 +771,16 @@
       cerva.dest = cerva.x;
       return S.indovina(D.indovinaCorsa, [{ icona: "▲", testo: D.accelera }, { icona: "▼", testo: D.rallenta }], 0);
     }).then(function () {
-      return Did.mostra(D.corsa, { tocca: false, durata: 1.4 });
+      cerva.x = 2860;
+      return prova("bosco", "oroBosco", 2720);
     }).then(function () {
       B.mostra();
-      Did.obiettivo(OB.salta);
-      hayy.inCorsa = true;
       hayy.raggiX = true;
-      hayy.posa = "corre";
-      var vel = 260, rallenta = 0, mostrate = {};
-      mondo.ostacoli.forEach(function (o) { o.passato = false; });
-      return attivita({
-        giu: function () {
-          if (hayy.salto <= 0.5) {
-            hayy.vy = 980; hayy.posa = "salta"; window.Suoni.salto();
-            M.emetti("polvere", hayy.x, SUOLO, 10, { dispersione: 200 });
-          }
-        },
-        aggiorna: function (dt) {
-          vel = Math.min(560, vel + dt * 90);
-          if (rallenta > 0) rallenta -= dt;
-          var v = rallenta > 0 ? 180 : vel;
-          hayy.x += v * dt;
-          hayy.passo += dt * 14;
-          hayy.verso = 1;
-          /* salto */
-          if (hayy.salto > 0 || hayy.vy > 0) {
-            hayy.vy -= 2600 * dt;
-            hayy.salto = Math.max(0, hayy.salto + hayy.vy * dt);
-            if (hayy.salto === 0) { hayy.vy = 0; hayy.posa = "corre"; M.emetti("polvere", hayy.x, SUOLO, 6); }
-          }
-          if (Math.random() < dt * 8 && hayy.salto === 0) M.emetti("polvere", hayy.x - 20, SUOLO - 4, 1, { vx: -80 });
-          /* ostacoli */
-          mondo.ostacoli.forEach(function (o) {
-            if (o.passato) return;
-            if (hayy.x > o.x - 30 && hayy.x < o.x + 30) {
-              o.passato = true;
-              if (hayy.salto < 45) {
-                rallenta = 0.7;
-                M.emetti("polvere", o.x, SUOLO - 20, 24, { dispersione: 300 });
-                M.scuoti(16, 0.35);
-                M.scritta(D.inciampo, o.x, SUOLO - 280, { colore: "#ff8a8a", dim: 70 });
-                window.Suoni.ops();
-                S.rompi();
-              } else {
-                var serie = S.serie();
-                S.premio(20, o.x, SUOLO - 300, serie > 1 ? "x" + serie : D.salto, { serie: true, colore: serie > 2 ? "#9cf0ff" : "#ffd27a" });
-                M.onda(o.x, SUOLO - 40, { r: 160, colore: [255, 255, 255], vita: 0.4 });
-              }
-            }
-          });
-          /* la cerva corre davanti */
-          cerva.dest = Math.min(2860, hayy.x + 300);
-          cerva.vel = 600;
-          /* il corpo cambia insieme */
-          var f = Math.max(0, Math.min(1, (hayy.x - 1680) / 1000));
-          hayy.cuore = 74 + f * 76;
-          hayy.respiro = 1.6 + f * 5;
-          hayy.calore = f;
-          if (f > 0.45 && Math.random() < dt * 10) M.emetti("goccia", hayy.x + 6, SUOLO - 220, 1, { vy: -120, vx: -60 });
-          if (f > 0.15 && !mostrate.c) { mostrate.c = 1; etichetta(D.etichettaCuore, "#ff9a9a"); }
-          if (f > 0.4 && !mostrate.r) { mostrate.r = 1; etichetta(D.etichettaRespiro, "#a8d8ff"); }
-          if (f > 0.65 && !mostrate.t) { mostrate.t = 1; etichetta(D.etichettaCalore, "#ffc27a"); }
-          this.velocita = rallenta > 0 ? 0 : (vel - 260) / 300;
-          if (hayy.x >= 2720) {
-            M.rallenta(0.35, 0.8);
-            M.zoom(1.25, 1.4, { x: 2720, y: SUOLO - 150 });
-            hayy.x = 2720;
-            hayy.dest = 2720;
-            hayy.salto = 0;
-            hayy.vy = 0;
-            hayy.inCorsa = false;
-            hayy.posa = "fermo";
-            this.fine();
-          }
-        },
-        disegnaSchermo: function (ctx, vw) {
-          var v = this.velocita || 0;
-          if (v <= 0.05) return;
-          var t = M.tempo();
-          ctx.strokeStyle = "rgba(255,255,255," + (0.25 * v).toFixed(3) + ")";
-          ctx.lineCap = "round";
-          for (var i = 0; i < 18; i++) {
-            var y = 80 + ((i * 137) % 760);
-            var len = 120 + (i % 4) * 60;
-            var x = vw - ((t * 2600 + i * 311) % (vw + len * 2));
-            ctx.lineWidth = 2 + (i % 3);
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(x + len, y);
-            ctx.stroke();
-          }
-        }
-      });
-    }).then(function () {
+      hayy.cuore = 150; hayy.respiro = 6.6; hayy.calore = 1;
+      M.camera.x = Math.max(0, hayy.x - M.vista() * 0.38);
       Did.obiettivo(null);
       cerva.vel = 220;
-      M.zoom(1, 0.01);
+      M.zoom(1.25, 1.2, { x: 2720, y: SUOLO - 150 });
       return Did.mostra(D.corsaFine);
     }).then(function () {
       hayy.posa = "siede";
@@ -717,11 +806,17 @@
     M.ora(1);
     B.mostra();
     hayy.equip = progressi.equip || hayy.equip;
-    return vai(hayy, 3110, 300).then(function () {
+    return prova("scogliera", "oroScogliera", 2900).then(function () {
+      return vai(hayy, 3110, 300);
+    }).then(function () {
       hayy.verso = 1;
+      /* prima di misurare in millesimi, si vede che cos'è un millesimo */
+      return window.Storia.spiega({ titolo: "", schede: [{ parola: "millesimo" }] });
+    }).then(function () {
       return Did.mostra(D.cocchi);
     }).then(function () {
       Did.obiettivo(OB.cocchi);
+      mondo.noTocchi = true;
       var tempi = [], stato = "attesa", timer = 0, cocco = null, risultati = null;
       function nuovo() {
         stato = "attesa";
@@ -810,6 +905,7 @@
         }
       });
     }).then(function (tempi) {
+      mondo.noTocchi = false;
       mondo.cocco = null;
       progressi.riflessi = tempi;
       var media = Math.round(tempi.reduce(function (a, b) { return a + b; }, 0) / tempi.length);
@@ -1066,7 +1162,9 @@
     mondo.capra2.visibile = true;
     mondo.capra2.x = 3980;
     var bottone = document.getElementById("btn-calore");
-    return vai(hayy, 3700, 260).then(function () {
+    return prova("notte", "oroNotte", 3500).then(function () {
+      return vai(hayy, 3700, 260);
+    }).then(function () {
       hayy.verso = 1;
       return S.indovina(D.indovinaCalore, [{ icona: "🪨", testo: D.ilSasso }, { icona: "🐐", testo: D.laCapra }], 1);
     }).then(function () {
@@ -1325,7 +1423,7 @@
   window.Livello1 = {
     carica: function () {
       progressi = window.Salvataggio.progressi("livello1");
-      M.caricaScena({
+      M.caricaScena(scenaLivello = {
         larghezza: LARGHEZZA,
         spiaggiaDa: 4300,
         /* Quando arriverà la scansione del disegno del ragazzo, si potrà aggiungere qui come strato. */
@@ -1333,7 +1431,8 @@
         disegnaColore: disegnaColore,
         aggiorna: aggiorna,
         luci: luci,
-        calore: calore
+        calore: calore,
+        tocca: tocca
       });
       window.Fondale.carica("livello1");
       S.prepara(progressi);
@@ -1381,7 +1480,9 @@
         animali: mondo.animali,
         aSchermo: function (wx, wy) { return M.aSchermo(wx, wy); },
         mondo: mondo,
-        hayyRef: hayy
+        hayyRef: hayy,
+        cervaRef: cerva,
+        absalRef: absal
       };
     }
   };

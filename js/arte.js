@@ -609,7 +609,7 @@
       ctx.save();
       ctx.translate(x, y);
       ctx.scale(c.verso || 1, 1);
-      var pelo = mescola([176, 120, 78], p.bordo, 0.12);
+      var pelo = mescola(Arte.inchiostro ? [120, 78, 48] : [176, 120, 78], p.bordo, 0.12);
       var scuro = rgba(mescola(pelo, [0, 0, 0], 0.35));
       if (c.stato === "sdraiata") {
         var g0 = ctx.createLinearGradient(0, -70, 0, 0);

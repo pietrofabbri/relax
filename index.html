@@ -105,6 +105,26 @@
     </div>
   </div>
 
+  <!-- Prove platform: comandi, cuori, pezzi di carta, fiato -->
+  <div id="avv-hud" class="nascosto" aria-hidden="true">
+    <div id="avv-cuori"></div>
+    <div id="avv-frammenti"></div>
+    <div id="avv-fiato"><span class="avv-fiato-icona"></span><div class="avv-fiato-tubo"><i id="avv-fiato-barra"></i></div></div>
+  </div>
+  <div id="comandi" class="nascosto">
+    <div class="cmd-gruppo">
+      <button id="cmd-sx" class="cmd" aria-label="Sinistra"><svg viewBox="0 0 24 24"><path d="M15 4L7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button id="cmd-dx" class="cmd" aria-label="Destra"><svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+    <div class="cmd-gruppo">
+      <button id="cmd-colpo" class="cmd colpo" aria-label="Bastone"><svg viewBox="0 0 24 24"><path d="M5 19L18 6" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"/><path d="M14 3c3 0 6 2 7 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".7"/></svg></button>
+      <button id="cmd-salta" class="cmd salta" aria-label="Salta"><svg viewBox="0 0 24 24"><path d="M5 15l7-7 7 7" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 20h8" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity=".6"/></svg></button>
+    </div>
+  </div>
+  <div id="sconfitta" class="nascosto" role="dialog" aria-live="assertive"></div>
+  <div id="avv-risultato" class="nascosto" role="dialog" aria-live="polite"></div>
+  <div id="parola-nuova" class="nascosto" role="dialog" aria-live="polite"></div>
+
   <div id="ruota" class="nascosto"></div>
   <noscript>Per giocare a Respira serve JavaScript attivo nel browser.</noscript>
 
@@ -125,6 +145,8 @@
   <script src="js/fondale.js"></script>
   <script src="js/mondo.js"></script>
   <script src="js/spettacolo.js"></script>
+  <script src="js/avventura.js"></script>
+  <script src="js/livelli/avventure-1.js"></script>
   <script src="js/livello1.js"></script>
   <script src="js/app.js"></script>
   <script src="js/main.js"></script>

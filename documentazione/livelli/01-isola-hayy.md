@@ -12,8 +12,8 @@ Torna a: [indice dei livelli](README.md) · Storia: [opera](../didattica/storie/
 | **Passi della roadmap** | B1.1-B1.6, R1.1 |
 | **Ruolo nel gioco** | Tutorial: si impara a muoversi, a osservare e a usare il quaderno |
 | **Chi lo progetta** | Noi, completo prima della sessione 1 |
-| **Stato** | **Fatto, versione 5** (14 novembre 2026): si legge per andare avanti (tempo di lettura e 16 domande di comprensione), 8 spiegazioni a schede con schemi, mondo a inchiostro con colore solo dove conta, striscia del fondale con guida da stampare. 15 novembre: domande di ragionamento con aiuto, spiegazione dei nervi con neuroni e sinapsi, fondale libero con gli oggetti del gioco sopra |
-| **Codice** | `js/livello1.js` (tappe), `js/testi-it.js` (testi), `js/arte.js` (disegni), `js/mondo.js` (motore) |
+| **Stato** | **Fatto, versione 5** (14 novembre 2026): si legge per andare avanti (tempo di lettura e 16 domande di comprensione), 8 spiegazioni a schede con schemi, mondo a inchiostro con colore solo dove conta, striscia del fondale con guida da stampare. 15 novembre: domande di ragionamento con aiuto, spiegazione dei nervi con neuroni e sinapsi, fondale libero con gli oggetti del gioco sopra. **16 novembre, versione 6**: tre prove platform (si può perdere), carte d'oro da guadagnare, paesaggio che si tocca, parole nuove spiegate prima di usarle, domande più difficili |
+| **Codice** | `js/livello1.js` (tappe), `js/avventura.js` (motore delle prove platform), `js/livelli/avventure-1.js` (le tre prove), `js/testi-it.js` (testi), `js/arte.js` (disegni), `js/mondo.js` (motore) |
 
 ## 2. Ambientazione
 
@@ -21,6 +21,22 @@ Torna a: [indice dei livelli](README.md) · Storia: [opera](../didattica/storie/
 - **Colore dominante:** sabbia e turchese.
 - **Foglio guida:** in alto mare e cielo; al centro un sentiero tra le palme; in basso la riva.
 - **Nota:** è il primo disegno del ragazzo da scansionare (sessione 1).
+
+## Le prove platform (versione 6)
+
+Tre prove in cui si gioca davvero: comandi a schermo (◀ ▶, salto, bastone), tre cuori, si può perdere.
+
+| Prova | Dentro la tappa | Che cosa c'è | Si impara |
+| --- | --- | --- | --- |
+| Il bosco | Corsa | buche, granchi, cocchi che cadono, rovi da abbattere col bastone, spine, foglia elastica, un riccio | correndo il fiato cala; fermandosi torna (barra del fiato, cuore che sale) |
+| La scogliera | Cocchi | piattaforme che si muovono, tronchi che crollano, vespe, ricci | — (abilità) |
+| La notte dei fuochi | Calore | piume d'aquila (doppio salto, come nel libro), muro alto, fuochi da accendere per ripartire | — (abilità) |
+
+- **Premio vero:** in ogni prova ci sono 3 pezzi di carta, nascosti nei punti difficili. Tutti e tre aprono una **carta d'oro** nell'album (★1-★3). Se ne manca uno, si può riprovare subito o andare avanti.
+- **Si può perdere:** cadere in una buca o farsi colpire toglie un cuore. Senza cuori compare «Hai perso!» e si riprova la prova (non il livello).
+- **Domande:** al primo colpo valgono 60 punti e un bollino; dopo un errore, 10.
+- **Parole nuove:** cellula, zuccheri, ossigeno, evaporare, millesimo di secondo compaiono con un disegno prima di essere usate.
+- **Paesaggio che si tocca:** animali, palme (cade un cocco), grotta (eco), sassi, cespugli, cielo (stella cadente). La prima volta ogni cosa dà un seme di luce.
 
 ## 3. Tappe (versione 2)
 

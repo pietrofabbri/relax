@@ -155,8 +155,75 @@
       var h = "";
       h += passo('<rect x="30" y="30" width="350" height="330" rx="26" fill="#fff4cc" stroke="' + INK + '" stroke-width="4"/>' + tondo(205, 120, 58, "fulmine") +
         testo(205, 220, L.nervi, { dim: 30 }) + testo(205, 262, L.veloce, { dim: 24, peso: 600 }) + testo(205, 300, L.breve, { dim: 24, peso: 600 }), 0);
-      h += passo('<rect x="420" y="30" width="350" height="330" rx="26" fill="#ffe1e1" stroke="' + INK + '" stroke-width="4"/>' + tondo(595, 120, 58, "goccia") +
+      h += passo('<rect x="420" y="30" width="350" height="330" rx="26" fill="#ffe1e1" stroke="' + INK + '" stroke-width="4"/>' + tondo(595, 120, 58, "sangue") +
         testo(595, 220, L.sangue, { dim: 30 }) + testo(595, 262, L.lento, { dim: 24, peso: 600 }) + testo(595, 300, L.dura, { dim: 24, peso: 600 }), 1);
+      return h;
+    },
+
+    /* parola nuova: cellula. Il corpo, la lente, i mattoncini */
+    cellula: function (L) {
+      var h = passo(sagoma(130, 250, 0.95) + testo(130, 385, L.corpo, { dim: 24 }), 0);
+      h += passo('<circle cx="175" cy="150" r="26" fill="none" stroke="#c4421a" stroke-width="5"/>' +
+        '<path d="M195 135 L430 40 M195 168 L430 360" stroke="#c4421a" stroke-width="3" stroke-dasharray="8 6"/>' + testo(300, 210, L.pelle, { dim: 22, colore: "#c4421a" }), 0.8);
+      var c = '<clipPath id="lente-c"><circle cx="590" cy="200" r="165"/></clipPath><g clip-path="url(#lente-c)"><rect x="420" y="30" width="340" height="340" fill="#ffe9dc"/>';
+      for (var r = 0; r < 6; r++) for (var q = 0; q < 6; q++) {
+        var x = 440 + q * 62 + (r % 2) * 31, y = 50 + r * 58;
+        c += '<rect x="' + x + '" y="' + y + '" width="56" height="52" rx="18" fill="#ffc9b3" stroke="' + INK + '" stroke-width="3"/>' +
+          '<circle cx="' + (x + 28) + '" cy="' + (y + 26) + '" r="9" fill="#c4421a"/>';
+      }
+      c += '</g><circle cx="590" cy="200" r="165" fill="none" stroke="' + INK + '" stroke-width="7"/>';
+      h += passo(c, 1.5);
+      h += passo(testo(590, 392, L.cellule + " · " + L.mattoni, { dim: 26, colore: "#c4421a" }), 2.3);
+      return h;
+    },
+
+    /* parola nuova: zuccheri. Cibo → zuccheri → muscoli → energia */
+    zuccheri: function (L) {
+      var h = passo(tondo(90, 90, 50, "cocco") + testo(90, 170, L.frutta, { dim: 22 }) +
+        '<g transform="translate(90 245)"><path d="M-48 20 Q-50 -26 0 -28 Q50 -26 48 20 Z" fill="#e8b46a" stroke="' + INK + '" stroke-width="4"/><path d="M-20 -18 l8 18 M2 -22 l8 18 M22 -18 l8 18" stroke="' + INK + '" stroke-width="3"/></g>' + testo(90, 300, L.pane, { dim: 22 }) +
+        '<g transform="translate(90 340)"><rect x="-28" y="-14" width="56" height="44" rx="10" fill="#f6c142" stroke="' + INK + '" stroke-width="4"/><rect x="-32" y="-24" width="64" height="12" rx="4" fill="#b98863" stroke="' + INK + '" stroke-width="3"/></g>' + testo(160, 360, L.miele, { dim: 22, ancora: "start" }), 0);
+      h += passo(freccia(180, 200, 290, 200), 0.9);
+      var cubi = "";
+      [[330, 160], [390, 160], [360, 108], [330, 220], [390, 220]].forEach(function (c) {
+        cubi += '<rect x="' + c[0] + '" y="' + c[1] + '" width="50" height="50" rx="6" fill="#fff" stroke="' + INK + '" stroke-width="4"/><path d="M' + (c[0] + 10) + ' ' + (c[1] + 12) + 'l8 0" stroke="#c4421a" stroke-width="4" stroke-linecap="round"/>';
+      });
+      h += passo(cubi + testo(385, 310, L.zuccheri, { dim: 30, colore: "#c4421a" }), 1.3);
+      h += passo(freccia(460, 200, 560, 200) + tondo(630, 180, 62, "corsa") + testo(630, 275, L.muscolo, { dim: 24 }), 2);
+      h += passo(tondo(730, 330, 40, "fulmine") + testo(660, 340, L.energia, { dim: 24, ancora: "end", colore: "#c4421a" }), 2.6);
+      return h;
+    },
+
+    /* parola nuova: ossigeno. L'aria è un miscuglio */
+    ossigeno: function (L) {
+      var cx = 230, cy = 200, r = 150, a = -Math.PI / 2, b = a + Math.PI * 2 * 0.21;
+      var h = passo('<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="#e6e1d6" stroke="' + INK + '" stroke-width="5"/>' + testo(cx - 30, cy + 70, L.altro, { dim: 26, colore: "#6b6258" }), 0);
+      h += passo('<path d="M' + cx + " " + cy + "L" + (cx + r * Math.cos(a)) + " " + (cy + r * Math.sin(a)) + "A" + r + " " + r + " 0 0 1 " + (cx + r * Math.cos(b)) + " " + (cy + r * Math.sin(b)) + 'Z" fill="#6fb3ff" stroke="' + INK + '" stroke-width="5"/>' +
+        testo(cx + 70, cy - 70, "O₂", { dim: 34, colore: "#fff" }) + testo(440, 70, L.ossigeno, { dim: 34, colore: "#2a6fc4", ancora: "start" }), 0.9);
+      h += passo(freccia(440, 150, 540, 210, "#2a6fc4") + tondo(600, 250, 58, "fuoco"), 1.7);
+      h += passo(freccia(470, 160, 690, 120, "#2a6fc4", 40) + tondo(730, 140, 50, "polmoni"), 2.3);
+      return h;
+    },
+
+    /* parola nuova: evaporare. Il panno al sole */
+    evapora: function (L) {
+      var h = passo(tondo(660, 90, 60, "sole"), 0);
+      h += passo('<path d="M140 250 H460 V300 H140 Z" fill="#9cc9ff" stroke="' + INK + '" stroke-width="5"/>' +
+        '<path d="M120 250 H480" stroke="' + INK + '" stroke-width="6" stroke-linecap="round"/>' +
+        '<circle cx="200" cy="320" r="8" fill="#6fb3ff"/><circle cx="330" cy="330" r="8" fill="#6fb3ff"/>' + testo(300, 370, L.panno, { dim: 24 }), 0.6);
+      var v = "";
+      for (var i = 0; i < 4; i++) { var x = 180 + i * 80; v += '<path d="M' + x + ' 230 q-20 -30 0 -60 q20 -30 0 -60" fill="none" stroke="#7fa8d8" stroke-width="5" stroke-linecap="round" opacity="0.8"/>'; }
+      h += passo(v + testo(300, 70, L.vapore, { dim: 26, colore: "#2a6fc4" }), 1.4);
+      h += passo(tondo(600, 280, 50, "termometro") + freccia(600, 340, 600, 390, "#2a6fc4") + testo(670, 290, L.fresco, { dim: 22, ancora: "start", colore: "#2a6fc4" }), 2.2);
+      return h;
+    },
+
+    /* parola nuova: millesimo di secondo */
+    millesimo: function (L) {
+      var h = passo('<rect x="60" y="150" width="680" height="70" rx="10" fill="#fff4cc" stroke="' + INK + '" stroke-width="5"/>' + testo(400, 120, L.secondo, { dim: 32 }), 0);
+      var t = "";
+      for (var i = 1; i < 100; i++) { var x = 60 + i * 6.8; t += '<path d="M' + x.toFixed(1) + " 150 V" + (i % 10 ? 172 : 200) + '" stroke="' + INK + '" stroke-width="' + (i % 10 ? 1 : 2.5) + '"/>'; }
+      h += passo(t + testo(400, 260, L.pezzi, { dim: 26, colore: "#c4421a" }), 0.9);
+      h += passo('<rect x="60" y="150" width="204" height="70" fill="#6fb3ff" opacity="0.45"/>' + tondo(162, 330, 46, "occhio") + testo(225, 340, L.ciglia, { dim: 22, ancora: "start" }), 1.8);
       return h;
     },
 
