@@ -160,6 +160,19 @@
       return h;
     },
 
+    /* cuore e polmoni: un unico giro. I polmoni caricano l'ossigeno, il cuore lo porta ai muscoli */
+    cuorePolmoni: function (L) {
+      var h = passo(tondo(150, 200, 78, "polmoni", "#4a90e2") + testo(150, 315, L.polmoni, { dim: 26, colore: "#2a6fc4" }) +
+        freccia(20, 90, 90, 140, "#4a90e2") + testo(20, 70, L.aria, { dim: 22, ancora: "start", colore: "#2a6fc4" }), 0);
+      h += passo(tondo(400, 200, 78, "cuore", "#e5484d") + testo(400, 315, L.cuore, { dim: 26, colore: "#c4421a" }), 0.7);
+      h += passo(freccia(230, 170, 318, 170, "#e5484d", -20) + testo(275, 120, L.ossigeno, { dim: 20, colore: "#c4421a" }), 1.3);
+      h += passo(tondo(650, 200, 78, "corsa") + testo(650, 315, L.muscoli, { dim: 26 }) +
+        freccia(480, 170, 568, 170, "#e5484d", -20) + testo(525, 120, L.porta, { dim: 20, colore: "#c4421a" }), 1.9);
+      h += passo(freccia(568, 240, 480, 240, "#4a90e2", -20) + freccia(318, 240, 230, 240, "#4a90e2", -20) +
+        testo(400, 380, L.giro, { dim: 24, colore: "#2a6fc4" }), 2.6);
+      return h;
+    },
+
     /* parola nuova: cellula. Il corpo, la lente, i mattoncini */
     cellula: function (L) {
       var h = passo(sagoma(130, 250, 0.95) + testo(130, 385, L.corpo, { dim: 24 }), 0);

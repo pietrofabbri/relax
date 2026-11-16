@@ -27,8 +27,8 @@
     preparato = true;
     comandi = document.getElementById("comandi");
     hud = document.getElementById("avv-hud");
-    var fi = document.querySelector(".avv-fiato-icona");
-    if (fi) fi.innerHTML = window.Icone.svg("polmoni");
+    var ic = document.querySelectorAll(".avv-fiato-icona");
+    ["polmoni", "cuore", "termometro"].forEach(function (n, i) { if (ic[i]) ic[i].innerHTML = window.Icone.svg(n); });
     function lega(id, chiave) {
       var b = document.getElementById(id);
       function giu(e) {
@@ -84,7 +84,9 @@
     var s = {
       def: def, t: 0, fermo: false,
       p: { x: d.inizio, y: SUOLO, vx: 0, vy: 0, aTerra: true, coyote: 0, doppio: false, invul: 0, colpo: 0, ricarica: 0, su: null, fermoT: 0 },
-      cuori: 3, cuoriMax: 3, fiato: 1, affanno: false,
+      cuori: d.cuori0 || 3, cuoriMax: d.cuori0 || 3, fiato: 1, affanno: false,
+      /* il corpo da tenere sotto controllo cresce di prova in prova: fiato, poi calma, poi calore */
+      corpo: d.corpo || ["fiato"], agit: 0, caldo: 1, brividi: 0,
       piume: !!d.piumeSubito, bastone: d.bastone !== false,
       bufferSalto: 0,
       salvataggio: d.inizio, sicuro: d.inizio,
@@ -144,7 +146,7 @@
 
   function salta(forza, doppio) {
     var p = st.p;
-    var k = st.affanno ? 0.82 : 1;
+    var k = (st.affanno ? 0.82 : 1) * (1 - st.agit * 0.28) * (st.brividi > 0.5 ? 0.88 : 1);
     p.vy = -forza * k;
     p.aTerra = false; p.su = null; p.coyote = 0;
     st.fiato = Math.max(0, st.fiato - 0.035);
@@ -204,6 +206,7 @@
     if (p.invul > 0 || st.fermo) return;
     st.cuori--;
     st.contatori.colpiti++;
+    agita(0.5);
     p.invul = 1.6;
     p.vy = -720;
     p.vx = (p.x < daX ? -1 : 1) * 520;
@@ -217,8 +220,18 @@
     if (st.cuori <= 0) perdi();
   }
 
+  function agita(n) {
+    if (st.corpo.indexOf("calma") < 0) return;
+    st.agit = Math.min(1, st.agit + n);
+    if (st.agit > 0.6 && !st.avvisi.agit) {
+      st.avvisi.agit = 1;
+      M.scritta(window.TESTI.avventura.agitato, st.p.x, st.p.y - 320, { dim: 54, colore: "#ffb0c0", vita: 2.6 });
+    }
+  }
+
   function cadutaInBuca() {
     st.contatori.cadute++;
+    agita(0.4);
     st.cuori--;
     window.Suoni.tonfo();
     M.emetti("goccia", st.p.x, SUOLO + 20, 40, { vy: -700, dispersione: 500 });
@@ -301,6 +314,13 @@
     var b = document.getElementById("avv-fiato-barra");
     b.style.width = Math.round(st.fiato * 100) + "%";
     b.parentNode.classList.toggle("poco", st.fiato < 0.25);
+    var c = document.getElementById("avv-calma"), k = document.getElementById("avv-caldo");
+    c.classList.toggle("nascosto", st.corpo.indexOf("calma") < 0);
+    k.classList.toggle("nascosto", st.corpo.indexOf("calore") < 0);
+    document.getElementById("avv-calma-barra").style.width = Math.round((1 - st.agit) * 100) + "%";
+    c.querySelector(".avv-fiato-tubo").classList.toggle("poco", st.agit > 0.6);
+    document.getElementById("avv-caldo-barra").style.width = Math.round(st.caldo * 100) + "%";
+    k.querySelector(".avv-fiato-tubo").classList.toggle("poco", st.caldo < 0.3);
     document.getElementById("cmd-colpo").classList.toggle("nascosto", !st.bastone);
   }
 
@@ -320,7 +340,7 @@
         q.dy = Math.sin(w) * (q.ampY || 0);
       }
       if (q.tipo === "crolla") {
-        if (q.stato === "trema") { q.t += dt; q.dx = Math.sin(st.t * 60) * 3; if (q.t > 0.55) { q.stato = "cade"; q.vy = 0; window.Suoni.tonfo(); } }
+        if (q.stato === "trema") { q.t += dt; q.dx = Math.sin(st.t * 60) * 3; if (q.t > (st.def.crolla || 0.9)) { q.stato = "cade"; q.vy = 0; window.Suoni.tonfo(); } }
         else if (q.stato === "cade") { q.vy += G * 0.8 * dt; q.dy += q.vy * dt; q.dx = 0; if (q.dy > 700) { q.stato = "via"; q.t = 0; } }
         else if (q.stato === "via") { q.t += dt; if (q.t > 3.5) { q.stato = "su"; q.dy = 0; q.t = 0; } }
       }
@@ -543,16 +563,32 @@
       }
     });
 
+    /* calma: l'agitazione scende piano; molto più in fretta se ci si ferma a respirare */
+    if (st.corpo.indexOf("calma") >= 0) {
+      st.agit = Math.max(0, st.agit - dt * (p.fermoT > 0.6 ? 0.45 : 0.04));
+      if (st.agit > 0.5 && Math.random() < dt * 3) M.emetti("stella", p.x, p.y - 200, 1, { colori: [[255, 120, 150]], dispersione: 80 });
+    }
+    /* calore: di notte, lontano dai fuochi, il corpo si raffredda; vicino a un fuoco si scalda */
+    if (st.corpo.indexOf("calore") >= 0 && !st.fermo) {
+      var vicinoFuoco = st.fuochi.some(function (f) { return f.acceso && Math.abs(f.x - p.x) < 320; });
+      if (vicinoFuoco) st.caldo = Math.min(1, st.caldo + dt * 0.5);
+      else st.caldo = Math.max(0, st.caldo - dt * (st.def.freddo || 0.035) * (Math.abs(p.vx) > 280 ? 0.5 : 1));
+      st.brividi = st.caldo < 0.3 ? 1 : 0;
+      if (st.caldo < 0.3 && !st.avvisi.freddo) { st.avvisi.freddo = 1; M.scritta(window.TESTI.avventura.freddo, p.x, p.y - 320, { dim: 54, colore: "#a8d8ff", vita: 2.6 }); }
+      if (st.caldo <= 0) { st.caldo = 0.45; ferisci(p.x); }
+    }
+
     /* corpo di Hayy: cuore, respiro, sudore */
     var sforzoTot = 1 - st.fiato;
-    h.cuore += ((74 + sforzoTot * 96) - h.cuore) * Math.min(1, dt * 2);
+    h.cuore += ((74 + sforzoTot * 80 + st.agit * 60) - h.cuore) * Math.min(1, dt * 2);
     h.respiro = 1.6 + sforzoTot * 5;
     if (sforzoTot > 0.55 && Math.random() < dt * 8) M.emetti("goccia", p.x + 8 * h.verso, p.y - 170, 1, { vy: -100, vx: -60 * h.verso });
     if (st.affanno && Math.random() < dt * 4) M.emetti("fumo", p.x + 30 * h.verso, p.y - 150, 1, { vx: 60 * h.verso, vy: -30 });
     if (window.Battito.visibile()) window.Battito.vai(Math.round(h.cuore));
 
     /* aggiorna il disegno di Hayy */
-    h.x = p.x; h.y = p.y; h.salto = 0;
+    var trema = (st.agit > 0.5 ? st.agit * 5 : 0) + (st.brividi ? 3 : 0);
+    h.x = p.x + (trema ? (Math.random() - 0.5) * trema : 0); h.y = p.y; h.salto = 0;
     h.passo += dt * Math.abs(p.vx) / 32;
     h.posa = !p.aTerra ? "salta" : Math.abs(p.vx) > 280 ? "corre" : Math.abs(p.vx) > 20 ? "cammina" : "fermo";
     st.lampeggia = p.invul > 0 && Math.floor(p.invul * 12) % 2 === 0;
@@ -858,6 +894,7 @@
   function fine() {
     comandi.classList.add("nascosto");
     hud.classList.add("nascosto");
+    document.body.classList.remove("in-prova");
     var h = window.Livello1Hayy;
     h.inCorsa = false; h.y = SUOLO; h.posa = "fermo";
     st = null;
@@ -873,6 +910,7 @@
         posizionaHayy();
         comandi.classList.remove("nascosto");
         hud.classList.remove("nascosto");
+        document.body.classList.add("in-prova");
         window.Battito.mostra();
         aggiornaHud();
         aggiornaFiato();

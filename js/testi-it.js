@@ -78,6 +78,8 @@ window.TESTI = {
     frutto: "FIATO PIENO!",
     piume: "PIUME D'AQUILA: DOPPIO SALTO!",
     salvato: "FUOCO ACCESO",
+    agitato: "AGITATO! Fermati e respira",
+    freddo: "FREDDO! Cerca un fuoco",
     risultato: "Prova superata",
     pezzi: "pezzi di carta",
     semi: "semi di luce",
@@ -88,9 +90,9 @@ window.TESTI = {
     avanti: "Avanti",
     nomi: { bosco: "Il bosco", scogliera: "La scogliera", notte: "La notte dei fuochi" },
     intro: {
-      bosco: "Corri, salta le buche, usa il bastone.\nTrova i *3 pezzi di carta*!",
-      scogliera: "Rocce che crollano, foglie che si muovono.\nAttento alle vespe!",
-      notte: "È notte. Prendi le *piume*: saltano due volte.\nAccendi i fuochi: lì si riparte."
+      bosco: "Trova i *3 pezzi di carta*!",
+      scogliera: "Se ti colpiscono ti agiti.\nFermati e *respira*.",
+      notte: "Di notte fa freddo.\nResta vicino ai *fuochi*."
     }
   },
 
@@ -108,6 +110,7 @@ window.TESTI = {
   schemi: {
     corpo: { cervello: "cervello", cervelloFa: "pensa e comanda", polmoni: "polmoni", polmoniFa: "prendono l'aria", cuore: "cuore", cuoreFa: "spinge il sangue",
       stomaco: "stomaco", stomacoFa: "digerisce", muscoli: "muscoli", muscoliFa: "muovono" },
+    cuorePolmoni: { polmoni: "polmoni", aria: "aria", cuore: "cuore", muscoli: "muscoli", ossigeno: "ossigeno", porta: "sangue", giro: "il sangue torna indietro e ricomincia il giro" },
     catena: { muscoli: "muscoli", respiro: "respiro", cuore: "cuore", calore: "calore", sudore: "sudore", insieme: "tutto insieme!" },
     riflesso: { occhio: "occhio", nervo: "nervo", cervello: "cervello", mano: "mano", tempo: "≈ 0,2 secondi" },
     media: { media: "media" },
@@ -138,22 +141,22 @@ window.TESTI = {
 
     /* i capitoli della storia: uno per tappa. libro = cosa succede nel libro; gioco = cosa fai tu */
     capitoli: {
-      segui: { icona: "gazzella", titolo: "La gazzella", libro: ["Hayy è un neonato.", "Una gazzella lo trova e lo allatta."], gioco: "Seguila nel bosco.",
+      segui: { icona: "gazzella", titolo: "La gazzella", libro: ["Una gazzella trova Hayy", "e lo allatta."], gioco: "Seguila nel bosco.",
         domanda: { testo: "Hayy cresce senza persone intorno. Che cosa NON potrà mai scoprire da solo, solo guardando?", opzioni: ["che il fuoco scotta", "come si chiama la gazzella nella lingua degli uomini", "che l'acqua toglie la sete"], giusta: 1, aiuto: "Le cose si scoprono provando. Ma i nomi chi li inventa?" } },
-      animali: { icona: "foglia", titolo: "Hayy è diverso", libro: ["Hayy cresce con gli animali.", "Non ha corna, né pelo, né guscio.", "Allora li copia: foglie e bastoni."], gioco: "Copia gli animali.",
+      animali: { icona: "foglia", titolo: "Hayy è diverso", libro: ["Hayy non ha corna, pelo, guscio.", "Allora copia gli animali."], gioco: "Copia gli animali.",
         domanda: { testo: "Gli animali nascono con corna, pelo o guscio. Hayy no. Allora qual è il suo punto di forza?", opzioni: ["le mani e la testa: può costruire ciò che gli manca", "è più veloce di tutti gli animali", "da grande gli crescerà il pelo"], giusta: 0, aiuto: "Corna, piume e guscio: Hayy come li ha ottenuti?" } },
-      corsa: { icona: "corsa", titolo: "Forte e veloce", libro: ["Hayy diventa grande e forte.", "Corre con le gazzelle."], gioco: "Corri e guarda dentro il corpo.",
+      corsa: { icona: "corsa", titolo: "Forte e veloce", libro: ["Hayy diventa grande e forte.", "Corre con le gazzelle."], gioco: "Corri nel bosco.",
         domanda: { testo: "Hayy corre in salita con un sasso pesante in mano. Rispetto alla corsa senza sasso, il fiato finisce…", opzioni: ["prima: le gambe e le braccia fanno più fatica", "dopo: il sasso dà la spinta", "uguale: si corre allo stesso modo"], giusta: 0, aiuto: "Più fatica fanno i muscoli, più aria chiedono." } },
       cocchi: { icona: "cocco", titolo: "Il cibo dell'isola", libro: ["Hayy mangia i frutti dell'isola."], gioco: "Prendi i cocchi al volo.",
         domanda: { testo: "Un frutto è rosso e lucido, ma nessun animale lo mangia mai. Che cosa conviene pensare?", opzioni: ["è il più buono: gli animali lo lasciano a Hayy", "forse fa male: meglio non rischiare", "gli animali non vedono il rosso"], giusta: 1, aiuto: "Gli animali dell'isola sanno che cosa si mangia da molto prima di Hayy." } },
-      cerva: { icona: "cuore", titolo: "La gazzella muore", libro: ["La gazzella diventa vecchia.", "Un giorno smette di muoversi.", "Hayy vuole capire perché."], gioco: "Ascolta il suo cuore.",
+      cerva: { icona: "cuore", titolo: "La gazzella muore", libro: ["La gazzella, vecchia, si ferma.", "Hayy vuole capire perché."], gioco: "Ascolta il suo cuore.",
         domanda: { testo: "La gazzella è ferma. Fuori non ha ferite. Che cosa ha smesso di funzionare, secondo te?", opzioni: ["qualcosa dentro: il cuore, il respiro", "il pelo", "le corna"], giusta: 0, aiuto: "Quando la gazzella correva, che cosa sentivi battere?" } },
-      fuoco: { icona: "fuoco", titolo: "Il fuoco", libro: ["Un fulmine incendia le canne.", "Hayy scopre luce e calore.", "Porta il fuoco nella sua grotta."], gioco: "Proteggi la fiamma dal vento.",
+      fuoco: { icona: "fuoco", titolo: "Il fuoco", libro: ["Un fulmine incendia le canne.", "Hayy porta il fuoco nella grotta."], gioco: "Proteggi la fiamma dal vento.",
         domanda: { testo: "C'è vento forte. Come proteggi meglio una fiammella?", opzioni: ["la chiudi in una scatola senza buchi", "le metti le mani intorno, ma lasci passare un po' d'aria", "ci soffi sopra per farla crescere"], giusta: 1, aiuto: "Il vento forte la spegne. Ma senza aria si spegne lo stesso." } },
       calore: { icona: "termometro", titolo: "Il calore della vita", libro: ["Hayy nota una cosa:", "gli animali vivi sono caldi."], gioco: "Guarda il calore delle cose.",
         domanda: { testo: "Una capra dorme all'ombra. Accanto c'è un sasso, all'ombra anche lui. Hayy li tocca: che cosa sente?", opzioni: ["sono uguali: stanno nello stesso posto", "la capra è più calda", "il sasso è più caldo: è più duro"], giusta: 1, aiuto: "Il sasso prende calore solo dal sole. E la capra?" } },
       misura: { icona: "battito", titolo: "Il tuo cuore", libro: ["Hayy misura e confronta tutto."], gioco: "Ora conta il tuo battito." },
-      alba: { icona: "barca", titolo: "Absal", libro: ["Passano tanti anni.", "Arriva Absal, da un'altra isola.", "Insegna a Hayy a parlare."], gioco: "Impara le parole con Absal.",
+      alba: { icona: "barca", titolo: "Absal", libro: ["Anni dopo arriva Absal.", "Insegna a Hayy a parlare."], gioco: "Impara le parole con Absal.",
         domanda: { testo: "Absal vuole insegnare a Hayy la parola «fuoco». Hayy non sa leggere. Qual è il modo più rapido?", opzioni: ["scriverla sulla sabbia", "spiegarla con altre parole", "indicare il fuoco e dire la parola"], giusta: 2, aiuto: "Hayy non conosce ancora nessuna parola." } }
     },
 
@@ -277,9 +280,8 @@ window.TESTI = {
       parti: {
         titolo: "Come è fatto il corpo",
         schede: [
-          { schema: "corpo", testo: "Il corpo è fatto di *organi*.\nOgnuno ha un *compito*.", attesa: 3.6 },
-          { schema: "corpo", testo: "Il cervello comanda. I polmoni prendono l'aria.\nIl cuore spinge il sangue. I muscoli muovono." },
-          { schema: "corpo", testo: "Anche gli animali hanno parti con compiti diversi:\ncorna per difendersi, piume per scaldarsi." }
+          { schema: "corpo", testo: "Il corpo ha tanti *organi*.\nOgnuno fa un lavoro.", attesa: 3.6 },
+          { schema: "corpo", testo: "Guarda lo schema: chi fa che cosa?" }
         ],
         domanda: { testo: "I polmoni di una persona prendono poca aria. Quale altro organo dovrà lavorare di più?", opzioni: ["lo stomaco", "il cuore: deve far girare il sangue più in fretta", "nessuno"], giusta: 1, aiuto: "Chi porta in giro per il corpo ciò che entra nei polmoni?" }
       },
@@ -288,65 +290,65 @@ window.TESTI = {
         schede: [
           { parola: "zuccheri" },
           { parola: "ossigeno" },
-          { schema: "catena", testo: "I *muscoli* lavorano.\nPer lavorare usano *zuccheri* e *ossigeno*.", attesa: 3.6, fino: 1 },
-          { schema: "catena", testo: "Il *respiro* accelera: entra più ossigeno.\nIl *cuore* accelera: lo porta ai muscoli col sangue.", fino: 5 },
-          { schema: "catena", testo: "Lavorando, i muscoli producono *calore*.\nAllora la pelle *suda*." }
+          { schema: "cuorePolmoni", testo: "I *polmoni* passano l'ossigeno al sangue.", attesa: 3, fino: 3 },
+          { schema: "cuorePolmoni", testo: "Il *cuore* spinge quel sangue ai *muscoli*.\nPoi il sangue torna, e ricomincia.", attesa: 3.4 },
+          { schema: "catena", testo: "Corri: i muscoli vogliono più ossigeno.\nPolmoni e cuore *accelerano insieme*.", attesa: 3.4, fino: 3 },
+          { schema: "catena", testo: "I muscoli si scaldano. La pelle *suda*." }
         ],
-        domanda: { testo: "Un ciclista fa una gara lunghissima e non mangia niente. A un certo punto le gambe non spingono più. Che cosa manca?", opzioni: ["il sudore", "il carburante: gli zuccheri", "il calore"], giusta: 1, aiuto: "Il fuoco senza legna si spegne. E i muscoli?" }
+        domanda: { testo: "Se i polmoni respirassero veloci ma il cuore restasse lento, che cosa succederebbe ai muscoli?", opzioni: ["avrebbero lo stesso poco ossigeno: il sangue non lo porta", "avrebbero tanto ossigeno", "niente: il cuore non c'entra"], giusta: 0, aiuto: "Chi trasporta l'ossigeno dai polmoni ai muscoli?" }
       },
       veloci: {
         titolo: "Come viaggiano i messaggi nei nervi",
         schede: [
           { parola: "cellula" },
-          { schema: "neurone", testo: "I nervi sono fatti di cellule lunghe e sottili:\ni *neuroni*.", attesa: 3.2, fino: 2 },
-          { schema: "neurone", testo: "Lungo il neurone corre un piccolo *segnale elettrico*.\nPuò andare a 100 metri al secondo: più di un'auto in autostrada.", fino: 3 },
-          { schema: "neurone", testo: "Tra un neurone e l'altro c'è un piccolo spazio: la *sinapsi*.\nLì il messaggio salta con una goccia di sostanza chimica." },
-          { schema: "riflesso", testo: "Occhio → cervello → mano:\nin tutto circa *due decimi di secondo*.", attesa: 3.4 },
-          { schema: "tempi", testo: "Il viaggio nei nervi è rapidissimo.\nLa maggior parte del tempo serve al *cervello* per capire e decidere.", attesa: 3 }
+          { schema: "neurone", testo: "I nervi sono fatti di cellule lunghe:\ni *neuroni*.", attesa: 3.2, fino: 2 },
+          { schema: "neurone", testo: "Dentro corre un *segnale elettrico*:\nfino a 100 metri al secondo!", fino: 3 },
+          { schema: "neurone", testo: "Tra due neuroni c'è un piccolo spazio:\nla *sinapsi*." },
+          { schema: "riflesso", testo: "Occhio, cervello, mano:\ncirca *200 ms*.", attesa: 3.4 },
+          { schema: "tempi", testo: "Il tempo più lungo?\nQuello del *cervello* che decide.", attesa: 3 }
         ],
         domanda: { testo: "Un amico è distratto e prende il cocco 100 ms dopo di te. Dove ha perso quel tempo?", opzioni: ["nei nervi: si sono accorciati", "nel cervello: ci ha messo di più a capire e decidere", "nella mano: è più lenta"], giusta: 1, aiuto: "Guarda la barra: quale pezzo è il più lungo?" }
       },
       ripeti: {
         titolo: "Come lavora uno scienziato",
         schede: [
-          { schema: "media", testo: "Tre prove, tre tempi diversi.\nNessuna è sbagliata: ogni misura varia un po'.", attesa: 2.8 },
-          { schema: "media", testo: "Per questo si misura più volte\ne si fa la *media*: la somma diviso il numero di prove." }
+          { schema: "media", testo: "Tre prove, tre tempi diversi.\nOgni misura varia un po'.", attesa: 2.8 },
+          { schema: "media", testo: "Si misura più volte e si fa la *media*." }
         ],
         domanda: { testo: "Tre prove: 300, 200 e 250 ms. Fai una quarta prova. Che cosa è più probabile?", opzioni: ["esattamente 250", "un tempo vicino a 250, un po' più o un po' meno", "0 ms"], giusta: 1, aiuto: "Le tre misure erano tutte uguali?" }
       },
       cuore: {
         titolo: "Il cuore",
         schede: [
-          { schema: "cuoreGiorno", testo: "Il cuore è un *muscolo* che si stringe e spinge il sangue.\nOgni stretta è un *battito*.", attesa: 2.8, fino: 1 },
-          { schema: "cuoreGiorno", testo: "Batte circa *100.000 volte* al giorno.\nNon si riposa mai: nemmeno quando dormi." }
+          { schema: "cuoreGiorno", testo: "Il cuore è un *muscolo*.\nOgni stretta è un *battito*.", attesa: 2.8, fino: 1 },
+          { schema: "cuoreGiorno", testo: "*100.000 battiti* al giorno.\nAnche quando dormi." }
         ],
         domanda: { testo: "Hai 10 anni. Più o meno quante volte ha già battuto il tuo cuore?", opzioni: ["circa 3 milioni", "circa 350 milioni", "circa 35.000"], giusta: 1, aiuto: "100.000 al giorno. Un anno ha 365 giorni. Poi per 10…" }
       },
       lenti: {
         titolo: "Due strade per i messaggi",
         schede: [
-          { schema: "dueStrade", testo: "I messaggi dei *nervi* sono veloci e durano poco.", attesa: 2.8, fino: 1 },
-          { schema: "dueStrade", testo: "Altri messaggi, gli *ormoni*, viaggiano nel *sangue*.\nUno si chiama *adrenalina*: arriva con la paura e fa battere forte il cuore." },
-          { schema: "dueStrade", testo: "Gli ormoni restano nel sangue per minuti.\nPer questo un'emozione forte non passa subito." }
+          { schema: "dueStrade", testo: "I *nervi*: messaggi veloci, che durano poco.", attesa: 2.8, fino: 1 },
+          { schema: "dueStrade", testo: "Gli *ormoni*: messaggi nel *sangue*, lenti.\nLa paura porta l'*adrenalina*." },
+          { schema: "dueStrade", testo: "Gli ormoni restano per minuti.\nPer questo la paura non passa subito." }
         ],
         domanda: { testo: "Hai litigato con un amico. Lui è andato via, ma tu sei ancora agitato. Perché?", opzioni: ["l'adrenalina è ancora nel sangue", "i nervi sono rotti", "il cuore si è stancato"], giusta: 0, aiuto: "Quale strada dei messaggi dura più a lungo?" }
       },
       equilibrio: {
         titolo: "La temperatura del corpo",
         schede: [
-          { schema: "termostato", testo: "Il corpo resta sempre intorno ai *37 gradi*.\nUna parte del cervello controlla, come chi regola un fuoco.", attesa: 3.4, fino: 1 },
+          { schema: "termostato", testo: "Il corpo resta a *37 gradi*.\nIl cervello lo controlla.", attesa: 3.4, fino: 1 },
           { parola: "evapora" },
-          { schema: "termostato", testo: "Se hai caldo, *sudi*:\nil sudore evapora e porta via calore.", fino: 2 },
-          { schema: "termostato", testo: "Se hai freddo, *tremi*: i muscoli si muovono\ne, lavorando, producono calore." }
+          { schema: "termostato", testo: "Caldo? *Sudi*: il sudore evapora e rinfresca.", fino: 2 },
+          { schema: "termostato", testo: "Freddo? *Tremi*: i muscoli si scaldano." }
         ],
         domanda: { testo: "Esci dal mare bagnato e c'è vento. Hai freddo anche se è estate. Perché?", opzioni: ["l'acqua sulla pelle evapora e porta via calore", "il mare è salato", "il vento è sempre gelido"], giusta: 0, aiuto: "Pensa al panno bagnato al sole." }
       },
       fuocoAria: {
         titolo: "Il fuoco e il corpo",
         schede: [
-          { schema: "fuocoAria", testo: "Il fuoco brucia la legna usando l'*ossigeno* dell'aria.", attesa: 3.2, fino: 1 },
-          { schema: "fuocoAria", testo: "Le cellule del corpo fanno qualcosa di simile, ma piano:\nusano l'ossigeno per avere *energia* dagli zuccheri.", fino: 3 },
-          { schema: "fuocoAria", testo: "Per questo respiri, sempre.\nLo scoprirai con Ulisse!" }
+          { schema: "fuocoAria", testo: "Il fuoco brucia la legna con l'*ossigeno*.", attesa: 3.2, fino: 1 },
+          { schema: "fuocoAria", testo: "Le cellule fanno lo stesso, piano:\nossigeno + zuccheri = *energia*.", fino: 3 }
         ],
         domanda: { testo: "Dopo una corsa respiri a bocca aperta. Perché il corpo vuole tanta aria?", opzioni: ["per raffreddare i polmoni", "i muscoli usano più ossigeno per avere energia", "per far uscire il sudore"], giusta: 1, aiuto: "Che cosa serve al fuoco, e ai muscoli, per bruciare?" }
       }
@@ -355,7 +357,7 @@ window.TESTI = {
     /* le carte dell'album: titolo, una frase, il simbolo e il passo della roadmap */
     pagine: {
       parti: { titolo: "Ogni parte ha un compito", testo: "Cuore, polmoni, cervello: ognuno fa il suo lavoro.", icona: "puzzle", roadmap: "B1.1" },
-      insieme: { titolo: "Lavorano insieme", testo: "Se corri, cuore, respiro e calore cambiano insieme.", icona: "ingranaggi", roadmap: "B1.2" },
+      insieme: { titolo: "Cuore e polmoni, un solo giro", testo: "I polmoni caricano l'ossigeno, il cuore lo porta ai muscoli.", icona: "ingranaggi", roadmap: "B1.2" },
       veloci: { titolo: "Neuroni e riflessi", testo: "Nei neuroni corre un segnale elettrico, fino a 100 m al secondo. La maggior parte del tempo di una reazione serve al cervello.", icona: "fulmine", roadmap: "B1.3" },
       ripeti: { titolo: "Misura più volte", testo: "Ogni misura varia un po': si ripete e si fa la media.", icona: "ripeti", roadmap: "B1.6" },
       cuore: { titolo: "Il cuore non si ferma", testo: "Batte tutta la vita, anche quando dormi.", icona: "cuore", roadmap: "R1.1" },
