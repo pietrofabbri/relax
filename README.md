@@ -93,8 +93,9 @@ relax/
 
 ## Presentazioni
 
-- **Hayy ibn Yaqzan: riferimenti letterari e diritti umani** (documento formale per docenti): https://claude.ai/artifact/MWjxVprbEfePH5ADPawYLu
-- **Respira: come lavoreremo insieme** (per lo studente): https://claude.ai/artifact/GbhX6y7dsoVYMNp3c4Ugen
+- **Hayy ibn Yaqzan: riferimenti letterari e diritti umani** (documento di riferimento): https://claude.ai/artifact/MWjxVprbEfePH5ADPawYLu
+- **Respira: organizzazione del lavoro**: https://claude.ai/artifact/GbhX6y7dsoVYMNp3c4Ugen
+- **Respira: roadmap disciplinare** (le nozioni del gioco, 144 passi): https://claude.ai/artifact/TJCEYzrnxQ77RApr8YdHmv
 
 Le presentazioni sono private finché non vengono condivise dal proprietario.
 
