@@ -2,7 +2,9 @@
 
 **Un videogioco per smartphone in cui si vince restando calmi, e si capisce perché.**
 
-Progetto scolastico · 25 ore con uno studente di quinta, indirizzo biotecnologie ambientali · Aggiornato al 13 novembre 2026
+Progetto scolastico · 25 ore con uno studente di quinta, indirizzo biotecnologie ambientali · Aggiornato al 19 novembre 2026
+
+> **Per riprendere il lavoro (anche da un altro account):** leggi [RIPARTIRE.md](RIPARTIRE.md).
 
 ---
 
@@ -94,6 +96,8 @@ relax/
 ## Presentazioni
 
 - **Hayy ibn Yaqzan: riferimenti letterari e diritti umani** (documento di riferimento): https://claude.ai/artifact/MWjxVprbEfePH5ADPawYLu
+- File, generatori e PDF delle presentazioni: [presentazioni/](presentazioni/README.md)
+- Testo di approfondimento su Hayy (PDF, 12 pagine, note a piè di pagina): [testi/hayy/](testi/hayy/README.md)
 - **Respira: organizzazione del lavoro**: https://claude.ai/artifact/GbhX6y7dsoVYMNp3c4Ugen
 - **Respira: roadmap disciplinare** (le nozioni del gioco, 144 passi): https://claude.ai/artifact/TJCEYzrnxQ77RApr8YdHmv
 

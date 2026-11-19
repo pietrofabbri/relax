@@ -1,0 +1,103 @@
+{
+ "v": 5,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-16T20:59:49Z"
+ },
+ "lists": "css",
+ "format": {
+  "v": 1,
+  "shared": [
+   "project/deck.css"
+  ]
+ },
+ "title": "Respira: roadmap disciplinare",
+ "cover": "copertina",
+ "order": [
+  "copertina",
+  "struttura",
+  "mondi",
+  "principi",
+  "codici",
+  "livelli",
+  "livello1",
+  "fB",
+  "B1",
+  "B2",
+  "B3",
+  "B4",
+  "fR",
+  "R1",
+  "R2",
+  "R3",
+  "R4",
+  "fE",
+  "E1",
+  "E2",
+  "E3",
+  "E4",
+  "fA",
+  "A1",
+  "A2",
+  "A3",
+  "A4",
+  "fS",
+  "S1",
+  "S2",
+  "S3",
+  "S4",
+  "fM",
+  "M1",
+  "M2",
+  "M3",
+  "M4",
+  "catene",
+  "gioco",
+  "revisione"
+ ],
+ "sections": {
+  "s0": {
+   "description": "Introduzione: struttura, mondi, principi, codici, livelli",
+   "start": "copertina"
+  },
+  "s1": {
+   "description": "Filone B, basi comuni",
+   "start": "fB"
+  },
+  "s2": {
+   "description": "Filone R, respiro e cuore",
+   "start": "fR"
+  },
+  "s3": {
+   "description": "Filone E, emozioni e stress",
+   "start": "fE"
+  },
+  "s4": {
+   "description": "Filone A, alimentazione ed energia",
+   "start": "fA"
+  },
+  "s5": {
+   "description": "Filone S, sonno e ritmi",
+   "start": "fS"
+  },
+  "s6": {
+   "description": "Filone M, mondo esterno, relazioni e diritti",
+   "start": "fM"
+  },
+  "s7": {
+   "description": "Sintesi: catene di prerequisiti, cautele, revisione",
+   "start": "catene"
+  }
+ },
+ "faces": {
+  "eb-garamond": {
+   "family": "EB Garamond",
+   "href": "https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400..700&family=Public+Sans:wght@400;600;700&display=swap"
+  },
+  "public-sans": {
+   "family": "Public Sans",
+   "href": "https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&display=swap"
+  }
+ },
+ "designSystems": []
+}

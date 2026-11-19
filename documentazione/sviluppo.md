@@ -104,6 +104,20 @@ Il mondo è disegnato su **due tele**:
 
 Così il disegno a matita o a china del ragazzo e il disegno del codice stanno bene insieme. Nelle impostazioni si può scegliere "Mondo a colori". In ogni livello: ciò che va a colori si disegna in `disegnaColore`, il resto in `disegna`.
 
+## Le prove platform (livello 1, versioni 6 e 7)
+
+- **Motore:** `js/avventura.js`. Comandi a schermo (◀ ▶, salto, bastone) e tastiera; fisica con salto variabile, tolleranza ai bordi, doppio salto con le piume; nemici (granchio, vespa, riccio), buche, piattaforme fisse, mobili e che crollano, muri, rovi, spine, foglie elastiche, cocchi che cadono, fuochi (punti di ripartenza).
+- **Livelli:** `js/livelli/avventure-1.js` (bosco, scogliera, notte). Ogni prova dichiara `cuori0` e `corpo`: `["fiato"]`, poi `["fiato","calma"]`, poi `["fiato","calma","calore"]`.
+- **Corpo:** il fiato cala correndo e torna fermandosi; un colpo alza l'agitazione (salti più deboli, Hayy trema) che scende se ci si ferma; lontano dai fuochi il calore cala (brividi, poi un cuore perso).
+- **Premi e sconfitta:** 3 pezzi di carta per prova aprono una carta d'oro (`oroBosco`, `oroScogliera`, `oroNotte` in `testi-it.js`); senza cuori compare «Hai perso!» e si riprova la prova.
+- **Nel livello:** `prova(nome, oro, xDopo)` in `js/livello1.js` cambia scena, gioca, mostra il risultato (con «Riprova la prova») e torna alla scena del livello.
+- **Test:** `strumenti/test_avventure.py`; `strumenti/test_livello1.py` gioca anche le prove (le gioca qualche secondo, poi porta Hayy al traguardo).
+
+## Parole nuove e paesaggio da toccare
+
+- Nelle spiegazioni una scheda `{ parola: "cellula" }` mostra la parola nuova con un disegno (`TESTI.paroleNuove`, schemi omonimi in `js/schemi.js`).
+- `tocca(wx, wy)` in `js/livello1.js` fa reagire animali, palme, grotta, sassi, cespugli e cielo; la prima volta ogni cosa dà punti. Durante i giochi di precisione `mondo.noTocchi` lo spegne.
+
 ## Regole per i testi
 
 - **Una idea per frase.** Frasi di 3-8 parole; due righe al massimo per volta.

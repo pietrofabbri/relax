@@ -1,0 +1,67 @@
+{
+ "v": 5,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-16T21:01:19Z"
+ },
+ "lists": "css",
+ "format": {
+  "v": 1,
+  "shared": [
+   "project/deck.css"
+  ]
+ },
+ "title": "Respira: organizzazione del lavoro",
+ "cover": "copertina",
+ "order": [
+  "copertina",
+  "gioco",
+  "storie",
+  "diritti",
+  "l1",
+  "l1-capitolo",
+  "l1-aiuto",
+  "l1-sfida",
+  "l1-corpo",
+  "l1-schema",
+  "l1-domanda",
+  "l1-carta",
+  "settimana",
+  "casa-prova",
+  "casa-disegna",
+  "guida",
+  "classe-storia",
+  "classe-design",
+  "scienza",
+  "fine"
+ ],
+ "sections": {
+  "s0": {
+   "description": "Copertina, il gioco, le storie",
+   "start": "copertina"
+  },
+  "s1": {
+   "description": "Il livello 1: struttura, prove, schemi, domande, carte",
+   "start": "l1"
+  },
+  "s2": {
+   "description": "La settimana: a casa e in classe",
+   "start": "settimana"
+  },
+  "s3": {
+   "description": "Contenuti scientifici e accesso al gioco",
+   "start": "scienza"
+  }
+ },
+ "faces": {
+  "eb-garamond": {
+   "family": "EB Garamond",
+   "href": "https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400..700&family=Public+Sans:wght@400;600;700&display=swap"
+  },
+  "public-sans": {
+   "family": "Public Sans",
+   "href": "https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&display=swap"
+  }
+ },
+ "designSystems": []
+}

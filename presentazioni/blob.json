@@ -1,0 +1,42 @@
+{
+ "deckA2": {
+  "blob_immagine": {
+   "/_blob/1c76435448c6a1d6a3e1c5ad49565413": "mappa-traduzioni",
+   "/_blob/2a94d0393dab889dd89e126a246bbee9": "mappa-filosofi",
+   "/_blob/370640d20392964525f377ecae3dbf1a": "scena-isola-alba",
+   "/_blob/46f0f3843c33ac38b9bde7f9fa2beae5": "scena-palme-grotta",
+   "/_blob/77d17334446c98126d1e274c4bae0172": "mappa-manoscritto",
+   "/_blob/9853a28aaed8db42806c2b3e0508a578": "scena-barca-absal",
+   "/_blob/9873a6a3d1d05cb7c32f0cac59697ddd": "scena-animali",
+   "/_blob/99879b8d7d3cba76dbb1c56bec3e3592": "mappa-isola",
+   "/_blob/a3d367bccd30527179d234e30406d43d": "mappa-andalus",
+   "/_blob/ba28efe2f8930a4d8a7c8dcdb3b0ced9": "scena-gazzella",
+   "/_blob/da1f20aab78440aadeda0a19dd9c732e": "scena-tramonto-gazzella",
+   "/_blob/f6e2aef9c1f11c39f7529ccc6e64b149": "scena-fuoco"
+  },
+  "senza_nome": []
+ },
+ "deckB2": {
+  "blob_immagine": {
+   "/_blob/1863ea242948122003e379481abc3c22": "qr",
+   "/_blob/1b129737b4bca71eea6e1f61365aa93c": "scena-palme-grotta",
+   "/_blob/4c45a90c0fb734bf10de60d939292d3c": "mappa-mondo",
+   "/_blob/5604c43ca88a25f6f78746fd75dcfe87": "ui-domanda",
+   "/_blob/5bd638b611260f189ad171e81a60a19b": "ui-titolo",
+   "/_blob/67bee0dd69db069bcfce904c85a4d567": "ui-parola",
+   "/_blob/7f0938eff59ac37668b805558310805c": "ui-capitolo-aiuto",
+   "/_blob/98d53413d22391fb8d4a0d7ec0e726b7": "ui-capitolo-domanda",
+   "/_blob/ca7b109421efeff88d1a6ae571dc1fb7": "ui-risultato",
+   "/_blob/d0a2824353d65b8752b86e1885a49485": "ui-platform",
+   "/_blob/d0d97981cf45785ca23fe86ba5665fcb": "guida-2",
+   "/_blob/e4af96eb97f644a79fa0a2b91fac0727": "scena-gazzella"
+  },
+  "senza_nome": []
+ },
+ "roadmap": {
+  "blob_immagine": {
+   "/_blob/ccbb6a42b3a6e28fbc1cf0595f5811da": "mappa-mondo"
+  },
+  "senza_nome": []
+ }
+}

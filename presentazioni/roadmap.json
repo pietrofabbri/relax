@@ -1,0 +1,1010 @@
+{
+"B1.1": {
+"passo": "Il corpo è fatto di parti (organi), ognuna con un compito",
+"pre": "—",
+"esp": "Sagoma a grandezza naturale: posizionare cuore, polmoni, stomaco, cervello",
+"ver": "Indica 4 organi e un compito per ciascuno",
+"crit": "Il cuore sta al centro del torace, spostato a sinistra, non \"tutto a sinistra\""
+},
+"B1.2": {
+"passo": "Le parti lavorano insieme: quando corri cambiano tante cose nello stesso momento",
+"pre": "B1.1",
+"esp": "Dopo 20 saltelli elencare cosa è cambiato (fiato, battito, caldo, rossore)",
+"ver": "Nomina 3 cambiamenti contemporanei",
+"crit": "Prevedere un'alternativa da seduti per chi non può saltare"
+},
+"B1.3": {
+"passo": "Le parti si mandano messaggi, alcuni velocissimi",
+"pre": "B1.2",
+"esp": "Righello lasciato cadere e afferrato",
+"ver": "Spiega che la mano si chiude dopo un messaggio partito dagli occhi",
+"crit": "—"
+},
+"B1.4": {
+"passo": "Altri messaggi sono lenti, viaggiano nel sangue e durano a lungo",
+"pre": "B1.3",
+"esp": "Il cuore resta veloce per un po' anche dopo che uno spavento è finito (esempio raccontato)",
+"ver": "Distingue un messaggio veloce da uno lento con un esempio",
+"crit": "Non dire \"gli ormoni sono le emozioni\""
+},
+"B1.5": {
+"passo": "Il corpo cerca l'equilibrio: si sposta e poi torna da solo",
+"pre": "B1.4",
+"esp": "Battito dopo i saltelli misurato ogni minuto: torna al valore di partenza",
+"ver": "Descrive il \"ritorno\" con parole sue",
+"crit": "Equilibrio non significa stare sempre fermi e calmi: agitarsi a volte serve"
+},
+"B1.6": {
+"passo": "Per capire il corpo si misura, si ripete e si confronta; una misura sola può ingannare",
+"pre": "B1.5, R1.2",
+"esp": "Contare il battito tre volte di fila: perché i numeri sono diversi?",
+"ver": "Spiega perché conviene ripetere una misura",
+"crit": "—"
+},
+"B2.1": {
+"passo": "[ponte] Ogni organo è fatto di cellule; cellule simili formano tessuti",
+"pre": "B1.1",
+"esp": "Microscopio: epidermide di cipolla, poi foto di cellule umane",
+"ver": "Ordina cellula, tessuto, organo, apparato",
+"crit": "Le dimensioni (micrometri) sono difficili da immaginare: usare paragoni"
+},
+"B2.2": {
+"passo": "Gli apparati sono gruppi di organi con una funzione comune",
+"pre": "B2.1",
+"esp": "Carte da abbinare organo-apparato",
+"ver": "Associa correttamente 10 organi",
+"crit": "Alcuni organi stanno in più apparati (il pancreas è sia digerente sia endocrino)"
+},
+"B2.3": {
+"passo": "Il neurone è una cellula che trasmette segnali: dendriti, corpo, assone",
+"pre": "B2.1, B1.3",
+"esp": "Modello del neurone con fil di ferro o pasta modellabile",
+"ver": "Disegna un neurone con la direzione del segnale",
+"crit": "Nel sistema nervoso non ci sono solo neuroni (cellule gliali)"
+},
+"B2.4": {
+"passo": "Nella sinapsi il segnale passa da un neurone all'altro grazie a sostanze chimiche (neurotrasmettitori)",
+"pre": "B2.3",
+"esp": "Catena di compagni: ci si passa una pallina invece di toccarsi",
+"ver": "Spiega perché tra due neuroni serve un \"ponte chimico\"",
+"crit": "I neurotrasmettitori non corrispondono a un'emozione ciascuno"
+},
+"B2.5": {
+"passo": "Sistema nervoso centrale e periferico; una parte volontaria e una automatica",
+"pre": "B2.3, B2.2",
+"esp": "Riflesso del ginocchio (automatico) contro un gesto deciso (volontario)",
+"ver": "Classifica 6 azioni tra volontarie e automatiche",
+"crit": "Il confine è sfumato: il respiro sta in mezzo (R2.5)"
+},
+"B2.6": {
+"passo": "Il sistema endocrino: ghiandole che liberano ormoni nel sangue",
+"pre": "B2.2, B1.4",
+"esp": "Mappa del corpo con le ghiandole principali",
+"ver": "Nomina 4 ghiandole e un ormone per ciascuna",
+"crit": "Alcune molecole sono sia ormoni sia neurotrasmettitori (noradrenalina)"
+},
+"B3.1": {
+"passo": "[ponte] Il segnale nervoso è elettrico perché la membrana separa cariche diverse (potenziale di riposo)",
+"pre": "B2.3",
+"esp": "Simulazione interattiva del neurone",
+"ver": "Spiega cosa crea il potenziale di riposo",
+"crit": "Le analogie con le pile sono imperfette"
+},
+"B3.2": {
+"passo": "Potenziale d'azione: tutto o niente, canali del sodio e del potassio, pompa sodio-potassio",
+"pre": "B3.1",
+"esp": "Simulazione: variare lo stimolo e osservare la soglia",
+"ver": "Descrive le fasi del potenziale d'azione",
+"crit": "—"
+},
+"B3.3": {
+"passo": "Recettori: ogni molecola agisce solo dove trova il suo recettore; recettori eccitatori (glutammato) e inibitori (GABA)",
+"pre": "B2.4, B3.2",
+"esp": "Modello chiave-serratura in cartone",
+"ver": "Prevede l'effetto di un segnale inibitorio",
+"crit": "Il modello chiave-serratura semplifica (affinità, sottotipi di recettori)"
+},
+"B3.4": {
+"passo": "Agonisti e antagonisti: molecole che imitano o bloccano un segnale",
+"pre": "B3.3",
+"esp": "Caso della caffeina (rimanda ad A3.4)",
+"ver": "Classifica esempi tra agonisti e antagonisti",
+"crit": "—"
+},
+"B3.5": {
+"passo": "Ormoni peptidici e steroidei: recettori sulla membrana o dentro la cellula, tempi d'azione diversi",
+"pre": "B2.6, B3.3",
+"esp": "Linea del tempo: adrenalina (secondi) e cortisolo (minuti-ore)",
+"ver": "Spiega perché agiscono con tempi diversi",
+"crit": "—"
+},
+"B3.6": {
+"passo": "Omeostasi: valore di riferimento, sensore, centro di controllo, effettore; feedback negativo (e positivo come eccezione)",
+"pre": "B1.5, B2.6",
+"esp": "Termostato come modello; dati della temperatura corporea nel giorno",
+"ver": "Disegna un circuito di feedback negativo",
+"crit": "Il valore di riferimento non è fisso (cambia nella giornata): apre a B4.1"
+},
+"B4.1": {
+"passo": "[ponte] Allostasi: il cervello regola anticipando i bisogni, non solo correggendo gli errori",
+"pre": "B3.6",
+"esp": "Dati anonimi di classe: il battito sale prima di una verifica",
+"ver": "Distingue regolazione reattiva e predittiva",
+"crit": "Il rapporto tra omeostasi e allostasi è ancora discusso"
+},
+"B4.2": {
+"passo": "Carico allostatico: il costo nel tempo di risposte di stress ripetute o che non si spengono",
+"pre": "B4.1, E3.4",
+"esp": "Lettura guidata di una rassegna",
+"ver": "Spiega perché lo stress cronico ha un costo",
+"crit": "Gli indici di carico allostatico non sono standardizzati"
+},
+"B4.3": {
+"passo": "Plasticità sinaptica: l'esperienza rafforza o indebolisce le connessioni (potenziamento a lungo termine)",
+"pre": "B3.3",
+"esp": "Curva di apprendimento di un compito nuovo provato in classe",
+"ver": "Collega la pratica ripetuta al cambiamento delle sinapsi",
+"crit": "\"Neuroplasticità\" è un termine abusato nel marketing"
+},
+"B4.4": {
+"passo": "Epigenetica e stress: l'ambiente modifica l'espressione dei geni, non la loro sequenza",
+"pre": "B4.3, E3.4",
+"esp": "Lettura di uno studio sulle cure materne nei ratti",
+"ver": "Distingue mutazione e modificazione epigenetica",
+"crit": "Molti dati sono animali; evitare il determinismo (\"segnati per sempre\")"
+},
+"B4.5": {
+"passo": "Misurare lo stress: battito, HRV, cortisolo salivare, conduttanza cutanea, questionari, neuroimmagini; cosa misura ciascuno",
+"pre": "B3.6, B1.6",
+"esp": "Confronto tra strumenti diversi",
+"ver": "Sceglie la misura adatta a una domanda di ricerca",
+"crit": "Non esiste un indicatore unico dello \"stress\""
+},
+"B4.6": {
+"passo": "Leggere la ricerca: correlazione e causalità, campione, gruppo di controllo, replicazione, meta-analisi, conflitti d'interesse",
+"pre": "B4.5",
+"esp": "Un titolo di giornale confrontato con l'articolo originale",
+"ver": "Individua 3 limiti di uno studio",
+"crit": "—"
+},
+"R1.1": {
+"passo": "Il cuore batte sempre, anche quando dormi",
+"pre": "B1.1",
+"esp": "Ascoltare il proprio cuore con uno stetoscopio fatto con tubo e imbuto",
+"ver": "Indica dove si sente il battito",
+"crit": "Meglio ascoltare sé stessi; ascoltare un compagno solo con il suo consenso"
+},
+"R1.2": {
+"passo": "Il battito si può contare, al polso o al collo",
+"pre": "R1.1",
+"esp": "Contare per 30 secondi e moltiplicare per 2",
+"ver": "Misura il proprio battito",
+"crit": "Sul collo premere leggermente e da un lato solo"
+},
+"R1.3": {
+"passo": "Il battito cambia: sale con il movimento e le emozioni, scende con il riposo",
+"pre": "R1.2, B1.2",
+"esp": "Battito da seduti, dopo i saltelli, dopo 2 minuti: grafico di classe",
+"ver": "Prevede quando il battito salirà",
+"crit": "Nessuna gara su \"chi ha il battito più basso\"; alternativa da seduti"
+},
+"R1.4": {
+"passo": "Respirando prendiamo ossigeno e buttiamo fuori anidride carbonica",
+"pre": "B1.1",
+"esp": "Contare i respiri in un minuto; alitare su uno specchio",
+"ver": "Dice cosa entra e cosa esce",
+"crit": "Espiriamo anche parecchio ossigeno: non dire \"fuori esce solo anidride carbonica\""
+},
+"R1.5": {
+"passo": "Il respiro si può cambiare quando vogliamo, il battito no (non direttamente)",
+"pre": "R1.3, R1.4",
+"esp": "Provare a cambiare il battito \"pensandoci\", poi provare a rallentare il respiro",
+"ver": "Spiega cosa riusciamo a comandare",
+"crit": "Pensieri ed emozioni cambiano il battito: per questo \"non direttamente\""
+},
+"R1.6": {
+"passo": "Espirare piano aiuta il cuore a rallentare: è il \"freno\" del corpo",
+"pre": "R1.5, B1.5",
+"esp": "2 minuti di respiro un po' più lento del solito, con espirazione più lunga (per esempio 3 secondi dentro e 4-5 fuori); battito prima e dopo",
+"ver": "Usa la tecnica da solo",
+"crit": "L'effetto è piccolo e varia da persona a persona. Mai trattenere il fiato a lungo; se gira la testa ci si ferma"
+},
+"R2.1": {
+"passo": "[ponte] Apparato respiratorio: naso, trachea, bronchi, polmoni, alveoli",
+"pre": "R1.4, B2.2",
+"esp": "Modello del polmone con bottiglia e palloncini",
+"ver": "Traccia il percorso dell'aria",
+"crit": "Il modello con la bottiglia esagera: i polmoni non sono palloncini vuoti"
+},
+"R2.2": {
+"passo": "Il diaframma è il muscolo principale del respiro",
+"pre": "R2.1",
+"esp": "Una mano sulla pancia e una sul petto: quale si muove?",
+"ver": "Spiega cosa significa \"respirare con la pancia\"",
+"crit": "L'aria non va nella pancia: si muove la pancia perché il diaframma scende"
+},
+"R2.3": {
+"passo": "Negli alveoli ossigeno e anidride carbonica si scambiano per diffusione",
+"pre": "R2.1, B2.1",
+"esp": "Animazione dello scambio dei gas",
+"ver": "Spiega la diffusione con parole sue",
+"crit": "—"
+},
+"R2.4": {
+"passo": "Il cuore ha quattro cavità; piccola e grande circolazione",
+"pre": "R1.1, B2.2",
+"esp": "Percorso di una goccia di sangue sulla sagoma (cuore animale da macelleria solo se previsto e con consenso)",
+"ver": "Traccia le due circolazioni",
+"crit": "Il sangue non è mai blu: è più o meno ossigenato"
+},
+"R2.5": {
+"passo": "Il respiro è sia automatico sia volontario: è la \"porta\" tra le due parti del sistema nervoso",
+"pre": "R1.5, B2.5",
+"esp": "Perché non si riesce a smettere di respirare a lungo? (discussione, nessuna prova di apnea)",
+"ver": "Spiega perché il respiro è speciale",
+"crit": "Non è l'unica funzione a metà (anche il battito delle palpebre): \"una delle poche\""
+},
+"R2.6": {
+"passo": "Il cuore ha un metronomo interno (nodo senoatriale) che i nervi accelerano o rallentano",
+"pre": "R2.4, B2.5",
+"esp": "Video di un cuore che batte fuori dal corpo; il caso dei trapianti",
+"ver": "Spiega perché il cuore batte anche senza ordini dal cervello",
+"crit": "—"
+},
+"R3.1": {
+"passo": "[ponte] Sistema nervoso autonomo: simpatico e parasimpatico, effetti su ogni organo",
+"pre": "B2.5, R2.6",
+"esp": "Tabella degli effetti su pupilla, cuore, bronchi, digestione",
+"ver": "Completa la tabella",
+"crit": "Si apre la metafora \"acceleratore e freno\": i due sistemi lavorano spesso insieme e non sono un interruttore unico"
+},
+"R3.2": {
+"passo": "I mediatori: noradrenalina (simpatico) e acetilcolina (parasimpatico), con i loro recettori",
+"pre": "R3.1, B3.3",
+"esp": "Caso concettuale: cosa fa un farmaco che blocca i recettori beta",
+"ver": "Prevede l'effetto di un bloccante",
+"crit": "La midollare del surrene libera adrenalina nel sangue (collegamento con E3.1)"
+},
+"R3.3": {
+"passo": "Il nervo vago: percorso, organi raggiunti; la maggior parte delle sue fibre porta informazioni dagli organi al cervello",
+"pre": "R3.1",
+"esp": "Disegno del percorso dal tronco encefalico all'addome",
+"ver": "Distingue fibre che portano ordini e fibre che portano informazioni",
+"crit": "La percentuale (spesso \"80%\") è una stima: citarla come tale"
+},
+"R3.4": {
+"passo": "Aritmia sinusale respiratoria: il battito accelera inspirando e rallenta espirando",
+"pre": "R3.3, R2.2",
+"esp": "Fascia cardio o sensore durante il respiro lento: osservare l'oscillazione",
+"ver": "Spiega il fenomeno con il nervo vago",
+"crit": "I pulsossimetri economici sono lenti e imprecisi: meglio una fascia cardio"
+},
+"R3.5": {
+"passo": "Regolazione chimica del respiro: è soprattutto l'anidride carbonica (e il pH) a dare il bisogno di respirare",
+"pre": "R2.3, B3.6",
+"esp": "Discussione guidata, nessuna prova pratica",
+"ver": "Spiega il ruolo dei chemocettori",
+"crit": "—"
+},
+"R3.6": {
+"passo": "Iperventilazione: respirare troppo abbassa l'anidride carbonica e dà capogiri e formicolii",
+"pre": "R3.5",
+"esp": "Caso di studio",
+"ver": "Spiega perché \"respirare di più\" non calma",
+"crit": "Tema delicato per chi ha attacchi di panico: niente prove, tono rassicurante"
+},
+"R4.1": {
+"passo": "[ponte] Variabilità della frequenza cardiaca (HRV): misure nel tempo e in frequenza",
+"pre": "R3.4, B4.5",
+"esp": "Registrazione con fascia cardio e software gratuito",
+"ver": "Interpreta un tracciato HRV",
+"crit": "Il rapporto LF/HF come \"equilibrio simpatico-parasimpatico\" è contestato"
+},
+"R4.2": {
+"passo": "Baroriflesso: pressione e battito si regolano a vicenda",
+"pre": "R4.1, B3.6",
+"esp": "Schema del riflesso",
+"ver": "Descrive il circuito",
+"crit": "—"
+},
+"R4.3": {
+"passo": "Respirazione a risonanza: negli adulti intorno ai 6 respiri al minuto, ma la frequenza è individuale; biofeedback HRV",
+"pre": "R4.1, R4.2",
+"esp": "Confronto sul tracciato tra 12 e 6 respiri al minuto",
+"ver": "Spiega il concetto di risonanza",
+"crit": "Nei bambini la frequenza a riposo è più alta; un ritmo lento imposto da un'app senza allenamento può risultare scomodo"
+},
+"R4.4": {
+"passo": "Evidenze sulle tecniche respiratorie (respiro lento, sospiro ciclico, \"coerenza cardiaca\"): studi controllati e meta-analisi",
+"pre": "R4.3, B4.6",
+"esp": "Lettura critica di uno studio controllato",
+"ver": "Valuta la qualità delle prove",
+"crit": "Effetti piccoli o moderati; attenzione al marketing"
+},
+"R4.5": {
+"passo": "Dal cuore al cervello: i segnali cardiaci raggiungono il cervello e influenzano la percezione",
+"pre": "R3.3",
+"esp": "Lettura di una rassegna",
+"ver": "Spiega cosa sono i segnali afferenti",
+"crit": "Campo di ricerca giovane"
+},
+"R4.6": {
+"passo": "[ipotesi] Teoria polivagale: cosa propone, le critiche (2023 e 2026) e le risposte dell'autore",
+"pre": "R3.3, B4.6",
+"esp": "Dibattito strutturato a due squadre",
+"ver": "Espone entrambe le posizioni con le prove",
+"crit": "Non insegnarla come un fatto; distinguere l'uso clinico dalle basi biologiche contestate"
+},
+"A1.1": {
+"passo": "Mangiamo per avere energia e per costruire e riparare il corpo",
+"pre": "B1.1",
+"esp": "Dividere gli alimenti di una merenda tra \"energia\" e \"costruzione\"",
+"ver": "Dà un esempio per categoria",
+"crit": "Molti cibi fanno entrambe le cose"
+},
+"A1.2": {
+"passo": "Fame e sazietà sono messaggi del corpo",
+"pre": "A1.1, B1.4",
+"esp": "Scala della fame da 1 a 5, prima e dopo la merenda",
+"ver": "Riconosce i segnali di fame e sazietà",
+"crit": "Attenzione a chi ha disturbi alimentari: nessun obiettivo di \"mangiare meno\""
+},
+"A1.3": {
+"passo": "Il corpo è fatto per circa metà o più d'acqua; la sete è un buon segnale per bere",
+"pre": "A1.1",
+"esp": "Dove va l'acqua che beviamo? (sudore, urina, respiro)",
+"ver": "Sa quando bere",
+"crit": "Evitare il mito \"se hai sete sei già disidratato\""
+},
+"A1.4": {
+"passo": "Un pasto completo dà energia che dura; lo zucchero da solo non dà una \"spinta\"",
+"pre": "A1.1",
+"esp": "Ricordare come ci si sente un'ora dopo merende diverse (solo ricordo, nessuna prova con il cibo)",
+"ver": "Spiega perché un pasto completo tiene \"carichi\"",
+"crit": "La \"carica da zucchero\" è un mito; nessun cibo vietato"
+},
+"A1.5": {
+"passo": "La pancia sente le emozioni (\"farfalle\", \"nodo allo stomaco\")",
+"pre": "A1.1, E1.2",
+"esp": "Dove senti l'agitazione prima di una verifica?",
+"ver": "Collega una sensazione di pancia a un'emozione",
+"crit": "Mal di pancia frequenti vanno segnalati a un adulto"
+},
+"A1.6": {
+"passo": "Mangiare con calma aiuta ad ascoltare il corpo",
+"pre": "A1.2, R1.6",
+"esp": "Assaggio lento di uno spicchio di mela (solo con autorizzazione e allergie verificate)",
+"ver": "Descrive cosa nota mangiando lentamente",
+"crit": "Allergie, motivi religiosi, disponibilità di cibo diversa tra famiglie"
+},
+"A2.1": {
+"passo": "[ponte] Apparato digerente: dalla bocca all'intestino",
+"pre": "A1.1, B2.2",
+"esp": "Uno spago lungo quanto l'intestino tenue (in media circa 5 m in una persona viva)",
+"ver": "Ordina gli organi della digestione",
+"crit": "I manuali riportano spesso 6-8 m, misurati su cadaveri: dare un intervallo e spiegare perché"
+},
+"A2.2": {
+"passo": "Digestione meccanica e chimica; gli enzimi",
+"pre": "A2.1",
+"esp": "Un cracker masticato a lungo diventa dolce (l'amido si scompone)",
+"ver": "Spiega cosa fa un enzima",
+"crit": "—"
+},
+"A2.3": {
+"passo": "I nutrienti: carboidrati, proteine, grassi, fibre, vitamine, minerali, acqua",
+"pre": "A2.2",
+"esp": "Leggere l'etichetta di tre prodotti",
+"ver": "Legge un'etichetta nutrizionale",
+"crit": "I grassi non sono \"cattivi\"; porzioni e valori per 100 g confondono"
+},
+"A2.4": {
+"passo": "Glicemia: lo zucchero nel sangue sale dopo i pasti e torna nella norma",
+"pre": "A2.3, B1.5",
+"esp": "Grafico di curve glicemiche pubblicate (nessuna misura in classe)",
+"ver": "Legge il grafico",
+"crit": "Nessun test con il pungidito; non creare ansia sulla glicemia"
+},
+"A2.5": {
+"passo": "Fibre e indice glicemico: alcuni cibi alzano la glicemia più lentamente",
+"pre": "A2.4",
+"esp": "Confronto tra due curve",
+"ver": "Spiega la differenza tra le due curve",
+"crit": "L'indice glicemico cambia con porzione e abbinamenti (carico glicemico)"
+},
+"A2.6": {
+"passo": "Le sostanze stimolanti (caffeina in tè, caffè, cola, bevande energetiche) agiscono su battito e sonno",
+"pre": "R1.3, A2.3",
+"esp": "Milligrammi di caffeina letti sulle etichette",
+"ver": "Confronta il contenuto di più bevande",
+"crit": "Nessun consumo in classe; le bevande energetiche sono sconsigliate ai minori"
+},
+"A3.1": {
+"passo": "[ponte] Insulina e glucagone: il pancreas regola la glicemia con un feedback negativo",
+"pre": "A2.4, B3.6, B2.6",
+"esp": "Schema del circuito da completare",
+"ver": "Completa il circuito",
+"crit": "Il diabete di tipo 1 non è causato dallo zucchero; attenzione ai compagni con diabete"
+},
+"A3.2": {
+"passo": "Metabolismo energetico: glicogeno, respirazione cellulare, ATP",
+"pre": "A3.1, R2.3",
+"esp": "Collegare ossigeno e glucosio nella cellula",
+"ver": "Spiega perché servono entrambi",
+"crit": "—"
+},
+"A3.3": {
+"passo": "Il cervello consuma molto glucosio, ma in una persona sana e nutrita lo zucchero in più non migliora il pensiero",
+"pre": "A3.2",
+"esp": "Lettura di una meta-analisi",
+"ver": "Distingue bisogno e \"spinta\"",
+"crit": "Le prove su glucosio e prestazioni sono miste"
+},
+"A3.4": {
+"passo": "La caffeina blocca i recettori dell'adenosina; resta nel corpo diverse ore",
+"pre": "B3.4, A2.6",
+"esp": "Calcolo di quanta caffeina resta a mezzanotte dopo un caffè nel pomeriggio",
+"ver": "Esegue il calcolo",
+"crit": "L'emivita cambia molto tra persone (genetica, farmaci, gravidanza)"
+},
+"A3.5": {
+"passo": "Dal triptofano alla serotonina e alla melatonina",
+"pre": "A2.3, B2.4",
+"esp": "Schema della via di sintesi",
+"ver": "Ricostruisce la sequenza",
+"crit": "Mito \"il tacchino fa dormire\"; serotonina del corpo e del cervello sono riserve separate"
+},
+"A3.6": {
+"passo": "Il sistema nervoso enterico: una rete di neuroni nella parete dell'intestino",
+"pre": "B2.5, A2.1",
+"esp": "Confronto tra il numero di neuroni dell'intestino e quello di altre parti del sistema nervoso",
+"ver": "Spiega perché l'intestino lavora in parte da solo",
+"crit": "\"Secondo cervello\" è una metafora: l'intestino non pensa"
+},
+"A4.1": {
+"passo": "[ponte] Microbiota intestinale: composizione, funzioni, metaboliti (acidi grassi a catena corta)",
+"pre": "A3.6, A2.3",
+"esp": "Lettura guidata di una rassegna",
+"ver": "Descrive 3 funzioni del microbiota",
+"crit": "Non esiste una definizione unica di \"microbiota sano\""
+},
+"A4.2": {
+"passo": "Serotonina enterica: la maggior parte della serotonina del corpo (circa il 90%) è prodotta nell'intestino, ma non attraversa la barriera emato-encefalica",
+"pre": "A3.5, A4.1",
+"esp": "Schema delle due riserve di serotonina",
+"ver": "Spiega perché non \"rende felici\" direttamente",
+"crit": "Mito molto diffuso"
+},
+"A4.3": {
+"passo": "Asse intestino-cervello: vie nervose (vago), immunitarie, ormonali, metaboliche",
+"pre": "A4.1, R3.3, E3.2",
+"esp": "Mappa delle vie di comunicazione",
+"ver": "Descrive almeno 3 vie",
+"crit": "Molti dati vengono da animali senza microbi"
+},
+"A4.4": {
+"passo": "Stress e digestione: il simpatico rallenta la digestione; il cortisolo influisce su appetito e preferenze",
+"pre": "R3.1, E3.2",
+"esp": "Perché prima di una gara non si ha fame",
+"ver": "Spiega il meccanismo",
+"crit": "Grande variabilità: c'è chi sotto stress mangia di più e chi di meno"
+},
+"A4.5": {
+"passo": "Alimentazione e salute mentale: studi osservazionali e sperimentali",
+"pre": "A4.3, B4.6",
+"esp": "Confronto tra uno studio osservazionale e uno sperimentale",
+"ver": "Riconosce i fattori confondenti",
+"crit": "Studi spesso piccoli; nessuna \"dieta anti-ansia\""
+},
+"A4.6": {
+"passo": "Integratori, probiotici e promesse commerciali",
+"pre": "A4.5",
+"esp": "Analisi critica della pubblicità di un integratore",
+"ver": "Individua affermazioni non supportate",
+"crit": "—"
+},
+"E1.1": {
+"passo": "Le emozioni hanno un nome, e ne esistono tante",
+"pre": "—",
+"esp": "Carte delle emozioni con molte sfumature",
+"ver": "Nomina almeno 8 emozioni",
+"crit": "Le \"sei emozioni di base\" sono un modello discusso: meglio un vocabolario ampio"
+},
+"E1.2": {
+"passo": "Le emozioni si sentono nel corpo",
+"pre": "E1.1, B1.2",
+"esp": "Colorare su una sagoma dove si sente ogni emozione",
+"ver": "Indica dove sente almeno 3 emozioni",
+"crit": "Partecipazione facoltativa; nessun racconto personale richiesto"
+},
+"E1.3": {
+"passo": "Tutte le emozioni servono, anche quelle spiacevoli",
+"pre": "E1.1",
+"esp": "\"A cosa serve la paura? E la rabbia?\"",
+"ver": "Dà un esempio di utilità per un'emozione spiacevole",
+"crit": "Evitare \"emozioni negative = sbagliate\""
+},
+"E1.4": {
+"passo": "La paura è un allarme; a volte suona senza pericolo (falso allarme)",
+"pre": "E1.3, R1.3",
+"esp": "Esempi inventati (un rumore di notte che era il vento)",
+"ver": "Distingue un allarme vero da uno falso",
+"crit": "Usare solo esempi di fantasia"
+},
+"E1.5": {
+"passo": "Le emozioni salgono e poi scendono, come un'onda",
+"pre": "E1.2",
+"esp": "Disegnare l'onda di un'arrabbiatura",
+"ver": "Spiega che un'emozione passa",
+"crit": "—"
+},
+"E1.6": {
+"passo": "Dare un nome all'emozione e respirare piano aiutano l'onda a scendere",
+"pre": "E1.5, R1.6",
+"esp": "Gioco \"dimmi cosa senti\" seguito da 3 respiri lenti",
+"ver": "Usa la strategia da solo",
+"crit": "Non funziona sempre: se un'emozione non passa si chiede aiuto a un adulto"
+},
+"E2.1": {
+"passo": "[ponte] Il cervello e le sue parti: corteccia, strutture profonde (sistema limbico), tronco encefalico",
+"pre": "B2.5",
+"esp": "Modello del cervello fatto con la mano",
+"ver": "Indica 3 parti e cosa fanno",
+"crit": "Il modello della mano e il \"cervello a tre piani\" sono semplificazioni superate in neuroscienze"
+},
+"E2.2": {
+"passo": "L'amigdala riconosce ciò che è importante, soprattutto le minacce",
+"pre": "E2.1, E1.4",
+"esp": "Situazioni in cui scatta prima di pensare",
+"ver": "Spiega il ruolo dell'amigdala",
+"crit": "Non è \"il centro della paura\": lavora in una rete"
+},
+"E2.3": {
+"passo": "La corteccia prefrontale pianifica, frena gli impulsi e riconsidera; matura fino all'inizio dell'età adulta",
+"pre": "E2.1",
+"esp": "Esempi di \"pensare prima di agire\"",
+"ver": "Spiega il ruolo della prefrontale",
+"crit": "\"Matura a 25 anni\" è una semplificazione"
+},
+"E2.4": {
+"passo": "Combattere, scappare, immobilizzarsi: cosa cambia nel corpo e perché è utile",
+"pre": "E2.2, R2.4",
+"esp": "Lista dei cambiamenti e della loro utilità",
+"ver": "Collega ogni cambiamento alla sua funzione",
+"crit": "—"
+},
+"E2.5": {
+"passo": "Paura e ansia: la paura risponde a un pericolo presente, l'ansia anticipa un pericolo futuro",
+"pre": "E2.4, E1.5",
+"esp": "Classificare esempi tra paura e ansia",
+"ver": "Classifica correttamente",
+"crit": "Distinguere l'ansia normale dal disturbo d'ansia"
+},
+"E2.6": {
+"passo": "Pensieri ed emozioni si influenzano: lo stesso evento si può leggere in modi diversi",
+"pre": "E2.3, E2.5",
+"esp": "Riscrivere una situazione inventata da due punti di vista",
+"ver": "Propone due interpretazioni",
+"crit": "Non minimizzare problemi reali (\"basta pensare positivo\")"
+},
+"E3.1": {
+"passo": "[ponte] Risposta rapida allo stress: sistema simpatico e midollare del surrene, adrenalina e noradrenalina",
+"pre": "R3.2, B2.6",
+"esp": "Linea del tempo dei primi secondi",
+"ver": "Descrive la sequenza",
+"crit": "—"
+},
+"E3.2": {
+"passo": "Risposta lenta: asse ipotalamo-ipofisi-surrene (CRH, ACTH, cortisolo)",
+"pre": "E3.1, B3.5, B3.6",
+"esp": "Schema dell'asse da completare",
+"ver": "Ricostruisce la sequenza",
+"crit": "Il cortisolo non è un \"ormone cattivo\": serve al metabolismo e al risveglio"
+},
+"E3.3": {
+"passo": "Feedback negativo e ritmo giornaliero del cortisolo (picco al risveglio)",
+"pre": "E3.2",
+"esp": "Grafico del cortisolo nelle 24 ore",
+"ver": "Legge il grafico",
+"crit": "—"
+},
+"E3.4": {
+"passo": "Ippocampo e prefrontale come freni dell'asse dello stress; stress e memoria",
+"pre": "E3.3, E2.3",
+"esp": "Perché sotto forte stress si ricorda peggio",
+"ver": "Spiega il collegamento",
+"crit": "—"
+},
+"E3.5": {
+"passo": "Attivazione e prestazione: un modello a U rovesciata, con molti limiti",
+"pre": "E3.1",
+"esp": "Storia dell'esperimento del 1908 e delle sue generalizzazioni",
+"ver": "Spiega cosa dice il modello e cosa non dice",
+"crit": "Non chiamarla \"legge\": dipende dal compito ed è poco replicata"
+},
+"E3.6": {
+"passo": "Strategie di regolazione: rivalutazione, accettazione, distrazione, soppressione, risolvere il problema; costi e benefici",
+"pre": "E2.6, E3.4",
+"esp": "Confronto tra strategie su casi inventati",
+"ver": "Sceglie una strategia adatta a un caso",
+"crit": "Nessuna strategia è sempre la migliore: conta la flessibilità"
+},
+"E4.1": {
+"passo": "[ponte] Neurobiologia della regolazione: circuiti tra prefrontale e amigdala; teorie delle emozioni (di base e costruttive)",
+"pre": "E3.6, E2.2",
+"esp": "Confronto tra due teorie",
+"ver": "Espone i punti principali di ciascuna",
+"crit": "Dibattito scientifico aperto"
+},
+"E4.2": {
+"passo": "Dare un nome alle emozioni (affect labeling) e attività dell'amigdala: cosa mostrano gli studi",
+"pre": "E4.1, E1.6, B4.6",
+"esp": "Lettura di uno studio di neuroimmagine",
+"ver": "Valuta il disegno dello studio",
+"crit": "Effetti piccoli; risultati dipendenti dalla misura"
+},
+"E4.3": {
+"passo": "Interocezione e insula: percepire i segnali interni; i problemi di misura",
+"pre": "R3.3, E2.1, B4.5",
+"esp": "Contare il proprio battito senza toccarsi, poi discutere perché il compito è criticato",
+"ver": "Spiega i limiti del compito",
+"crit": "Il punteggio non è una misura valida della persona"
+},
+"E4.4": {
+"passo": "Stress cronico: glucocorticoidi, ippocampo, sistema immunitario; legame con ansia e depressione",
+"pre": "E3.4, B4.2",
+"esp": "Lettura di una rassegna",
+"ver": "Descrive i meccanismi",
+"crit": "Evitare autodiagnosi"
+},
+"E4.5": {
+"passo": "Stress nello sviluppo: periodi sensibili, fattori protettivi, resilienza",
+"pre": "E4.4, B4.4",
+"esp": "Analisi di un caso con fattori di rischio e di protezione",
+"ver": "Distingue rischio e destino",
+"crit": "Nessun determinismo"
+},
+"E4.6": {
+"passo": "Interventi con prove di efficacia (terapia cognitivo-comportamentale, mindfulness, attività fisica); quando e dove chiedere aiuto",
+"pre": "E4.4, B4.6",
+"esp": "Mappa dei servizi di supporto per ragazzi del territorio",
+"ver": "Sa indicare dove chiedere aiuto",
+"crit": "Il gioco non è una terapia e non la sostituisce"
+},
+"S1.1": {
+"passo": "Il corpo ha momenti per stare sveglio e momenti per dormire",
+"pre": "B1.1",
+"esp": "Disegnare la propria giornata su un orologio",
+"ver": "Descrive la propria giornata",
+"crit": "—"
+},
+"S1.2": {
+"passo": "Il buio e la luce dicono al corpo che ore sono",
+"pre": "S1.1",
+"esp": "Elenco delle luci accese la sera",
+"ver": "Spiega il ruolo della luce",
+"crit": "Non colpevolizzare le abitudini delle famiglie"
+},
+"S1.3": {
+"passo": "Mentre dormi il corpo cresce e si ripara, e la mente mette in ordine i ricordi",
+"pre": "S1.1",
+"esp": "Come ci si sente dopo una notte corta e dopo una notte lunga",
+"ver": "Elenca 2 cose che succedono nel sonno",
+"crit": "Mito \"durante il sonno il cervello si spegne\""
+},
+"S1.4": {
+"passo": "Ai bambini dai 6 ai 12 anni servono dalle 9 alle 12 ore di sonno",
+"pre": "S1.3",
+"esp": "Confronto con le proprie ore (stima, senza giudizio)",
+"ver": "Conosce il proprio bisogno di sonno",
+"crit": "Ci sono differenze individuali; non creare ansia"
+},
+"S1.5": {
+"passo": "Gli schermi la sera possono rendere più difficile addormentarsi: per la luce, per i contenuti eccitanti e per il tempo tolto al sonno",
+"pre": "S1.2",
+"esp": "Cosa fai nell'ultima mezz'ora prima di dormire?",
+"ver": "Nomina i tre motivi",
+"crit": "L'effetto della sola luce è modesto: non è \"lo schermo è il male\""
+},
+"S1.6": {
+"passo": "Un'abitudine calma della sera aiuta ad addormentarsi",
+"pre": "S1.4, R1.6",
+"esp": "Inventare un rituale della buonanotte di 10 minuti",
+"ver": "Descrive il proprio rituale",
+"crit": "—"
+},
+"S2.1": {
+"passo": "[ponte] Il ritmo circadiano dura circa 24 ore e continua anche senza orologi",
+"pre": "S1.1",
+"esp": "Racconto degli esperimenti di vita in grotta",
+"ver": "Spiega cosa significa \"circadiano\"",
+"crit": "—"
+},
+"S2.2": {
+"passo": "Il sonno ha fasi: leggero, profondo, con sogni (REM)",
+"pre": "S2.1",
+"esp": "Ipnogramma semplificato",
+"ver": "Riconosce le fasi su un grafico",
+"crit": "—"
+},
+"S2.3": {
+"passo": "La melatonina è l'ormone del buio, prodotto dalla ghiandola pineale",
+"pre": "S2.1, B2.6",
+"esp": "Grafico della melatonina nelle 24 ore",
+"ver": "Legge il grafico",
+"crit": "Non è un sonnifero: segnala il buio"
+},
+"S2.4": {
+"passo": "Il diario del sonno: misurare le proprie abitudini",
+"pre": "S2.2, B1.6",
+"esp": "Ricostruire in classe gli orari dell'ultima settimana",
+"ver": "Calcola le ore medie",
+"crit": "Dati personali: restano anonimi"
+},
+"S2.5": {
+"passo": "Dormire poco peggiora attenzione, umore e appetito",
+"pre": "S2.4",
+"esp": "Lettura di dati pubblicati",
+"ver": "Elenca 3 effetti",
+"crit": "Nessun esperimento di privazione del sonno"
+},
+"S2.6": {
+"passo": "La luce del mattino e orari regolari rimettono l'orologio; il \"jet lag sociale\"",
+"pre": "S2.3",
+"esp": "Calcolo del proprio jet lag sociale (differenza tra orari feriali e festivi)",
+"ver": "Esegue il calcolo",
+"crit": "—"
+},
+"S3.1": {
+"passo": "[ponte] Il nucleo soprachiasmatico è l'orologio centrale; i geni orologio (cenni)",
+"pre": "S2.1, B2.3",
+"esp": "Schema dell'orologio centrale e degli orologi periferici",
+"ver": "Spiega il ruolo del nucleo",
+"crit": "—"
+},
+"S3.2": {
+"passo": "La via della luce: cellule della retina con melanopsina, nucleo soprachiasmatico, ghiandola pineale",
+"pre": "S3.1, S2.3",
+"esp": "Schema del percorso",
+"ver": "Ricostruisce il percorso",
+"crit": "Il cristallino dei bambini lascia passare più luce blu: sono più sensibili"
+},
+"S3.3": {
+"passo": "Modello a due processi: la pressione del sonno (adenosina) e il ritmo circadiano",
+"pre": "S3.1, A3.4",
+"esp": "Grafico delle due curve",
+"ver": "Spiega quando arriva il sonno",
+"crit": "—"
+},
+"S3.4": {
+"passo": "Cortisolo e melatonina: due ritmi opposti",
+"pre": "S3.2, E3.3",
+"esp": "Sovrapporre i due grafici",
+"ver": "Spiega l'opposizione",
+"crit": "—"
+},
+"S3.5": {
+"passo": "Architettura del sonno: fasi NREM e REM, cicli di circa 90 minuti, elettroencefalogramma",
+"pre": "S2.2, B3.2",
+"esp": "Lettura di un ipnogramma reale",
+"ver": "Riconosce i cicli",
+"crit": "La durata dei cicli varia"
+},
+"S3.6": {
+"passo": "Adolescenza: l'orologio si sposta in avanti e la pressione del sonno cresce più lentamente",
+"pre": "S3.3",
+"esp": "Dibattito sull'orario d'inizio delle lezioni",
+"ver": "Spiega la base biologica",
+"crit": "Non è pigrizia"
+},
+"S4.1": {
+"passo": "[ponte] Neurofisiologia del sonno: onde lente, fusi, REM; i circuiti che alternano sonno e veglia",
+"pre": "S3.5",
+"esp": "Lettura di tracciati EEG",
+"ver": "Descrive i grafoelementi principali",
+"crit": "—"
+},
+"S4.2": {
+"passo": "Sonno e memoria: consolidamento e riattivazione dei ricordi",
+"pre": "S4.1, E3.4",
+"esp": "Lettura di uno studio sperimentale",
+"ver": "Spiega il consolidamento",
+"crit": "—"
+},
+"S4.3": {
+"passo": "Sonno ed emozioni: dopo una notte senza sonno l'amigdala reagisce di più; ruolo del REM",
+"pre": "S4.2, E4.1",
+"esp": "Lettura di uno studio di privazione del sonno",
+"ver": "Valuta i risultati",
+"crit": "L'idea del REM come \"terapia notturna\" è un'ipotesi"
+},
+"S4.4": {
+"passo": "[ipotesi] Il sistema glinfatico e la \"pulizia\" del cervello durante il sonno",
+"pre": "S4.1",
+"esp": "Confronto tra studi con risultati opposti",
+"ver": "Espone il dibattito",
+"crit": "Risultati recenti contrastanti"
+},
+"S4.5": {
+"passo": "Luce, schermi e sonno: quanto sono grandi gli effetti; occhiali filtranti e modalità notte",
+"pre": "S3.2, B4.6",
+"esp": "Lettura di una revisione sistematica",
+"ver": "Valuta l'entità degli effetti",
+"crit": "Gli effetti esistono ma sono spesso sovrastimati nel discorso pubblico"
+},
+"S4.6": {
+"passo": "Disturbi del sonno nei giovani (insonnia, apnee) e trattamenti con prove di efficacia",
+"pre": "S4.5, E4.6",
+"esp": "Analisi di un caso",
+"ver": "Distingue abitudine e disturbo",
+"crit": "Niente autodiagnosi; la melatonina come farmaco solo su indicazione medica"
+},
+"M1.1": {
+"passo": "I sensi portano il mondo dentro di noi",
+"pre": "B1.3",
+"esp": "Un minuto di ascolto: elencare tutti i suoni sentiti",
+"ver": "Elenca i sensi e un esempio ciascuno",
+"crit": "Includere chi ha disabilità sensoriali; occhi chiusi facoltativi"
+},
+"M1.2": {
+"passo": "Troppi stimoli (rumore, luci, confusione) possono accendere l'allarme",
+"pre": "M1.1, E1.4",
+"esp": "Confronto tra un momento rumoroso e uno silenzioso",
+"ver": "Descrive come si sente nei due momenti",
+"crit": "Ognuno ha una sensibilità diversa (anche per neurodivergenza): rispettarla"
+},
+"M1.3": {
+"passo": "Muoversi e giocare aiutano a scaricare la tensione",
+"pre": "R1.3",
+"esp": "Umore e battito prima e dopo 5 minuti di gioco in movimento",
+"ver": "Descrive il cambiamento",
+"crit": "Attività adattabili a tutti"
+},
+"M1.4": {
+"passo": "Le persone di fiducia aiutano a calmarsi",
+"pre": "E1.6",
+"esp": "Disegnare le proprie persone di fiducia",
+"ver": "Sa a chi rivolgersi",
+"crit": "Non tutte le famiglie sono un posto sereno: parlare di \"persone di fiducia\""
+},
+"M1.5": {
+"passo": "Natura e posti tranquilli aiutano molte persone",
+"pre": "M1.1",
+"esp": "Disegnare il proprio posto tranquillo, reale o immaginato",
+"ver": "Descrive il proprio posto",
+"crit": "Non tutti hanno accesso al verde; il posto può essere immaginario"
+},
+"M1.6": {
+"passo": "Il riposo è un diritto di tutti (Dichiarazione universale dei diritti umani, art. 24)",
+"pre": "M1.4",
+"esp": "Leggere l'articolo 24 e riscriverlo con parole proprie",
+"ver": "Spiega l'articolo",
+"crit": "—"
+},
+"M2.1": {
+"passo": "[ponte] Organi di senso e vie sensoriali: dal recettore al cervello",
+"pre": "B2.5, M1.1",
+"esp": "Mappa dei sensi e delle aree del cervello che li ricevono",
+"ver": "Traccia la via di un senso",
+"crit": "—"
+},
+"M2.2": {
+"passo": "Il rumore si misura in decibel (scala logaritmica); oltre certe soglie e durate è dannoso",
+"pre": "M2.1",
+"esp": "Misurare il rumore della classe con un'app fonometro",
+"ver": "Legge e confronta valori in decibel",
+"crit": "Le app sono imprecise; musica solo a volume moderato"
+},
+"M2.3": {
+"passo": "L'attività fisica fa bene a cuore, umore e sonno (per i ragazzi si raccomanda movimento ogni giorno)",
+"pre": "R2.4",
+"esp": "Diario del movimento di una settimana",
+"ver": "Collega movimento e benessere",
+"crit": "Attività inclusive; nessun confronto tra corpi"
+},
+"M2.4": {
+"passo": "Abitudini e ricompense: ripetiamo ciò che ci fa stare bene; le notifiche sfruttano questo meccanismo",
+"pre": "E2.1",
+"esp": "Contare le notifiche ricevute in un'ora (solo osservazione)",
+"ver": "Spiega perché una notifica attira",
+"crit": "Nessun giudizio sull'uso dello smartphone"
+},
+"M2.5": {
+"passo": "Relazioni e stress: sostegno, conflitti, bullismo; dove chiedere aiuto",
+"pre": "M1.4, E2.5",
+"esp": "Casi inventati da discutere",
+"ver": "Sa indicare a chi chiedere aiuto",
+"crit": "Tema delicato: tenere pronta una persona di riferimento"
+},
+"M2.6": {
+"passo": "Diritti dei bambini: la Convenzione ONU sui diritti dell'infanzia riconosce il diritto al riposo e al gioco (art. 31)",
+"pre": "M1.6",
+"esp": "Confronto tra l'art. 24 della Dichiarazione e l'art. 31 della Convenzione",
+"ver": "Spiega le differenze tra i due testi",
+"crit": "—"
+},
+"M3.1": {
+"passo": "[ponte] Dopamina e ricompensa: segnala la differenza tra ricompensa attesa e ottenuta; le ricompense imprevedibili sono le più potenti",
+"pre": "B3.4, M2.4",
+"esp": "Confronto tra una slot machine e il gesto di aggiornare un social",
+"ver": "Spiega l'errore di previsione",
+"crit": "La dopamina non è \"la molecola del piacere\""
+},
+"M3.2": {
+"passo": "Ossitocina e legame sociale: effetti che dipendono dal contesto",
+"pre": "B3.5, M2.5",
+"esp": "Lettura di uno studio",
+"ver": "Descrive gli effetti principali",
+"crit": "Non è \"l'ormone dell'amore\"; gli studi con spray nasale sono deboli"
+},
+"M3.3": {
+"passo": "Esercizio fisico: endorfine, endocannabinoidi e fattori di crescita dei neuroni",
+"pre": "B3.4, M2.3",
+"esp": "Discussione sul benessere dopo una corsa",
+"ver": "Spiega i meccanismi principali",
+"crit": "Il ruolo delle endorfine nella \"euforia del corridore\" è discusso"
+},
+"M3.4": {
+"passo": "Rumore cronico e salute: effetti su sonno, pressione e stress",
+"pre": "M2.2, R3.1",
+"esp": "Mappa del rumore del quartiere",
+"ver": "Collega rumore e fisiologia",
+"crit": "—"
+},
+"M3.5": {
+"passo": "[ipotesi] Natura e benessere: teoria del ripristino dell'attenzione e teoria della riduzione dello stress",
+"pre": "M2.1, B1.6",
+"esp": "Confronto tra 10 minuti in cortile e 10 in corridoio, con discussione dei limiti",
+"ver": "Distingue ipotesi e prova",
+"crit": "Prove miste e repliche parziali"
+},
+"M3.6": {
+"passo": "Design persuasivo: come molte app sono progettate per trattenere l'attenzione, e perché il nostro gioco non lo fa",
+"pre": "M3.1",
+"esp": "Analisi di un'app nota",
+"ver": "Riconosce 3 tecniche persuasive",
+"crit": "Collegamento diretto con le scelte di design del gioco"
+},
+"M4.1": {
+"passo": "[ponte] Il sostegno sociale attenua la risposta del cortisolo allo stress",
+"pre": "M3.2, E3.3",
+"esp": "Lettura di uno studio sperimentale",
+"ver": "Descrive il disegno e il risultato",
+"crit": "—"
+},
+"M4.2": {
+"passo": "Stress, infiammazione e sistema immunitario: citochine e \"comportamento di malattia\"",
+"pre": "B4.2, E4.4",
+"esp": "Schema dei collegamenti tra sistema nervoso e immunitario",
+"ver": "Ricostruisce il circuito",
+"crit": "—"
+},
+"M4.3": {
+"passo": "Determinanti sociali della salute: povertà, discriminazione e ambiente come fonti di stress",
+"pre": "B4.2, M4.1",
+"esp": "Analisi di dati epidemiologici",
+"ver": "Collega condizioni di vita e salute",
+"crit": "Rilassarsi non è solo una questione di volontà"
+},
+"M4.4": {
+"passo": "Smartphone e benessere: cosa dicono davvero gli studi",
+"pre": "M3.6, B4.6",
+"esp": "Confronto tra due ricerche con conclusioni opposte",
+"ver": "Valuta la forza delle prove",
+"crit": "Effetti medi piccoli e causalità incerta; dibattito acceso"
+},
+"M4.5": {
+"passo": "Salute e riposo come diritti: Dichiarazione universale (art. 24 e 25), Convenzione sui diritti dell'infanzia (art. 31); politiche pubbliche",
+"pre": "M4.3, M2.6",
+"esp": "Proposta di una politica scolastica per il riposo",
+"ver": "Argomenta la proposta con dati",
+"crit": "—"
+},
+"M4.6": {
+"passo": "Progettare per il benessere: etica del game design per minori, accessibilità, privacy",
+"pre": "M4.4, M3.6",
+"esp": "Revisione critica del nostro stesso gioco",
+"ver": "Individua 3 miglioramenti",
+"crit": "Chiude il cerchio con il progetto"
+}
+}

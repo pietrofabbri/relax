@@ -1,0 +1,107 @@
+{
+ "v": 5,
+ "createdOnFiles": {
+  "v": 1,
+  "at": "2026-11-16T21:00:33Z"
+ },
+ "lists": "css",
+ "format": {
+  "v": 1,
+  "shared": [
+   "project/deck.css"
+  ]
+ },
+ "title": "Hayy ibn Yaqzan: riferimenti letterari e diritti umani",
+ "cover": "copertina",
+ "order": [
+  "copertina",
+  "indice",
+  "cap1",
+  "chi",
+  "dove",
+  "quando",
+  "nome",
+  "mestieri",
+  "corte",
+  "averroe",
+  "filosofi",
+  "cap2",
+  "titolo",
+  "forma",
+  "data",
+  "nomi",
+  "isola",
+  "t1",
+  "t2",
+  "t3",
+  "t4",
+  "t5",
+  "t6",
+  "t7",
+  "t8",
+  "e-pers",
+  "e-luoghi",
+  "e-natura",
+  "e-oggetti",
+  "e-idee",
+  "e-tempi",
+  "temi1",
+  "temi2",
+  "temi3",
+  "cap3",
+  "manoscritto",
+  "pococke",
+  "traduzioni",
+  "quaccheri",
+  "robinson",
+  "edizioni",
+  "cap4",
+  "documenti",
+  "criteri",
+  "dudu1",
+  "dudu26",
+  "dudu19",
+  "dudu27",
+  "cost3",
+  "limiti",
+  "sintesi",
+  "fonti"
+ ],
+ "sections": {
+  "s0": {
+   "description": "Copertina e indice",
+   "start": "copertina"
+  },
+  "s1": {
+   "description": "L'autore: chi, dove, quando, nome, lavoro, corte, predecessori",
+   "start": "cap1"
+  },
+  "s2": {
+   "description": "L'opera: titolo, forma, data, fonti, luogo, trama in 8 tappe, elementi della storia, temi",
+   "start": "cap2"
+  },
+  "s3": {
+   "description": "Il viaggio del libro: manoscritto, traduzioni, lettori, edizioni",
+   "start": "cap3"
+  },
+  "s4": {
+   "description": "Diritti umani: documenti, criteri, articoli, limiti, sintesi",
+   "start": "cap4"
+  },
+  "s5": {
+   "description": "Fonti",
+   "start": "fonti"
+  }
+ },
+ "faces": {
+  "eb-garamond": {
+   "family": "EB Garamond",
+   "href": "https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400..700&family=Public+Sans:wght@400;600;700&display=swap"
+  },
+  "public-sans": {
+   "family": "Public Sans",
+   "href": "https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&display=swap"
+  }
+ },
+ "designSystems": []
+}
